@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_peripheral_lite-application-description"><strong>BLE_Peripheral_Lite
+        Application Description</strong></h2>
+        <p>Demonstrate how to communicate with simple Bluetooth LE
+        peripheral with minimum activated features. This application
+        shows simple Bluetooth LE peripheral operation with
+        bidirectional communication with minimalistic device
+        configuration flow and Lite service support with minimum needed
+        features activation (not including e.g. Tasks Sequencer, Timer
+        Server, Low-Power Manager).</p>
+        <p>BLE_Peripheral_Lite application advertises and waits for a
+        connection from either:</p>
+        <ul>
+        <li>ST BLE Toolbox smartphone application</li>
+        <li>ST BLE Sensor smartphone application</li>
+        </ul>
+        <p>Once connected, BLE_Peripheral_Lite can receive write
+        messages from the Client and send notifications to it.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target
+        memory</li>
+        <li>Run the example</li>
+        </ul>
+        <p><strong>You can interact with BLE_Peripheral_Lite application
+        with a smartphone:</strong></p>
+        <ul>
+        <li>Install and launch ST BLE Toolbox or ST BLE Sensor
+        applications on android or iOS smartphone
+        <ul>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.dit.stbletoolbox">
+        ST BLE Toolbox Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-toolbox/id1531295550">
+        ST BLE Toolbox iOS</a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems">
+        ST BLE Sensor Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-sensor/id993670214">
+        ST BLE Sensor iOS</a></li>
+        </ul></li>
+        <li>Once the code (BLE_Peripheral_Lite) is downloaded into the
+        STM32WB0 board and executed, the module is initialized.</li>
+        <li>The Peripheral device (BLE_Peripheral_Lite) starts
+        advertising with data using local name “HELLO!”.</li>
+        <li>The green led blinks for each advertising event slowly each
+        ~0.5sec.</li>
+        <li>The Smart phone application starts scanning.</li>
+        <li>Select the “HELLO!” device (containing My Very Own service
+        as P2PServer profile) in the list of Smart phone application and
+        connect to it. The green led toggles faster.</li>
+        <li>Select the P2P Server interface and click on the LED icon to
+        switch On/Off LED1 (blue LED of the Nucleo board0).</li>
+        <li>Notification is sent from the server (Peripheral device -
+        Nucleo board) to the client (Smart phone) every ~1sec.</li>
+        <li>When the Peripheral device (Nucleo board) is disconnected,
+        advertising is restarted and it is possible to connect to it
+        again.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

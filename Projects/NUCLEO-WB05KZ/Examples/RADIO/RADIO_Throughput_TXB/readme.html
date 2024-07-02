@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="radio_throughput_txb-example-description"><strong>RADIO_Throughput_TXB
+        Example Description</strong></h2>
+        <p>This code implements a throughput test (transmitter,
+        bidirectional). Two devices are needed, one with the RX
+        bidirectional configuration. In the bidirectional configuration,
+        the TX device will wait for the ACK packet. The usage is the
+        same as the unidirectional configuration, but it is necessary to
+        have another device configured with the RxThroughput
+        Bidirectional as well.</p>
+        <h4 id="notes"><strong>Notes</strong></h4>
+        <ol type="1">
+        <li><p>On Keil framework, the following compilation setting are
+        applied :</p>
+        <pre><code>--diag_suppress L6312W          (Hide “Empty &lt;type&gt; region description for region &lt;region&gt;” warning)
+--diag_suppress L6314W          (Hide “No section matches pattern &lt;module&gt;(&lt;section&gt;” warning)
+--diag_suppress L6329W          (Hide “Pattern &lt;module&gt;(&lt;section&gt;) only matches removed unused sections” warning)</code></pre></li>
+        </ol>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, 2.4 GHz RADIO IP</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB05 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the projects with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file</li>
+        <li>Flash another board with RADIO_Throughput_TXB example</li>
+        <li>Run example</li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

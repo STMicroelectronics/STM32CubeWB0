@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_p2pserver_ota-application-description"><strong>BLE_p2pServer_ota
+        Application Description</strong></h2>
+        <p>Demonstrate STM32WB0 acting as BLE peripheral and GATT server
+        and offering OTA firmware update service.</p>
+        <p>BLE_p2pServer_ota application advertises and wait for a
+        connection from either:</p>
+        <ul>
+        <li>BLE_p2pClient application running on STM32WB0 device</li>
+        <li>BLE_p2pRouter application running on STM32WB0 device</li>
+        <li>ST BLE Toolbox smartphone application</li>
+        <li>ST BLE Sensor smartphone application</li>
+        </ul>
+        <p>Once connected, p2pServer can receive write messages from the
+        Client and send notifications to it.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE firmware update over the
+        air, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board may be necessary to run
+        p2pClient or BLE_p2pRouter application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target memory:
+        <ul>
+        <li>BLE_ApplicationInstallManager binary is downloaded at the
+        memory address 0x10040000</li>
+        <li>BLE_p2pServer_ota binary is downloaded at the memory address
+        0x10041000</li>
+        </ul></li>
+        <li>Run the example</li>
+        </ul>
+        <p><strong>You can interact with p2pServer_ota application with
+        a smartphone:</strong></p>
+        <ul>
+        <li>Install and launch ST BLE Toolbox or ST BLE Sensor
+        applications on Android or iOS smartphone
+        <ul>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.dit.stbletoolbox">
+        ST BLE Toolbox Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-toolbox/id1531295550">
+        ST BLE Toolbox iOS</a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems">
+        ST BLE Sensor Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-sensor/id993670214">
+        ST BLE Sensor iOS</a></li>
+        </ul></li>
+        <li>Connect to STM32WB0 device, select p2pS_xx device in the
+        list, where xx is the 2 last digits of the BD ADDRESS.</li>
+        <li>Select the P2P Server interface and click on the LED icon to
+        switch On/Off LED1 of the Nucleo board.</li>
+        <li>Press the Button B1 of the board to notify the smartphone
+        application.</li>
+        </ul>
+        <p><strong>You can interact with p2pServer_ota application with
+        another Nucleo board:</strong></p>
+        <ul>
+        <li>Power up p2pClient devices next to p2pServer device.</li>
+        <li>On p2pClient device press B1 button: scan is initiated and
+        connection is established to the first p2pServer device that is
+        found.
+        <ul>
+        <li>On p2pServer device press B1 button: a GATT notification
+        message is sent toward connected p2pClient device.</li>
+        <li>On p2pClient device press B1 button: a GATT write command is
+        sent toward connected p2pServer device.</li>
+        </ul></li>
+        </ul>
+        <p>On p2pServer, advertising is stopped after 60s. A click on
+        button B1 allows to restart it.</p>
+        <p>When not connected, a click on button B2 allows to clear the
+        security database.</p>
+        <p>Once connected, a click on button B3 allows to update the
+        connection interval parameters.</p>
+        <p>Multi connection support:</p>
+        <ul>
+        <li>Pressing button B2 while the device is already connected
+        starts a new advertising to allow multi-connection.</li>
+        </ul>
+        <p><strong>You can update the application from a
+        smartphone:</strong></p>
+        <ul>
+        <li>Power on the Nucleo board with the
+        BLE_ApplicationInstallManager and BLE_p2pServer_ota
+        applications.</li>
+        <li>Open ST BLE Toolbox application: select the p2pS_xx in the
+        device list, where xx is the 2 last digits of the BD
+        ADDRESS.</li>
+        <li>Select the Over The Air Update Server interface and the
+        STM32WB0 device type</li>
+        <li>The STM32WB0 interface offers the choice to download an
+        Application Binary or a User Conf Binary</li>
+        <li>Memory mapping is defined as following:
+        <ul>
+        <li>4 KB (sectors 0 and 1) are reserved for the
+        BLE_ApplicationInstallManager application</li>
+        <li>250 KB (from sector 2 to sector 126) are dedicated to
+        BLE_p2pServer_ota application</li>
+        <li>the second 250 KB of Flash (from sector 127 to sector 251)
+        are dedicated for the new application</li>
+        <li>sectors 252 and 253 are dedicated to User Configuration
+        Data</li>
+        <li>sectors 254 and 255 are reserved for NVM data used by
+        Bluetooth Stack.</li>
+        </ul></li>
+        <li>When selecting Application Binary the default Address offset
+        0x03F800 is displayed. The download address of the new
+        application is then 0x1007F800.</li>
+        <li>When selecting the User Conf Binary, the Address offset to
+        choose is the address offset of the configured User
+        Configuration Data area defined in the app_conf.h header file
+        (default is 0x07E000).</li>
+        <li>With <em>SELECT FILE</em> you can choose the binary of the
+        new application or the binary of the User Configuration Data to
+        download</li>
+        <li>After this binary choice, a calculated Number of sectors to
+        erase is displayed resulting of the size in sectors of the
+        application or the user configuration data to download.</li>
+        <li>The Number of sectors to erase can be forced with a
+        specified number by checking <em>Force it</em> checkbox</li>
+        <li>After selecting download icon, the download will start.</li>
+        <li>In case of new application download, a reboot on this new
+        application is done at the end of the procedure.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

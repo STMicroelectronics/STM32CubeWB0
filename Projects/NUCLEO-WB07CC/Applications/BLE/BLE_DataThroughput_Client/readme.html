@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_datathroughput_client-application-description"><strong>BLE_DataThroughput_Client
+        Application Description</strong></h2>
+        <p>How to demonstrate Point-to-Point communication using BLE
+        component (as GATT server or GATT client).</p>
+        <p>The Nucleo board flashed with BLE_DataThroughput_Client
+        application acts as GATT Client and can connect and exchange
+        data with a nucleo board flashed with BLE_DataThroughput_Server
+        application.</p>
+        <p>Data transfer via notification from server to client or/and
+        write from client to server. Use of a timer that enables to
+        calculate the throughput at application level.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 devices. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        </ul>
+        <p><strong>Use of two nucleo boards</strong></p>
+        <p>Two STM32WB0x nucleo boards are used, one central/client
+        (flashed with BLE_DataThroughput_Client) and one
+        peripheral/server (flashed with BLE_DataThroughput_Server).</p>
+        <p>The GATT server board supports a Data transfer service with a
+        transmission characteristic that supports notifications.</p>
+        <p>The GATT client board supports a Data transfer service by
+        writing without response to the GATT server board Reception
+        characteristic.</p>
+        <p>The board flashed with BLE_DataThroughput_Client is defined
+        as GAP central.</p>
+        <p>Open a serial terminal on Central and Peripheral side (ST
+        Link Com Port, <span class="citation"
+        data-cites="115200">@115200</span> bauds).</p>
+        <p>At reset application initialization is done.</p>
+        <ul>
+        <li>The peripheral device starts advertising.</li>
+        <li>Push B1 on central: the central device scans and
+        automatically connects to the peripheral.</li>
+        <li>After connection:
+        <ul>
+        <li>the client starts to search the data transfer service and
+        characteristic.</li>
+        <li>the client enables the notifications of the transmission
+        characteristic.</li>
+        </ul></li>
+        </ul>
+        <p>On server side when connected:</p>
+        <ul>
+        <li>B1 starts (blue LED is ON)/stops (blue LED is OFF)
+        notification.</li>
+        <li>B2 sends L2CAP connection update - toggle 26.25 ms/11.25
+        ms</li>
+        <li>B3 toggles PHY</li>
+        </ul>
+        <p>On server side when idle:</p>
+        <ul>
+        <li>B2 clears the database</li>
+        </ul>
+        <p>On client side when connected:</p>
+        <ul>
+        <li>B1 starts (blue LED is ON)/stops (blue LED is OFF) write
+        without response.</li>
+        <li>B2 sends pairing request</li>
+        </ul>
+        <p>On client side when idle:</p>
+        <ul>
+        <li>B2 clears the database</li>
+        </ul>
+        <p>On client terminal receiving the current notification, the
+        number of bytes per second is displayed.</p>
+        <p>On server terminal receiving the current write without
+        response, the number of bytes per second is displayed.</p>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2 id="radio_testrx-example-description"><strong>RADIO_TestRx
+        Example Description</strong></h2>
+        <p>How to configure simple RX with ack scenario using HAL_RADIO
+        API</p>
+        <p>This code runs RX scenario sending back an acknowledgment
+        (ACK). The payload of the received frame is printed on the
+        terminal. To implement this scenario the API
+        HAL_RADIO_ReceivePacketWithAck is used. The default callback
+        HAL_RADIO_Callback is provided to this function. The following
+        callbacks are implemented, in user code, according to the radio
+        driver’s needs: HAL_RADIO_CallbackRcvOk,
+        HAL_RADIO_CallbackRcvTimeout and HAL_RADIO_CallbackTxDone to
+        define the behavior of the radio.</p>
+        <h4 id="notes"><strong>Notes</strong></h4>
+        <ol type="1">
+        <li><p>On Keil framework, the following compilation setting are
+        applied :</p>
+        <pre><code>--diag_suppress L6312W          (Hide “Empty &lt;type&gt; region description for region &lt;region&gt;” warning)
+--diag_suppress L6314W          (Hide “No section matches pattern &lt;module&gt;(&lt;section&gt;” warning)
+--diag_suppress L6329W          (Hide “Pattern &lt;module&gt;(&lt;section&gt;) only matches removed unused sections” warning)</code></pre></li>
+        </ol>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, 2.4 GHz RADIO IP</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB09 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file</li>
+        <li>Program two devices: one with the RADIO_TestTx image and the
+        other with the RADIO_TestRx image. On the RADIO_TestTx device,
+        open a serial terminal to get the result of the
+        communication.</li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

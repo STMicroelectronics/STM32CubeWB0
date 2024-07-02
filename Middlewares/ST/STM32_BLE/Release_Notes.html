@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Release Notes for STM32_BLE Middleware</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="../../../_htmresc/mini-st_2020.css" />
+  <link rel="icon" type="image/x-icon" href="../../../_htmresc/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<div class="row">
+<div class="col-sm-12 col-lg-4">
+<center>
+<h1 id="release-notes-for">Release Notes for</h1>
+<h1 id="stm32_ble-middleware"><mark>STM32_BLE Middleware</mark></h1>
+<p>Copyright © 2024 STMicroelectronics<br />
+</p>
+<a href="https://www.st.com" class="logo"><img
+src="../../../_htmresc/st_logo_2020.png" alt="ST logo" /></a>
+</center>
+<h1 id="purpose">Purpose</h1>
+<p>STM32_BLE Middleware for ST Bluetooth LE stack v4.0.</p>
+<p>The following Bluetooth LE specification v5.4 features are
+supported:</p>
+<ul>
+<li>Advertising</li>
+<li>Scanning</li>
+<li>Master / Slave Connection</li>
+<li>GATT Client / Server</li>
+<li>Host and Controller Privacy</li>
+<li>LE Encryption</li>
+<li>Direction Findings (AoA, AoD)</li>
+<li>LE Data Packet Length Extension</li>
+<li>LE Legacy and Secure Connections</li>
+<li>2Mbit PHY</li>
+<li>LE Long Range (Coded PHY)</li>
+<li>High Duty Cycle Non-Connectable Advertising</li>
+<li>Extended advertising and scanning</li>
+<li>LE Channel Selection Algorithm #2</li>
+<li>GATT Robust Caching</li>
+<li>Periodic Advertising and Periodic Advertising Sync Transfer</li>
+<li>Periodic Advertising with Responses</li>
+<li>Advertising Coding selection</li>
+<li>Encrypted Advertising Data</li>
+<li>LE Ping procedure</li>
+<li>LE L2CAP Connection-Oriented Channel support</li>
+<li>LE Power Control &amp; Path Loss Monitoring support</li>
+<li>Connection robustness mechanism</li>
+<li>LE channel classification</li>
+<li>Enhanced ATT (EATT) support</li>
+<li>Connection subrating support</li>
+<li>Broadcast Isochronous Streams (BIS) support</li>
+<li>Connection Isochronous Streams (CIS) support</li>
+<li>Multiple/concurrent active links supported (tested up to 24)</li>
+<li>Direct Test Mode</li>
+<li>Link statistics</li>
+<li>ATT Maximum Transmission Unit (MTU) size is 1020 octets.</li>
+<li>L2CAP Maximum Payload Size (MPS) size is 1024 octets.</li>
+<li>MISRA-C:2012 compliance</li>
+<li>Bluetooth LE stack modular configurations allowing to optimize
+Bluetooth LE stack memory footprints based on user application
+scenario</li>
+<li>Single Bluetooth LE stack v4.0 binary image (stm32wb0x_ble_stack.a)
+which can be used for all the supported supported toolchains</li>
+<li>Dedicated Bluetooth LE stack v4.0 binary image
+(stm32wb0x_ble_stack_controller_only.a) for the HCI controller only
+configuration</li>
+</ul>
+<p>The list of Bluetooth LE commands is documented in the
+STM32WB0_BLE_Wireless_Interface document on STM32_BLE\stack\doc
+folder.</p>
+</div>
+<section id="update-history" class="col-sm-12 col-lg-8">
+<h1>Update History</h1>
+<div class="collapse">
+<input type="checkbox" id="collapse-section5" checked aria-hidden="true">
+<label for="collapse-section5"  aria-hidden="true"><strong>V1.0.0 /
+05-June-2024</strong></label>
+<h2 id="main-changes">Main Changes</h2>
+<p>ST Bluetooth LE stack v4.0 release:</p>
+<ul>
+<li>New features/updates (compared to Bluetooth LE stack v3.x)
+<ul>
+<li>Added Periodic Advertising with Responses (PAwR) support with
+associated new commands and events.</li>
+<li>Updated event management policy compared to previous ST Bluetooth LE
+stack v3.x releases.</li>
+<li>Added Advertising Coding selection feature.</li>
+<li>Added Encrypted Advertising Data</li>
+<li>Reviewed overall security APIs (not backward compatible with
+Bluetooth LE stack v3.x)</li>
+<li>Add a way to selectively accept/reject pairing requests from either
+peer Central or Peripheral (known as Pairing Response mode)</li>
+<li>Set default IO capabilities to NoInputNoOutput and MITM protection
+to NotRequired</li>
+<li>Harmonization of L2CAP COS channels that addressed the request to
+use internal mem buffers to handle both LE-CFC and ECFC channels</li>
+<li>Added new L2CAP APIs to make their names homogeneous and consistent
+for all commands and events</li>
+<li>Added a proprietary command (aci_gap_set_le_event_mask) to allow
+setting the LE event mask preserving the events needed by the Host</li>
+<li>Moved ACI_HAL_WRITE_RADIO_REG and ACI_HAL_READ_RADIO_REG outside of
+Bluetooth LE stack library</li>
+<li>Added end_of_radio_activity_event called directly from ISR
+context</li>
+<li>Added Periodic Advertising ADI support</li>
+<li>Reviewed Periodic advertising slot length</li>
+<li>Reviewed ISOAL &amp; BIG/BIS &amp; CIG/CIS modules</li>
+<li>Removed aci_hal_tone_start() from library</li>
+<li>Removed ACI GAP commands to handle Periodic Advertising and Periodic
+Advertising Sync Transfer modes and procedures:
+<ul>
+<li>HCI commands are used to handle Periodic Advertising and Periodic
+Advertising Sync Transfer modes and procedures.</li>
+</ul></li>
+<li>Removed ACI_GAP_SET_EVENT_MASK command</li>
+<li>Added two new error codes: BLE_ERROR_TOO_LATE and
+BLE_ERROR_TOO_EARLY (required by PAwR)</li>
+<li>Added new modular configuration option
+CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED for enabling/disabling
+Periodic Advertising with Responses support.</li>
+<li>Removed CFG_BLE_EATT_ENABLED modular configuration option.</li>
+<li>Added new Bluetooth LE stack initialization parameters:
+<ul>
+<li>NumOfSubeventsPAwR: Maximum number of Periodic Advertising with
+Responses subevents.</li>
+<li>MaxPAwRSubeventDataCount: Maximum number of subevent data that can
+be queued in the controller.</li>
+<li>NumOfSyncBIG: Maximum number of slots for synchronizing to a
+Broadcast Isochronous Group.</li>
+<li>NumOfBrcBIG: Maximum number of slots for synchronizing to a
+Broadcast Isochronous Stream.</li>
+<li>NumOfSyncBIS: Maximum number of slots for synchronizing to a
+Broadcast Isochronous Stream.</li>
+<li>NumOfBrcBIS: Maximum number of slots for broadcasting a Broadcast
+Isochronous Stream.</li>
+<li>NumOfCIG: Maximum number of Connected Isochronous Groups.</li>
+<li>NumOfCIS: Maximum number of Connected Isochronous Streams.</li>
+</ul></li>
+<li>Renamed Bluetooth LE stack initialization parameter
+WhiteListSizeLog2 as FilterAcceptListSizeLog2.</li>
+<li>Removed aci_gatt_srv_init() API and moved to GATT profile managed
+externally (aci_gatt_srv_profile_init()).</li>
+<li>Removed some parameters on aci_gap_init() API</li>
+<li>Added new aci_gap_profile_init() API.</li>
+<li>Renamed some commands and events compared to previous Bluetooth LE
+stack v3.x</li>
+<li>Modified some GATT commands and events by adding the CID parameter
+to support both Unenhanced and Enhanced channels.</li>
+<li>Removed GATT commands for EATT channels: they have been replaced by
+corresponding GATT commands modified by adding the CID parameter.</li>
+</ul></li>
+<li>Solved issues (compared to Bluetooth LE stack v3.x):
+<ul>
+<li>ID 1055406: Periodic advertising sync ends abnormally.Sometimes the
+scanner, synchronized with a periodic advertiser, ends sending
+advertising reports to the application.</li>
+<li>ID 1127696: Missed SDU in BIG Synchronize</li>
+<li>ID 1127085: Number of simultaneous supported BIS (currently 2) not
+matching customer requirement (set to 4)</li>
+<li>ID 1166290: Discovery procedures not excluded in Observer role;
+Discoverability mode not excluded in Broadcaster role</li>
+<li>ID 1166716: Operation parameter is ignored in both the LE Set
+Extended Advertising Data and LE Set Periodic Advertising Data
+commands</li>
+<li>ID 1171561: Command Disallowed is not returned when a data path not
+allowed (with BN=0) is configured</li>
+<li>ID 1191988: Missing
+HCI_LE_PERIODIC_ADVERTISING_SYNC_ESTABLISHED_EVENT</li>
+<li>ID 1197578: Issue in ACI_HAL_GET_LINK_STATUS when connection is
+established with Extended ADV Commands</li>
+<li>ID 1214606: Corruption of advertising context during long run
+tests</li>
+</ul></li>
+<li>Known limitations:
+<ul>
+<li>ID 600131: HCI timeout on ACI_GAP_CLEAR_SECURITY_DB command:
+<ul>
+<li>Erasing the SDB through the aci_gap_clear_security_db command shall
+be avoided during intense radio activities (also when a connection is
+active).</li>
+</ul></li>
+<li>ID 603240 : Extended/legacy advertising usage check:
+<ul>
+<li>This problem is not expected to happen in real conditions since the
+application should not use the HCI_LE_SET_ADVERTISING_PARAMETERS
+directly.</li>
+<li>Currently the error is returned because of a promiscuous usage of
+GAP and HCI level commands, that happens when the application uses HCI
+commands for legacy advertising after having initialized GAP component
+(through ACI_GAP_INIT); GAP returns an error because it tries to use
+extended commands that are blocked at that point</li>
+</ul></li>
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+than right value.</li>
+<li>ID 1007074: Define a FW Error Event code to report malformed or
+out-of-spec packets (applicable to all Bluetooth layers)</li>
+<li>ID 1074817: Different advertising filter policies are allowed among
+different adverting sets. It should be forbidden according to GAP
+specifications.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
+<li>ID 1165728: GATT Indications sent to Upper layer even when received
+with insufficient security level:
+<ul>
+<li>The link security requirements when receiving the indications shall
+be verified directly by the application layer that may then discard
+those not satisfying the minimum requirements.</li>
+</ul></li>
+<li>ID 1165731: GATT Notifications sent to Upper layer even when
+received with insufficient security level:
+<ul>
+<li>The link security requirements when receiving the notifications
+shall be verified directly by the application layer that may then
+discard those not satisfying the minimum requirements.</li>
+</ul></li>
+<li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
+a GATT characteristic.
+<ul>
+<li>Characteristic properties shall be redefined at application
+level.</li>
+</ul></li>
+<li>ID 1197644: Non-optimal pre-scheduler allocation under 10 ms of
+connection interval</li>
+<li>ID 1198031: GAP handles for advertising sets cannot be greater than
+or equal to NumOfAdvDataSet</li>
+<li>ID 1213293: The Advertiser_Address shall be checked in according to
+Advertiser_Address_Type value for some HCI commands</li>
+<li>ID 1221480: The Path loss estimated with and without Power Control
+may be very different.</li>
+<li>ID 1258605: Limitations when Power Control is active (some commands
+may remain pending)</li>
+<li>ID 1277942: Pairing may fail when Resolving list is not aligned to
+the bonding table</li>
+<li>ID 1286651: Scan performance issue related to the different numbers
+of received advertising packets compared to Nordic solution.</li>
+<li>ID 1247513: On PAwR context, if the end of the last response slot of
+a sub-event is at the 150us limit from the start of the next subevent
+there is not enough time to program the timer. This affects both
+synchronizer and advertiser. Further, controller privacy is not
+supported on the synchronizer side</li>
+<li>ID 1284129: Sporadic ADV Data corruption in PAWR scenarios</li>
+<li>ID 1284159, 1286588: Not expected status error returned by
+HCI_LE_SET_PERIODIC_ADVERTISING_RESPONSE_DATA</li>
+<li>ID 1284313: Data provided on time by the Host for a PAwR subevent
+may be ignored when received from the Controller after the TX of the
+subevent has been programmed</li>
+</ul></li>
+</ul>
+</div>
+</section>
+</div>
+<footer class="sticky">
+<p>For complete documentation on STM32WB0x,visit: [<a
+href="http://www.st.com/stm32WB0">www.st.com/stm32WB0</a>]</p>
+<em>This release note uses up to date web standards and, for this
+reason, should not be opened with Internet Explorer but preferably with
+popular browsers such as Google Chrome, Mozilla Firefox, Opera or
+Microsoft Edge.</em>
+</footer>
+</body>
+</html>

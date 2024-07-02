@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_power_consumption-application-description"><strong>BLE_Power_Consumption
+        Application Description</strong></h2>
+        <p>Basic Bluetooth LE demo to demonstrate the device power
+        consumption in specific scenarios (ADV 100 ms, ADV 1000 ms and
+        CONNECTION).</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, Power Consumption in ADV and
+        CONN</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector. Connect the Nucleo Board to an
+        amperometer in the JP2 connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file</li>
+        <li>Run the example</li>
+        <li>To start the advertising:
+        <ul>
+        <li>Press B1 button Nucleo board to start the fast Advertising
+        with interval 100 ms and take the power consumption figures in
+        this scenario.</li>
+        <li>Press B2 button on the Nucleo board to start the fast
+        Advertising with interval 1000 ms and take the power consumption
+        figures in this scenario.</li>
+        </ul></li>
+        <li>On the smartphone, download a BLE Scanner application</li>
+        <li>Enable Bluetooth communications</li>
+        <li>Run BLE Scanner application and start scanning</li>
+        <li>The device name is “Power Consunption Test”</li>
+        <li>Connect the BLE scanner application with the STM32WB0 and
+        take the power consumption figures.</li>
+        <li>To disconnect the device press the button B3 on the Nucleo
+        Board.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+[ProjectFiles]
+HeaderPath=
+[Others]
+Define=NUCLEO_WB07CC
+HALModule=
+[Groups]
+Doc=../README.md;
+

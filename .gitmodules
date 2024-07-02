@@ -1,0 +1,12 @@
+[submodule "Drivers/STM32WB0x_HAL_Driver"]
+	path = Drivers/STM32WB0x_HAL_Driver
+	url = https://github.com/STMicroelectronics/stm32wb0x_hal_driver.git
+	branch = main
+[submodule "Drivers/CMSIS/Device/ST/STM32WB0X"]
+	path = Drivers/CMSIS/Device/ST/STM32WB0X
+	url = https://github.com/STMicroelectronics/cmsis_device_wb0.git
+	branch = main
+[submodule "Drivers/BSP/STM32WB0x-nucleo"]
+	path = Drivers/BSP/STM32WB0x-nucleo
+	url = https://github.com/STMicroelectronics/stm32wb0x-nucleo-bsp
+	branch = main

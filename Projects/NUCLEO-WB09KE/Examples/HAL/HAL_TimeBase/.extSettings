@@ -1,0 +1,8 @@
+[ProjectFiles]
+HeaderPath=..\..\..\..\..\..\Drivers\BSP\STM32WB0x-nucleo
+[Others]
+Define=NUCLEO_WB09KE
+HALModule=TIM
+[Groups]
+Doc=../README.md;
+Drivers/BSP/STM32WB0x-nucleo=../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c;

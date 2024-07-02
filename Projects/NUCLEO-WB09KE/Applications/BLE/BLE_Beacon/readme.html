@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2 id="ble_beacon-application-description"><strong>BLE_Beacon
+        Application Description</strong></h2>
+        <p>How to advertise 4 types of beacon ( tlm, uuid, url, iBeacon
+        ).</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>4 Beacon types are available and have to be defined in
+        app_con.h file through CFG_BEACON_TYPE macro, that can be set to
+        one of the following values:
+        <ul>
+        <li>CFG_IBEACON (default)</li>
+        <li>CFG_EDDYSTONE_UID_BEACON_TYPE</li>
+        <li>CFG_EDDYSTONE_URL_BEACON_TYPE</li>
+        <li>CFG_EDDYSTONE_TLM_BEACON_TYPE</li>
+        </ul></li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        <li>On the smartphone, download and run a Beacon Scanner
+        application.</li>
+        <li>For iBeacons, on iOS devices you need to specify the beacon
+        UUID to search for: 00010203-0405-0607-0809-0a0b0c0d0e0f.</li>
+        <li>Start scanning .</li>
+        <li>The Beacon information are displayed on the smartphone.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

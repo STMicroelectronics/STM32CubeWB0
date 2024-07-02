@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_healththermometer-application-description"><strong>BLE_HealthThermometer
+        Application Description</strong></h2>
+        <p>How to use the Health Thermometer profile as specified by the
+        Bluetooth LE SIG.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 devices. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file</li>
+        <li>On the android/ios device, enable the Bluetooth
+        communications and if not done before install ST BLE Toolbox
+        application:
+        <ul>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.dit.stbletoolbox">
+        ST BLE Toolbox Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-toolbox/id1531295550">
+        ST BLE Toolbox iOS</a>.</li>
+        </ul></li>
+        <li>Power on the Nucleo board with the BLE_HealthThermometer
+        application</li>
+        <li>Click on the App icon, STM32 BLE Toolbox (android
+        device)</li>
+        <li>Select the HT_xx in the device list</li>
+        <li>Connect the application</li>
+        <li>Open Health Thermometer service</li>
+        <li>The temperature measurement is displayed on the android
+        device, temperature min/max valures are also displayed.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[ProjectFiles]
+HeaderPath=..\..\..\..\..\..\Drivers\BSP\STM32WB0x-nucleo
+[Others]
+Define=NUCLEO_WB05KZ
+HALModule=
+[Groups]
+Application/User=../Src/stm32wb0x_hal_timebase_tim.c;
+Doc=../README.md;
+Drivers/BSP/STM32WB0x-nucleo=../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c;

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_heartrate_ota-application-description"><strong>BLE_HeartRate_ota
+        Application Description</strong></h2>
+        <p>How to use the Heart Rate and OTA profile as specified by the
+        Bluetooth LE SIG.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE firmware update over the
+        air, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li><p>Open the project with your preferred toolchain</p></li>
+        <li><p>Rebuild all files and load your image into target
+        memory:</p>
+        <ul>
+        <li>BLE_ApplicationInstallManager binary is downloaded at the
+        memory address 0x10040000</li>
+        <li>BLE_HeartRate_ota binary is downloaded at the memory address
+        0x10041000</li>
+        </ul></li>
+        <li><p>Run the example</p></li>
+        <li><p>Install and launch ST BLE Toolbox or ST BLE Sensor
+        applications on Android or iOS smartphone</p>
+        <ul>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.dit.stbletoolbox">
+        ST BLE Toolbox Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-toolbox/id1531295550">
+        ST BLE Toolbox iOS</a></li>
+        <li><a href="https://play.google.com/store/apps/details?id=com.st.bluems">
+        ST BLE Sensor Android</a></li>
+        <li><a href="https://apps.apple.com/us/app/st-ble-sensor/id993670214">
+        ST BLE Sensor iOS</a></li>
+        </ul></li>
+        <li><p>Power on the Nucleo board with the
+        BLE_ApplicationInstallManager and BLE_HeartRate_ota
+        applications.</p></li>
+        <li><p>You can open ST BLE Toolbox application (android device):
+        select the HR_xx in the device list, where xx is the 2 last
+        digits of the BD ADDRESS.</p></li>
+        <li><p>Connect to the selected STM32WB07 device.</p></li>
+        <li><p>Scroll right and select either the Heart Rate interface
+        or the Over The Air Update Server interface</p></li>
+        <li><p>In the Heart Rate interface, HeartRate and energy
+        measurement are launched and displayed in graphs, you can reset
+        the energy measurement.</p>
+        <ul>
+        <li>Pairing is supported: Button B2 clears the security database
+        when the device is not connected. When connected, Button B2 send
+        the slave pairing request, here a popup asks you to associate
+        your device. You can either bond from the smartphone by clicking
+        on Bond Button.</li>
+        <li>After 60s of advertising, the application switch from fast
+        advertising to low power advertising, pressing Button B1 while
+        advertising allows to restart fast advertising.</li>
+        <li>Pressing button B3 while connected allows to update the
+        connection interval.</li>
+        </ul></li>
+        <li><p>In the Over The Air Update Server interface, select the
+        STM32WB07 device type</p>
+        <ul>
+        <li>The STM32WB0 interface offers the choice to download an
+        Application Binary or a User Conf Binary (User Configuration
+        Data is not supported in this demo for WB07, due to limited size
+        of Flash).</li>
+        <li>Memory mapping is defined as following:
+        <ul>
+        <li>4 KB (sectors 0 and 1) are reserved for the
+        BLE_ApplicationInstallManager application.</li>
+        <li>124 KB (from sector 2 to sector 63) are dedicated to
+        BLE_HeartRate_ota application.</li>
+        <li>the second 124 KB of Flash (from sector 64 to sector 125)
+        are dedicated for the new application.</li>
+        <li>sectors 126 and 127 are reserved for NVM data used by
+        Bluetooth Stack.</li>
+        </ul></li>
+        <li>With <em>SELECT FILE</em> you can choose the binary of the
+        new application.</li>
+        <li>After selecting download icon, the download will start.</li>
+        <li>A reboot on the new application is done at the end of the
+        procedure.</li>
+        </ul></li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

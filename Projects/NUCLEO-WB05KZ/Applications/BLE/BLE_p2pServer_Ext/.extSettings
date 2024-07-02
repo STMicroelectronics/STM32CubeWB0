@@ -1,0 +1,8 @@
+[ProjectFiles]
+HeaderPath=../../../../../../Drivers/BSP/STM32WB0x-nucleo;
+[Others]
+Define=NUCLEO_WB05KZ
+[Groups]
+Doc=../README.md;
+Drivers/BSP/NUCLEO-WB05KZ=../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c;
+Application/User/STM32_BLE/App=../STM32_BLE/App/adv_ext_app.c;

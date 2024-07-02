@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="radio_otaclient-demonstration-description"><strong>RADIO_otaClient
+        Demonstration Description</strong></h2>
+        <p>How to configure client application using proprietary 2.4 GHz
+        radio driver for over-the-air firmware upgrade.</p>
+        <p>This code runs OTA Client application: receives a new binary
+        image of the firmware containing user application from OTA
+        server, saves it to flash memory and runs the received
+        application. A proprietary protocol implemented at the radio’s
+        low-level driver is used for communication between client and
+        server. The user app code is located in flash region after
+        OTA_client code, a specific TAG in the startup file indicates if
+        received firmware is a valid user application and which
+        application should run, if OTA client or user application. The
+        PB2 button allows users to activate the OTA Client and get new
+        image from an OTA Server.</p>
+        <p>Two devices are necessary to fully run this demo. Both
+        otaServerYmodem and otaServerFixed can be used as the Server
+        application. For example, Radio_otaTx and Radio_otaRx projects
+        allow to build the required images to be transferred on the OTA
+        Client device.</p>
+        <h4 id="notes"><strong>Notes</strong></h4>
+        <ol type="1">
+        <li><p>On Keil framework, the following compilation setting are
+        applied :</p>
+        <pre><code>--diag_suppress L6312W          (Hide “Empty &lt;type&gt; region description for region &lt;region&gt;” warning)
+--diag_suppress L6314W          (Hide “No section matches pattern &lt;module&gt;(&lt;section&gt;” warning)
+--diag_suppress L6329W          (Hide “Pattern &lt;module&gt;(&lt;section&gt;) only matches removed unused sections” warning)</code></pre></li>
+        </ol>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, 2.4 GHz RADIO IP</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file</li>
+        <li>Run the example</li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

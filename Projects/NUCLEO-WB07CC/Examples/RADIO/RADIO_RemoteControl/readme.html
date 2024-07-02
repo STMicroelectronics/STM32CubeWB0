@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="radio_remotecontrol-example-description"><strong>RADIO_RemoteControl
+        Example Description</strong></h2>
+        <p>How to configure a basic remote control scenario between two
+        devices using the HAL_RADIO API.</p>
+        <p>In this example, the device is programmed to listen for
+        packet. When the packet is received the LD2 is toggled. If the
+        push button PB1 is pressed, a transmission of a packet is
+        scheduled. The transmission is continuously done until the
+        button is released.</p>
+        <p>To implement this scenario, two HAL APIs are used:
+        HAL_RADIO_SendPacket for transmission and
+        HAL_RADIO_ReceivePacket for reception. The default callback
+        HAL_RADIO_Callback is provided to these functions.The following
+        callbacks are implemented according to the radio driver’s needs:
+        HAL_RADIO_CallbackRcvOk, HAL_RADIO_CallbackRcvTimeout, and
+        HAL_RADIO_CallbackTxDone to define the behavior of the
+        radio.</p>
+        <h4 id="notes"><strong>Notes</strong></h4>
+        <ol type="1">
+        <li><p>On Keil framework, the following compilation setting are
+        applied :</p>
+        <pre><code>--diag_suppress L6312W          (Hide “Empty &lt;type&gt; region description for region &lt;region&gt;” warning)
+--diag_suppress L6314W          (Hide “No section matches pattern &lt;module&gt;(&lt;section&gt;” warning)
+--diag_suppress L6329W          (Hide “Pattern &lt;module&gt;(&lt;section&gt;) only matches removed unused sections” warning)</code></pre></li>
+        </ol>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, 2.4 GHz RADIO IP</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB07 device. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the two board with the same
+        firmware</li>
+        <li>Run the example</li>
+        <li>Press the B1 button on a board, then the other board will
+        turn on or turn off the LD2 on reception. And vice-versa.</li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>
