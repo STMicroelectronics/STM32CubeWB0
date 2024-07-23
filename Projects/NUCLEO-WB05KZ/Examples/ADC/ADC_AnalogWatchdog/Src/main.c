@@ -235,14 +235,21 @@ static void MX_ADC1_Init(void)
 {
 
   /* USER CODE BEGIN ADC1_Init 0 */
-
+  uint32_t uADCxCalibrationPoint1_Gain;
+  uint32_t uADCxCalibrationPoint1_Offset;
   /* USER CODE END ADC1_Init 0 */
 
   ADC_ChannelConfTypeDef ConfigChannel = {0};
   ADC_AnalogWDGConfTypeDef ConfigWatchdog = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
-
+  uADCxCalibrationPoint1_Gain   = LL_ADC_GET_CALIB_GAIN_FOR_VINPX_3V6();
+  uADCxCalibrationPoint1_Offset = LL_ADC_GET_CALIB_OFFSET_FOR_VINPX_3V6();
+  if(uADCxCalibrationPoint1_Gain == 0xFFF)
+  {
+    uADCxCalibrationPoint1_Gain = LL_ADC_DEFAULT_RANGE_VALUE_3V6;
+    uADCxCalibrationPoint1_Offset = 0UL;
+  }
   /* USER CODE END ADC1_Init 1 */
 
   /** Common config
@@ -267,9 +274,9 @@ static void MX_ADC1_Init(void)
   ConfigChannel.Channel = ADC_CHANNEL_VINP0;
   ConfigChannel.Rank = ADC_RANK_1;
   ConfigChannel.VoltRange = ADC_VIN_RANGE_3V6;
-  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_NONE;
-  ConfigChannel.CalibrationPoint.Gain = 0x00;
-  ConfigChannel.CalibrationPoint.Offset = 0x00;
+  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_POINT_1;
+  ConfigChannel.CalibrationPoint.Gain = uADCxCalibrationPoint1_Gain;
+  ConfigChannel.CalibrationPoint.Offset = uADCxCalibrationPoint1_Offset;
   if (HAL_ADC_ConfigChannel(&hadc1, &ConfigChannel) != HAL_OK)
   {
     Error_Handler();

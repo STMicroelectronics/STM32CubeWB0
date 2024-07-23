@@ -178,7 +178,7 @@ int main(void)
     HAL_Delay(LED_BLINK_SLOW);
     BSP_LED_Off(LD1);
     HAL_Delay(LED_BLINK_SLOW);
-    
+
     /* Note: ADC group regular conversions data are stored into array         */
     /*       "uhADCxConvertedData"                                            */
     /*       (for debug: see variable content into watch window).             */
@@ -193,9 +193,9 @@ int main(void)
 
       /* Computation of ADC conversions raw data to physical values           */
       /* using LL ADC driver helper macro.                                    */
-      
+
       uhADCxConvertedData_VoltageGPIO_mVolt        = __LL_ADC_CALC_DATA_TO_VOLTAGE(LL_ADC_VIN_RANGE_3V6, uhADCxConvertedData[1], LL_ADC_DS_DATA_WIDTH_12_BIT);
-      hADCxConvertedData_Temperature_DegreeCelsius = __LL_ADC_CALC_TEMPERATURE( uhADCxConvertedData[0], LL_ADC_DS_DATA_WIDTH_12_BIT);
+      hADCxConvertedData_Temperature_DegreeCelsius = __LL_ADC_CALC_TEMPERATURE(uhADCxConvertedData[0], LL_ADC_DS_DATA_WIDTH_12_BIT);
 
       /* Update status variable of DMA transfer */
       ubDmaTransferStatus = 0;
@@ -276,13 +276,20 @@ static void MX_ADC1_Init(void)
 {
 
   /* USER CODE BEGIN ADC1_Init 0 */
-
+  uint32_t uADCxCalibrationPoint2_Gain;
+  uint32_t uADCxCalibrationPoint2_Offset;
   /* USER CODE END ADC1_Init 0 */
 
   ADC_ChannelConfTypeDef ConfigChannel = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
-
+  uADCxCalibrationPoint2_Gain   = LL_ADC_GET_CALIB_GAIN_FOR_VINPX_3V6();
+  uADCxCalibrationPoint2_Offset = LL_ADC_GET_CALIB_OFFSET_FOR_VINPX_3V6();
+  if(uADCxCalibrationPoint2_Gain == 0xFFF)
+  {
+    uADCxCalibrationPoint2_Gain = LL_ADC_DEFAULT_RANGE_VALUE_3V6;
+    uADCxCalibrationPoint2_Offset = 0UL;
+  }
   /* USER CODE END ADC1_Init 1 */
 
   /** Common config
@@ -319,9 +326,10 @@ static void MX_ADC1_Init(void)
   */
   ConfigChannel.Channel = ADC_CHANNEL_VINP0;
   ConfigChannel.Rank = ADC_RANK_2;
-  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_NONE;
-  ConfigChannel.CalibrationPoint.Gain = 0x00;
-  ConfigChannel.CalibrationPoint.Offset = 0x00;
+  ConfigChannel.VoltRange = ADC_VIN_RANGE_3V6;
+  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_POINT_2;
+  ConfigChannel.CalibrationPoint.Gain = uADCxCalibrationPoint2_Gain;
+  ConfigChannel.CalibrationPoint.Offset = uADCxCalibrationPoint2_Offset;
   if (HAL_ADC_ConfigChannel(&hadc1, &ConfigChannel) != HAL_OK)
   {
     Error_Handler();

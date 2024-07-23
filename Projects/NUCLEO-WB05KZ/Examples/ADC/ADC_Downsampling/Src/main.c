@@ -147,7 +147,6 @@ int main(void)
     /* to ADC resolution: 12 bits)                                            */
     uhADCxConvertedData_OVS_ratio16_width_12_bit = HAL_ADC_GetValue(&hadc1);
 
-
     /*## Step 2: ADC downsampling modified settings  #########################*/
     /* Modify ADC downsampling settings:                                      */
     /* - ratio: 16                                                            */
@@ -180,14 +179,13 @@ int main(void)
     /* ADC resolution 12 bits, data scale expected: 16 bits)                  */
     uhADCxConvertedData_OVS_ratio16_width_16_bit = HAL_ADC_GetValue(&hadc1);
 
-
     /*## Step 3: ADC downsampling disabled  ##################################*/
     /* Modify ADC downsampling settings:                                      */
     /* - scope: none (downsampling disabled)                                  */
     /* Set ADC downsampling scope */
-  HAL_ADC_Stop(&hadc1);
-  hadc1.Init.DownSamplerConfig.DataWidth = ADC_DS_DATA_WIDTH_12_BIT;
-  hadc1.Init.DownSamplerConfig.DataRatio = ADC_DS_RATIO_1;
+    HAL_ADC_Stop(&hadc1);
+    hadc1.Init.DownSamplerConfig.DataWidth = ADC_DS_DATA_WIDTH_12_BIT;
+    hadc1.Init.DownSamplerConfig.DataRatio = ADC_DS_RATIO_1;
     if (HAL_ADC_Init(&hadc1) != HAL_OK)
     {
       Error_Handler();
@@ -261,9 +259,9 @@ int main(void)
     }
 
     /* For this example purpose, calculation of downsampling raw data         */
-    /* (from variable "uhADCxConvertedData_OVS_ratio16_WIDTH_16_BIT_12_BIT")               */
+    /* (from variable "uhADCxConvertedData_OVS_ratio16_WIDTH_16_BIT_16_BIT")               */
     /* to the equivalent data on 12 bits with floating point                  */
-    fConvertedData_OVS_EquivalentValue12bits = (((float)uhADCxConvertedData_OVS_ratio16_width_12_bit) / 16);
+    fConvertedData_OVS_EquivalentValue12bits = (((float)uhADCxConvertedData_OVS_ratio16_width_16_bit) / 16);
 
     /* Data value should not exceed range resolution 12 bits */
     if (fConvertedData_OVS_EquivalentValue12bits > __LL_ADC_DIGITAL_SCALE(LL_ADC_DS_DATA_WIDTH_12_BIT))
@@ -278,21 +276,19 @@ int main(void)
 
     HAL_Delay(LED_BLINK_SLOW);
 
-    /* Note: ADC conversion data is stored into variables:                    */
-    /*       - "uhADCxConvertedData_OVS_ratio16_width_12_bit"                       */
-    /*       - "uhADCxConvertedData_OVS_ratio16_width_16_bit"                       */
-    /*       - "uhADCxConvertedData_OVS_disabled"                             */
-    /*       Computed data with floating point:                               */
-    /*       - "fConvertedData_OVS_EquivalentValue12bits"                     */
-    /*       (for debug: see variable content into watch window).             */
-
-    /* Note: ADC conversion data can be computed to physical values           */
-    /*       using ADC LL driver helper macro:                                */
-    /*         uhADCxConvertedData_Voltage_mVolt                              */
-    /*         = __LL_ADC_CALC_DATA_TO_VOLTAGE(VDDA_APPLI,                    */
-    /*                                         uhADCxConvertedData),          */
-    /*                                         LL_ADC_RESOLUTION_12B)         */
-
+    /* Note: ADC conversion data is stored into variables:                                     */
+    /*       - "uhADCxConvertedData_OVS_ratio16_width_12_bit"                                  */
+    /*       - "uhADCxConvertedData_OVS_ratio16_width_16_bit"                                  */
+    /*       - "uhADCxConvertedData_OVS_disabled"                                              */
+    /*       Computed data with floating point:                                                */
+    /*       - "fConvertedData_OVS_EquivalentValue12bits"                                      */
+    /*       (for debug: see variable content into watch window).                              */
+    /* Note: ADC conversion data can be computed to physical values using ADC LL driver        */
+    /*       helper macro:                                                                     */
+    /* uhADCxConvertedData_Voltage_mVolt                                                       */
+    /*           = __LL_ADC_CALC_DATA_TO_VOLTAGE(LL_ADC_VIN_RANGE_3V6,                         */
+    /*                                           uhADCxConvertedData_OVS_ratio16_width_16_bit, */
+    /*                                           LL_ADC_DS_DATA_WIDTH_16_BIT);                 */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -358,13 +354,20 @@ static void MX_ADC1_Init(void)
 {
 
   /* USER CODE BEGIN ADC1_Init 0 */
-
+  uint32_t uADCxCalibrationPoint1_Gain;
+  uint32_t uADCxCalibrationPoint1_Offset;
   /* USER CODE END ADC1_Init 0 */
 
   ADC_ChannelConfTypeDef ConfigChannel = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
-
+  uADCxCalibrationPoint1_Gain   = LL_ADC_GET_CALIB_GAIN_FOR_VINPX_3V6();
+  uADCxCalibrationPoint1_Offset = LL_ADC_GET_CALIB_OFFSET_FOR_VINPX_3V6();
+  if(uADCxCalibrationPoint1_Gain == 0xFFF)
+  {
+    uADCxCalibrationPoint1_Gain = LL_ADC_DEFAULT_RANGE_VALUE_3V6;
+    uADCxCalibrationPoint1_Offset = 0UL;
+  }
   /* USER CODE END ADC1_Init 1 */
 
   /** Common config
@@ -389,9 +392,9 @@ static void MX_ADC1_Init(void)
   ConfigChannel.Channel = ADC_CHANNEL_VINP0;
   ConfigChannel.Rank = ADC_RANK_1;
   ConfigChannel.VoltRange = ADC_VIN_RANGE_3V6;
-  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_NONE;
-  ConfigChannel.CalibrationPoint.Gain = 0x00;
-  ConfigChannel.CalibrationPoint.Offset = 0x00;
+  ConfigChannel.CalibrationPoint.Number = ADC_CALIB_POINT_1;
+  ConfigChannel.CalibrationPoint.Gain = uADCxCalibrationPoint1_Gain;
+  ConfigChannel.CalibrationPoint.Offset = uADCxCalibrationPoint1_Offset;
   if (HAL_ADC_ConfigChannel(&hadc1, &ConfigChannel) != HAL_OK)
   {
     Error_Handler();
