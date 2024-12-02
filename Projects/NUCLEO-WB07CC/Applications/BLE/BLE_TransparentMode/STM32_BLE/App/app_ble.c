@@ -164,16 +164,11 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
-
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
   BLE_STACK_Tick();
 
-  if(BLE_STACK_SleepCheck() == 0)
-  {
-    BLEStack_Process_Schedule();
-  }
   APP_DEBUG_SIGNAL_RESET(APP_STACK_PROCESS);
 }
 
@@ -186,7 +181,6 @@ void VTimer_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_VTIMER, CFG_SEQ_PRIO_0);
 }
-
 void NVM_Process(void)
 {
   NVMDB_Tick();
@@ -211,30 +205,21 @@ void BURST_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BURST, CFG_SEQ_PRIO_1);
 }
-
 void BURST_Process(void)
 {
   BURST_Tick();
-}
-
-/* Function called from PKA_IRQHandler() context. */
-void PKAMGR_IRQCallback(void)
-{
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TIMER_TXRX_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_TxRxWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TIMER_CPU_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_CpuWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TXRX_IRQHandler() context. */
@@ -242,9 +227,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 {
   BLE_STACK_RadioHandler(flags);
 
-  BLEStack_Process_Schedule();
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+}
+
+void BLE_STACK_ProcessRequest(void)
+{
+  BLEStack_Process_Schedule();
 }
 
 /* Functions Definition ------------------------------------------------------*/
@@ -254,20 +243,15 @@ void APP_BLE_Init(void)
   /* USER CODE BEGIN APP_BLE_Init_1 */
 
   /* USER CODE END APP_BLE_Init_1 */
-
   UTIL_SEQ_RegTask(1U << CFG_TASK_BLE_STACK, UTIL_SEQ_RFU, BLEStack_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_VTIMER, UTIL_SEQ_RFU, VTimer_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_NVM, UTIL_SEQ_RFU, NVM_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_TM, UTIL_SEQ_RFU, TM_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_BURST, UTIL_SEQ_RFU, BURST_Process);
-
   ModulesInit();
 
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
-
-  /* Need to call stack process at least once. */
-  BLEStack_Process_Schedule();
 
     /* Used by aci_gatt_nwk and adv_buff_alloc libraries.  */
   dm_init(CFG_BLE_GATT_ADV_NWK_BUFFER_SIZE, aci_gatt_adv_nwk_buffer);
@@ -336,6 +320,8 @@ void APP_BLE_Init(void)
   return;
 }
 
+#if (BLESTACK_CONTROLLER_ONLY == 0)
+
 /* Implementation of event hooks. */
 
 int aci_l2cap_cos_disconnection_complete_event_preprocess(uint16_t Connection_Handle,
@@ -382,6 +368,7 @@ void BURST_StartCallback(void)
 {
   BURST_Process_Schedule();
 }
+#endif
 
 void TL_ProcessReqCallback(void)
 {

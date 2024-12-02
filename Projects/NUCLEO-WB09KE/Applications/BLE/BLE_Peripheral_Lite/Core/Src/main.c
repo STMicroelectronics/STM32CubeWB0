@@ -40,6 +40,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
 PKA_HandleTypeDef hpka;
 
 /* USER CODE BEGIN PV */
@@ -53,7 +54,6 @@ static void MX_GPIO_Init(void);
 static void MX_RADIO_Init(void);
 static void MX_RADIO_TIMER_Init(void);
 static void MX_PKA_Init(void);
-
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -69,6 +69,7 @@ static void MX_PKA_Init(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -77,7 +78,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-  
+
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -97,7 +98,6 @@ int main(void)
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
   MX_PKA_Init();
-  
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -136,11 +136,12 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  
+
   /** Configure the SYSCLKSource and SYSCLKDivider
   */
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_RC64MPLL;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_RC64MPLL_DIV2;
+
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_WAIT_STATES_0) != HAL_OK)
   {
     Error_Handler();
@@ -154,7 +155,7 @@ void SystemClock_Config(void)
 void PeriphCommonClock_Config(void)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-   
+
   /** Initializes the peripherals clock
   */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SMPS;
@@ -173,6 +174,7 @@ void PeriphCommonClock_Config(void)
   */
 static void MX_PKA_Init(void)
 {
+
   /* USER CODE BEGIN PKA_Init 0 */
   
   /* USER CODE END PKA_Init 0 */
@@ -188,9 +190,8 @@ static void MX_PKA_Init(void)
   /* USER CODE BEGIN PKA_Init 2 */
   
   /* USER CODE END PKA_Init 2 */
-  
-}
 
+}
 
 /**
   * @brief RADIO Initialization Function
@@ -199,6 +200,7 @@ static void MX_PKA_Init(void)
   */
 static void MX_RADIO_Init(void)
 {
+
   /* USER CODE BEGIN RADIO_Init 0 */
 
   /* USER CODE END RADIO_Init 0 */
@@ -233,23 +235,23 @@ static void MX_RADIO_Init(void)
   */
 static void MX_RADIO_TIMER_Init(void)
 {
+
   /* USER CODE BEGIN RADIO_TIMER_Init 0 */
   
   /* USER CODE END RADIO_TIMER_Init 0 */
-  
+
   RADIO_TIMER_InitTypeDef RADIO_TIMER_InitStruct = {0};
 
   /* USER CODE BEGIN RADIO_TIMER_Init 1 */
   
   /* USER CODE END RADIO_TIMER_Init 1 */
-  
- 
+
   if (__HAL_RCC_RADIO_IS_CLK_DISABLED())
   {
     /* Radio Peripheral reset */
     __HAL_RCC_RADIO_FORCE_RESET();
     __HAL_RCC_RADIO_RELEASE_RESET();
-    
+
     /* Enable Radio peripheral clock */
     __HAL_RCC_RADIO_CLK_ENABLE();
   }
@@ -262,7 +264,7 @@ static void MX_RADIO_TIMER_Init(void)
   /* USER CODE BEGIN RADIO_TIMER_Init 2 */
 
   /* USER CODE END RADIO_TIMER_Init 2 */
-  
+
 }
 
 /**
@@ -274,7 +276,7 @@ static void MX_GPIO_Init(void)
 {
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
-  
+
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();

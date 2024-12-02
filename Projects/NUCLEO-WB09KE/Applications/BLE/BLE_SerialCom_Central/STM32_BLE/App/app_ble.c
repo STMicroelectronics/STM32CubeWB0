@@ -158,7 +158,6 @@ typedef struct
 NO_INIT(uint32_t dyn_alloc_a[BLE_DYN_ALLOC_SIZE>>2]);
 
 static BleApplicationContext_t bleAppContext;
-
 GATT_CLIENT_APP_ConnHandle_Notif_evt_t clientHandleNotification;
 
 static const char a_GapDeviceName[] = {  'S', 'e', 'r', 'i', 'a', 'l', ' ', 'C', 'o', 'm', ' ', 'C', 'e', 'n', 't', 'r', 'a', 'l' }; /* Gap Device Name */
@@ -401,7 +400,6 @@ void BLE_Init(void)
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
-
   ret = aci_gap_set_security_requirements(bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode,
                                                bleAppContext.BleApplicationContext_legacy.bleSecurityParam.mitm_mode,
                                                CFG_SC_SUPPORT,
@@ -434,7 +432,6 @@ void BLE_Init(void)
       APP_DBG_MSG("  Success: aci_gap_configure_filter_accept_and_resolving_list command\n");
     }
   }
-
   APP_DBG_MSG("==>> End BLE_Init function\n");
 
 }
@@ -445,16 +442,11 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
-
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
   BLE_STACK_Tick();
 
-  if(BLE_STACK_SleepCheck() == 0)
-  {
-    BLEStack_Process_Schedule();
-  }
   APP_DEBUG_SIGNAL_RESET(APP_STACK_PROCESS);
 }
 
@@ -467,7 +459,6 @@ void VTimer_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_VTIMER, CFG_SEQ_PRIO_0);
 }
-
 void NVM_Process(void)
 {
   NVMDB_Tick();
@@ -478,24 +469,16 @@ void NVM_Process_Schedule(void)
   UTIL_SEQ_SetTask( 1U << CFG_TASK_NVM, CFG_SEQ_PRIO_1);
 }
 
-/* Function called from PKA_IRQHandler() context. */
-void PKAMGR_IRQCallback(void)
-{
-  BLEStack_Process_Schedule();
-}
-
 /* Function called from RADIO_TIMER_TXRX_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_TxRxWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TIMER_CPU_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_CpuWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TXRX_IRQHandler() context. */
@@ -503,9 +486,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 {
   BLE_STACK_RadioHandler(flags);
 
-  BLEStack_Process_Schedule();
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+}
+
+void BLE_STACK_ProcessRequest(void)
+{
+  BLEStack_Process_Schedule();
 }
 
 /* Functions Definition ------------------------------------------------------*/
@@ -514,18 +501,13 @@ void APP_BLE_Init(void)
   /* USER CODE BEGIN APP_BLE_Init_1 */
 
   /* USER CODE END APP_BLE_Init_1 */
-
   UTIL_SEQ_RegTask(1U << CFG_TASK_BLE_STACK, UTIL_SEQ_RFU, BLEStack_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_VTIMER, UTIL_SEQ_RFU, VTimer_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_NVM, UTIL_SEQ_RFU, NVM_Process);
-
   ModulesInit();
 
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
-
-  /* Need to call stack process at least once. */
-  BLEStack_Process_Schedule();
 
   /**
   * Initialize GATT Client Application
@@ -599,9 +581,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
-
       gap_cmd_resp_release();
-
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE_1 */
 
       /* USER CODE END EVT_DISCONN_COMPLETE_1 */
@@ -723,7 +703,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
       default:
         /* USER CODE BEGIN SUBEVENT_DEFAULT */
-
+        APP_DBG_MSG("HCI_LE_META_EVT: 0x%02X\n", p_meta_evt->subevent);
         /* USER CODE END SUBEVENT_DEFAULT */
         break;
       }
@@ -902,6 +882,32 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
         break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
       case ACI_L2CAP_COS_CONNECTION_RESP_VSEVT_CODE:
         {
@@ -959,7 +965,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         /* USER CODE END EVT_VENDOR_1 */
       default:
         /* USER CODE BEGIN EVT_VENDOR_DEFAULT */
-
+        APP_DBG_MSG("HCI_VENDOR_EVT: 0x%04X\n", p_blecore_evt->ecode);
         /* USER CODE END EVT_VENDOR_DEFAULT */
         break;
       }
@@ -984,7 +990,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
   default:
     /* USER CODE BEGIN ECODE_DEFAULT*/
-
+    APP_DBG_MSG("HCI_EVENT: 0x%02X\n", p_event_pckt->evt);
     /* USER CODE END ECODE_DEFAULT*/
     break;
   }
@@ -1256,7 +1262,6 @@ static void gap_cmd_resp_wait(void)
   UTIL_SEQ_WaitEvt(1 << CFG_IDLEEVT_PROC_GAP_COMPLETE);
   return;
 }
-
 /* USER CODE BEGIN FD_LOCAL_FUNCTION */
 void BLE_SVC_L2CAP_Conn_Update(uint16_t ConnectionHandle, uint16_t conn1, uint16_t conn2)
 {

@@ -322,7 +322,7 @@
                 </option>
                 <option>
                     <name>CCRequirePrototypes</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>CCDiagWarnAreErr</name>
@@ -698,7 +698,7 @@
             <data>
                 <extensions></extensions>
                 <cmdline></cmdline>
-                <hasPrio>160</hasPrio>
+                <hasPrio>1</hasPrio>
                 <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
@@ -1137,6 +1137,9 @@
                     <name>App</name>
                     <file>
                         <name>$PROJ_DIR$\..\STM32_BLE\App\app_ble.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\STM32_BLE\App\esl_app.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\STM32_BLE\App\esl_profile.c</name>

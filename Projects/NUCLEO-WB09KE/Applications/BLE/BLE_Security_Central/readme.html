@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_security_central-application-description"><strong>BLE_Security_Central
+        Application Description</strong></h2>
+        <p>Demonstrate STM32WB0 acting as BLE central and GATT
+        client.</p>
+        <p>The BLE_Security_Central application scans for advertising
+        and waits for a connection from either: - The
+        BLE_Security_Peripheral application running on an STM32WB0
+        device.</p>
+        <p>Pairing with pass key entry method (with fixed pin) and
+        bonding are used in this example.</p>
+        <p>Once connected, BLE_Security_Peripheral can receive write
+        messages from the Central and it will send notifications
+        periodically to it.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board may be necessary to run
+        BLE_Security_Central application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target
+        memory</li>
+        <li>Run the example</li>
+        </ul>
+        <p><strong>You can interact with the BLE_Security_Peripheral
+        application with another Nucleo board:</strong></p>
+        <ul>
+        <li>Power up the BLE_Security_Peripheral device next to a
+        BLE_Security_Central device.</li>
+        <li>On the BLE_Security_Peripheral, press the B2 button to clear
+        the security DB.</li>
+        <li>On the BLE_Security_Central, press the B2 button to clear
+        the security DB.</li>
+        <li>On the BLE_Security_Peripheral, press the B1 button to start
+        the advertising procedure with a one-minute timeout. During
+        advertising, LED2 will blink.</li>
+        <li>On the BLE_Security_Central, press the B1 button to initiate
+        a scan and establish a connection to the first
+        BLE_Security_Peripheral device that is found.</li>
+        <li>A GATT notification message is sent periodically to the
+        connected BLE_Security_Central device, and the LED1 on the
+        Central will toggle.</li>
+        <li>On the BLE_Security_Central, press the B1 button to send a
+        GATT write command to the connected BLE_Security_Peripheral
+        device, causing LED1 on the Peripheral to toggle.</li>
+        </ul>
+        <p>On the BLE_Security_Peripheral, advertising stops after 60
+        seconds. Pressing the B1 button restarts it. If the Peripheral
+        is connected, pressing the B1 button starts the procedure to
+        disconnect from the Central. When the BLE_Security_Peripheral is
+        not connected, pressing the B2 button clears the security
+        database. Once connected, pressing the B3 button on the
+        Peripheral updates the connection interval parameters.</p>
+        <p>When the BLE_Security_Central is not connected, pressing the
+        B2 button clears the security database. If the Central is
+        connected, pressing the B3 button starts the procedure to
+        disconnect from the Peripheral. Once connected, pressing the B1
+        button on the Central sends a GATT write command to the
+        connected BLE_Security_Peripheral device, causing LED1 on the
+        Peripheral to toggle.</p>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

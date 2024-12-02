@@ -1,6 +1,6 @@
 ## __RADIO_Skeleton Example Description__
 
-Code demonstrating the basic project structure template with initialization framework to be used for building a 2.4GHx RADIO example application.
+Code demonstrating the basic project structure template with initialization framework to be used for building a 2.4GHz RADIO example application.
 
 #### __Notes__
                                             

@@ -154,6 +154,17 @@ void USART1_IRQHandler(void)
 {
   /* USER CODE BEGIN USART1_IRQn 0 */
 
+    uint8_t read_data; 
+  
+  /* If the RX FIFO is Not Empty */
+  if(LL_USART_IsActiveFlag_RXNE(USART1) == 1) {
+    /* Read a byte from the RX FIFO */
+    read_data = LL_USART_ReceiveData8(USART1);
+    
+    /* Send the data received to the user RX callback */
+    UartRxCpltCallback(&read_data, 1);
+  }
+  
   /* USER CODE END USART1_IRQn 0 */
   /* USER CODE BEGIN USART1_IRQn 1 */
 

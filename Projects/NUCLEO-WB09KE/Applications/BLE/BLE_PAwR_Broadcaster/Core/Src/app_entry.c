@@ -325,6 +325,48 @@ static void Button_TriggerActions(void *arg)
 
 #endif
 
+HAL_StatusTypeDef MX_USART1_Init(UART_HandleTypeDef* huart, MX_UART_InitTypeDef *MXInit)
+{
+  HAL_StatusTypeDef ret;
+  
+  /* UART configuration */
+  huart->Init.BaudRate       = MXInit->BaudRate;
+  huart->Init.WordLength     = (uint32_t) MXInit->WordLength;
+  huart->Init.StopBits       = (uint32_t) MXInit->StopBits;
+  huart->Init.Parity         = (uint32_t) MXInit->Parity;
+  huart->Init.Mode           = UART_MODE_TX_RX;
+  huart->Init.HwFlowCtl      = (uint32_t) MXInit->HwFlowCtl;
+  huart->Init.OverSampling   = UART_OVERSAMPLING_8;
+  huart->Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart->Init.ClockPrescaler = UART_PRESCALER_DIV1;
+
+  ret = HAL_UART_Init(huart);
+  if(ret != HAL_OK)
+  {
+    return ret;
+  }
+  
+  ret = HAL_UARTEx_SetTxFifoThreshold(huart, UART_TXFIFO_THRESHOLD_1_8);
+  if(ret != HAL_OK)
+  {
+    return ret;
+  }
+  
+  ret = HAL_UARTEx_SetRxFifoThreshold(huart, UART_RXFIFO_THRESHOLD_1_8);
+  if(ret != HAL_OK)
+  {
+    return ret;
+  }
+  
+  ret = HAL_UARTEx_EnableFifoMode(huart);
+  if(ret != HAL_OK)
+  {
+    return ret;
+  }
+  
+  return HAL_OK;
+}
+
 static void RxUART_Init(void)
 {
   /* Enable the RX not empty interrupt */

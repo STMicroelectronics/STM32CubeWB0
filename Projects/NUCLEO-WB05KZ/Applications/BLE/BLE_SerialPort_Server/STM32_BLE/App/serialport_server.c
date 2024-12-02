@@ -97,6 +97,10 @@ static SERIALPORT_SERVER_Context_t SERIALPORT_SERVER_Context;
 BLE_GATT_SRV_CCCD_DECLARE(tx, CFG_BLE_NUM_RADIO_TASKS, BLE_GATT_SRV_CCCD_PERM_DEFAULT,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 /* SerialPort server service TX (notification) RX (write without response), characteristics definition */
 static const ble_gatt_chr_def_t serialport_server_chars[] = {
 	{

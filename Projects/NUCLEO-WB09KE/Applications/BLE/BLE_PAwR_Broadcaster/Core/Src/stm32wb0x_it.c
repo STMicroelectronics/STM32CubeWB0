@@ -160,6 +160,9 @@ void USART1_IRQHandler(void)
     /* Send the data received to the user RX callback */
     UART_CMD_DataReceived(&read_data, 1);
   }
+  
+  USART1->ICR = USART_ICR_ORECF | USART_ICR_NECF | USART_ICR_PECF | USART_ICR_FECF;
+  
   /* USER CODE END USART1_IRQn 0 */
   /* USER CODE BEGIN USART1_IRQn 1 */
 

@@ -219,8 +219,11 @@ void PWR_ExitOffMode( void )
     while(WAKEUP->ABSOLUTE_TIME == 0xF);
   }
   
-  /* Handler to manage the IOs IRQ if needed */
-  HAL_PWR_WKUP_IRQHandler();
+  if(RAM_VR.WakeupFromSleepFlag)
+  {
+    /* Handler to manage the IOs IRQ if needed */
+    HAL_PWR_WKUP_IRQHandler();
+  }
  
   /* USER CODE BEGIN PWR_ExitOffMode_2 */
 
@@ -316,8 +319,11 @@ void PWR_ExitStopMode( void )
     LL_RCC_RC64MPLL_Disable();
   }
   
-  /* Handler to manage the IOs IRQ if needed */
-  HAL_PWR_WKUP_IRQHandler();
+  if(RAM_VR.WakeupFromSleepFlag)
+  {
+    /* Handler to manage the IOs IRQ if needed */
+    HAL_PWR_WKUP_IRQHandler();
+  }
   
   /* USER CODE BEGIN PWR_ExitStopMode_2 */
 

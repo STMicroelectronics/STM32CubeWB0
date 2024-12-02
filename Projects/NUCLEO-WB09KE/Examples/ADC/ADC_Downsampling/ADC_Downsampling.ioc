@@ -1,8 +1,14 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-0\#ChannelRegularConversion=ADC_CHANNEL_VINP0
 ADC1.DataRatio=ADC_DS_RATIO_16
-ADC1.IPParameters=Rank-0\#ChannelRegularConversion,RankArg-0\#ChannelRegularConversion,master,Channel-0\#ChannelRegularConversion,SelectedChannel,VoltRange-0\#ChannelRegularConversion,NbrOfConversionFlag,DataRatio
+ADC1.Gain-0\#ChannelRegularConversion=uADCxCalibrationPoint1_Gain
+ADC1.Gain1=uADCxCalibrationPoint1_Gain
+ADC1.IPParameters=Rank-0\#ChannelRegularConversion,RankArg-0\#ChannelRegularConversion,master,Channel-0\#ChannelRegularConversion,SelectedChannel,VoltRange-0\#ChannelRegularConversion,NbrOfConversionFlag,DataRatio,Number-0\#ChannelRegularConversion,Gain-0\#ChannelRegularConversion,Offset-0\#ChannelRegularConversion,Gain1,Offset1
+ADC1.IPParametersWithoutCheck=Offset1,Gain1
 ADC1.NbrOfConversionFlag=1
+ADC1.Number-0\#ChannelRegularConversion=ADC_CALIB_POINT_1
+ADC1.Offset-0\#ChannelRegularConversion=uADCxCalibrationPoint1_Offset
+ADC1.Offset1=uADCxCalibrationPoint1_Offset
 ADC1.Rank-0\#ChannelRegularConversion=1
 ADC1.RankArg-0\#ChannelRegularConversion=ADC_RANK_1
 ADC1.SelectedChannel=ADC_CHANNEL_VINP0
@@ -38,8 +44,8 @@ Mcu.PinsNb=6
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32WB09KEVx
-MxCube.Version=6.12.0
-MxDb.Version=DB.6.0.120
+MxCube.Version=6.13.0
+MxDb.Version=DB.6.0.130
 NVIC.ForceEnableDMAVector=true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false

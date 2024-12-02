@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    p2p_server_app.h
+  * @file    Peripheral_Lite_Server_app.h
   * @author  MCD Application Team
-  * @brief   Header for peripheral_lite_server_app.c
+  * @brief   Header for Peripheral_Lite_Server_app.c
   ******************************************************************************
   * @attention
   *
@@ -63,11 +63,9 @@ typedef struct
 #define CFG_BOARD_ID_WB0                        (0x8D)
 #define CFG_FW_DATA3_FUOTA                      (0x01)
 
-/* USER CODE BEGIN PD */
 #define ADV_TIMEOUT_MS                 (500)
 #define CONN_TIMEOUT_MS                (100)
 #define NOTIFICATION_TIMEOUT_MS        (1 * 1000)
-/* USER CODE END PD */
 
 /* USER CODE END EC */
 
@@ -84,6 +82,7 @@ typedef struct
 /* Exported functions ------------------------------------------------------- */
 void PERIPHERAL_LITE_SERVER_APP_Init(void);
 void PERIPHERAL_LITE_SERVER_APP_EvtRx(PERIPHERAL_LITE_SERVER_APP_ConnHandleNotEvt_t *p_Notification);
+void PERIPHERAL_LITE_SERVER_APP_Process(void);
 /* USER CODE BEGIN EF */
 
 /* USER CODE END EF */

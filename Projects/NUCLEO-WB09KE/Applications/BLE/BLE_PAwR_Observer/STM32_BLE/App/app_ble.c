@@ -34,6 +34,7 @@
 #include "pka_manager.h"
 #include "stm32_seq.h"
 #include "esl_profile.h"
+#include "esl_app.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -492,11 +493,6 @@ static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
   BLE_STACK_Tick();
-
-  if(BLE_STACK_SleepCheck() == 0)
-  {
-    BLEStack_Process_Schedule();
-  }
   
   if(bleAppContext.Device_Connection_Status == APP_BLE_ADV_FAST || bleAppContext.Device_Connection_Status == APP_BLE_ADV_LP)
   {
@@ -526,34 +522,30 @@ void NVM_Process_Schedule(void)
   UTIL_SEQ_SetTask( 1U << CFG_TASK_NVM, CFG_SEQ_PRIO_1);
 }
 
-/* Function called from PKA_IRQHandler() context. */
-void PKAMGR_IRQCallback(void)
-{
-  BLEStack_Process_Schedule();
-}
-
 /* Function called from RADIO_TIMER_TXRX_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_TxRxWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TIMER_CPU_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_CpuWakeUpCallback(void)
 {
   VTimer_Process_Schedule();
-  BLEStack_Process_Schedule();
 }
 
 /* Function called from RADIO_TXRX_IRQHandler() context. */
 void HAL_RADIO_TxRxCallback(uint32_t flags)
 {
   BLE_STACK_RadioHandler(flags);
-
-  BLEStack_Process_Schedule();
+  
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+}
+
+void BLE_STACK_ProcessRequest(void)
+{
+  BLEStack_Process_Schedule();
 }
 
 /* Functions Definition ------------------------------------------------------*/
@@ -572,9 +564,6 @@ void APP_BLE_Init(void)
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
 
-  /* Need to call stack process at least once. */
-  BLEStack_Process_Schedule();
-
   /**
   * Initialization of the BLE App Context
   */
@@ -585,7 +574,7 @@ void APP_BLE_Init(void)
 
   /* USER CODE BEGIN APP_BLE_Init_4 */
   UTIL_SEQ_RegTask(1<<CFG_TASK_ADV_CANCEL_ID, UTIL_SEQ_RFU, Adv_Cancel);
-  UTIL_SEQ_RegTask(1<<CFG_TASK_UPD_DISPLAY, UTIL_SEQ_RFU, ESL_PROFILE_UpdateDisplay);
+  UTIL_SEQ_RegTask(1<<CFG_TASK_ESL_UPD, UTIL_SEQ_RFU, ESL_APP_Process);
   
   /* Create timer to handle the Advertising Stop */
   bleAppContext.Advertising_mgr_timer_Id.callback = Adv_Cancel_Req;    
@@ -798,6 +787,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           (void) event;
           
           APP_DBG_MSG("HCI_LE_PERIODIC_ADVERTISING_SYNC_LOST\n");
+          
           bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
           APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_LP);
         }
@@ -929,6 +919,32 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
         break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+          
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
       case ACI_HAL_FW_ERROR_VSEVT_CODE:
         {
@@ -1282,43 +1298,6 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       HAL_RADIO_TIMER_StopVirtualTimer(&(bleAppContext.Advertising_mgr_timer_Id));
       break;
     }/* PROC_GAP_PERIPH_ADVERTISE_STOP */
-    case PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE:
-    {
-      Advertising_Set_Parameters_t Advertising_Set_Parameters = {0};
-
-      /* Disable advertising */
-      status = aci_gap_set_advertising_enable(DISABLE, 0, NULL);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
-        APP_DBG_MSG("Disable advertising - fail, result: 0x%02X\n",status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Disable advertising - Success\n");
-      }
-      /* Set advertising data */
-      status = aci_gap_set_advertising_data(0, ADV_COMPLETE_DATA, sizeof(a_AdvData), (uint8_t*) a_AdvData);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        APP_DBG_MSG("==>> aci_gap_set_advertising_data Failed, result: 0x%02X\n", status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Success: aci_gap_set_advertising_data\n");
-      }
-      /* Enable advertising */
-      status = aci_gap_set_advertising_enable(ENABLE, 1, &Advertising_Set_Parameters);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        APP_DBG_MSG("==>> aci_gap_set_advertising_enable Failed, result: 0x%02X\n", status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Success: aci_gap_set_advertising_enable\n");
-      }
-      break;
-    }/* PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE */
     case PROC_GAP_PERIPH_CONN_PARAM_UPDATE:
     {
        status = aci_l2cap_connection_parameter_update_req(
@@ -1451,19 +1430,9 @@ static void fill_advData(uint8_t *p_adv_data, uint8_t tab_size, const uint8_t* p
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
 
-void ESL_PROFILE_SensorDataReqCB(uint8_t sensor_index, uint8_t *data_p, uint8_t *data_length_p)
+void ESL_APP_ProcessRequest(void)
 {
-  uint16_t batt_voltage = 3300; // It shloud be read from sensor instead.
-      
-  *data_length_p = 0;
-  
-  HOST_TO_LE_16(data_p, batt_voltage);
-  *data_length_p = 2;
-}
-
-void ESL_PROFILE_UpdateDisplayReqCB(void)
-{
-  UTIL_SEQ_SetTask( 1U << CFG_TASK_UPD_DISPLAY, CFG_SEQ_PRIO_0);  
+  UTIL_SEQ_SetTask( 1U << CFG_TASK_ESL_UPD, CFG_SEQ_PRIO_0);
 }
 
 void watchdog_enable(void)

@@ -1118,6 +1118,12 @@
     <group>
       <name>STM32WB0x_HAL_Driver</name>
       <file>
+        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_cortex.c</name>
       </file>
       <file>
@@ -1152,12 +1158,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_radio_timer.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart.c</name>

@@ -34,6 +34,7 @@ extern "C" {
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
+
 /* USER CODE BEGIN ET */
 
 /* USER CODE END ET */
@@ -58,6 +59,7 @@ extern "C" {
 void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
+
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 void VTimer_Process(void);

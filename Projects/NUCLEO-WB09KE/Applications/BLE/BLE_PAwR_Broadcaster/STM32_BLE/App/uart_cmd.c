@@ -1,3 +1,20 @@
+/**
+  ******************************************************************************
+  * @file    uart_cmd.c
+  * @author  GPM WBL Application Team
+  * @brief   Implementation of uart commands for ESL.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2024 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -213,7 +230,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 8, "%2hhx,%2hhx", &group_id, &esl_id);
-    if(ret != 2 || group_id > 2)
+    if(ret != 2 || group_id >= MAX_GROUPS)
     {
       return 1;
     }
@@ -235,7 +252,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%2hhx", &group_id, &esl_id, &image_index);
-    if(ret != 3 || group_id > 2)
+    if(ret != 3 || group_id >= MAX_GROUPS)
     {
       return 1;
     }
@@ -257,7 +274,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%2hhu", &group_id, &esl_id, &led_status);
-    if(ret != 3 || group_id > 2 || led_status > 2)
+    if(ret != 3 || group_id >= MAX_GROUPS || led_status > 2)
     {
       return 1;
     }
@@ -279,7 +296,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%[^\t\r\n]", &group_id, &esl_id, text);
-    if(ret != 3 || group_id > 2)
+    if(ret != 3 || group_id >= MAX_GROUPS)
     {
       return 1;
     }
@@ -301,7 +318,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 9, "%2hhx,%2hhx,%u.%u", &group_id, &esl_id, &val_int, &val_fract);
-    if(ret != 4 || group_id > 2 || val_int > 999 || val_fract > 99)
+    if(ret != 4 || group_id >= MAX_GROUPS || val_int > 999 || val_fract > 99)
     {
       return 1;
     }
@@ -322,7 +339,7 @@ static int parse_cmd(void)
     int ret;
     
     ret = sscanf((char*)CommandString + 8, "%2hhx,%2hhx", &group_id, &esl_id);
-    if(ret != 2 || group_id > 2 || esl_id == 0xFF)
+    if(ret != 2 || group_id >= MAX_GROUPS || esl_id == 0xFF)
     {
       return 1;
     }

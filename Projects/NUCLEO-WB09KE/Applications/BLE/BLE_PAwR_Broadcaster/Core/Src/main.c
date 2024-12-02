@@ -301,7 +301,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF2;
+  GPIO_InitStruct.Alternate = 2;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 #endif
 /* USER CODE END MX_GPIO_Init_2 */

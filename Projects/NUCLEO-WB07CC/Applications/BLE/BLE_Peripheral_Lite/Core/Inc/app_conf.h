@@ -31,7 +31,7 @@
 /**
  * Define to 1 if LSE is used, otherwise set it to 0.
  */
-#define CFG_LSCLK_LSE                           (1)
+#define CFG_LSCLK_LSE                       (1)
 
 /******************************************************************************
  * Application Config
@@ -40,59 +40,59 @@
 /**
  * Define Tx Power Mode
  */
-#define CFG_TX_POWER_MODE                 (0) /* Tx normal power mode */
+#define CFG_TX_POWER_MODE                   (0) /* Tx normal power mode */
 
 /**
  * Define Tx Power
  */
-#define CFG_TX_POWER                      (0x18) /* 0x18 <=> 0 dBm */
+#define CFG_TX_POWER                        (0x18) /* 0x18 <=> 0 dBm */
 
 /**
  * Define Advertising parameters
  */
-#define CFG_PUBLIC_BD_ADDRESS             (0x0280E1AAABAC)
-#define CFG_BD_ADDRESS_TYPE               HCI_ADDR_STATIC_RANDOM_ADDR
-#define CFG_BLE_PRIVACY_ENABLED           (0)
+#define CFG_PUBLIC_BD_ADDRESS               (0x0280E1AAABAC)
+#define CFG_BD_ADDRESS_TYPE                 HCI_ADDR_STATIC_RANDOM_ADDR
+#define CFG_BLE_PRIVACY_ENABLED             (0)
 
-#define ADV_INTERVAL_MIN                  (0x0080)
-#define ADV_INTERVAL_MAX                  (0x00A0)
-#define ADV_LP_INTERVAL_MIN               (0x0640)
-#define ADV_LP_INTERVAL_MAX               (0x0FA0)
-#define ADV_TYPE                         (HCI_ADV_EVENT_PROP_LEGACY|HCI_ADV_EVENT_PROP_CONNECTABLE|HCI_ADV_EVENT_PROP_SCANNABLE)
-#define ADV_FILTER                        HCI_ADV_FILTER_NONE
+#define ADV_INTERVAL_MIN                    (0x0080)
+#define ADV_INTERVAL_MAX                    (0x00A0)
+#define ADV_LP_INTERVAL_MIN                 (0x0640)
+#define ADV_LP_INTERVAL_MAX                 (0x0FA0)
+#define ADV_TYPE                            (HCI_ADV_EVENT_PROP_LEGACY|HCI_ADV_EVENT_PROP_CONNECTABLE|HCI_ADV_EVENT_PROP_SCANNABLE)
+#define ADV_FILTER                          HCI_ADV_FILTER_NONE
 
 /**
  * Define IO Authentication
  */
-#define CFG_BONDING_MODE                 (1)
-#define CFG_FIXED_PIN                    (111111)
-#define CFG_ENCRYPTION_KEY_SIZE_MAX      (16)
-#define CFG_ENCRYPTION_KEY_SIZE_MIN      (8)
+#define CFG_BONDING_MODE                    (1)
+#define CFG_FIXED_PIN                       (111111)
+#define CFG_ENCRYPTION_KEY_SIZE_MAX         (16)
+#define CFG_ENCRYPTION_KEY_SIZE_MIN         (8)
 
 /**
  * Define IO capabilities
  */
-#define CFG_IO_CAPABILITY                     GAP_IO_CAP_DISPLAY_YES_NO
+#define CFG_IO_CAPABILITY                   GAP_IO_CAP_DISPLAY_YES_NO
 
 /**
  * Define MITM modes
  */
-#define CFG_MITM_PROTECTION                   GAP_MITM_PROTECTION_REQUIRED
+#define CFG_MITM_PROTECTION                 GAP_MITM_PROTECTION_REQUIRED
 
 /**
  * Define Secure Connections Support
  */
-#define CFG_SC_SUPPORT                        GAP_SC_OPTIONAL
+#define CFG_SC_SUPPORT                      GAP_SC_OPTIONAL
 
 /**
  * Define Keypress Notification Support
  */
-#define CFG_KEYPRESS_NOTIFICATION_SUPPORT     GAP_KEYPRESS_NOT_SUPPORTED
+#define CFG_KEYPRESS_NOTIFICATION_SUPPORT   GAP_KEYPRESS_NOT_SUPPORTED
 
 /**
  * Appearance of device set into BLE GAP
  */
-#define CFG_GAP_APPEARANCE          (GAP_APPEARANCE_UNKNOWN)
+#define CFG_GAP_APPEARANCE                  (GAP_APPEARANCE_UNKNOWN)
 
 /* USER CODE BEGIN Generic_Parameters */
 
@@ -114,7 +114,7 @@
  * 128 simultaneous radio tasks, but actual usable max value depends on the
  * available RAM.
  */
-#define CFG_BLE_NUM_RADIO_TASKS                                (CFG_NUM_RADIO_TASKS)
+#define CFG_BLE_NUM_RADIO_TASKS                         (CFG_NUM_RADIO_TASKS)
 
 /**
  * Maximum number of Attributes that can be stored in the GATT database.
@@ -133,7 +133,7 @@
 #define CFG_BLE_ATT_MTU_MAX                             (247)
 
 /**
- * Maximum duration of the connection event in system time units (625/256 us =~ 
+ * Maximum duration of the connection event in system time units (625/256 us =~
  * 2.44 us) when the device is in Peripheral role [0-0xFFFFFFFF].
  */
 #define CFG_BLE_CONN_EVENT_LENGTH_MAX                   (0xFFFFFFFF)
@@ -186,7 +186,7 @@
 
 /**
  * Maximum number of subevent data that can be queued in the controller.
- */    
+ */
 #define CFG_BLE_PAWR_SUBEVENT_DATA_COUNT_MAX            (8U)
 
 /**
@@ -197,19 +197,19 @@
 
 /**
  * Maximum number of slots for synchronizing to a periodic advertising train,
- * if Periodic Advertising and Synchronizing Feature is enabled. 
+ * if Periodic Advertising and Synchronizing Feature is enabled.
  */
 #define CFG_BLE_NUM_SYNC_SLOTS                          (0)
 
 /**
  * Two's logarithm of Filter Accept, Resolving and Advertiser list size.
  */
-#define CFG_BLE_FILTER_ACCEPT_LIST_SIZE_LOG2                    (3)
+#define CFG_BLE_FILTER_ACCEPT_LIST_SIZE_LOG2            (3)
 
 /**
  * Maximum number of Antenna IDs in the antenna pattern used in CTE connection
  * oriented mode.
- */ 
+ */
 #define CFG_BLE_NUM_CTE_ANTENNA_IDS_MAX                 (0)
 
 /**
@@ -218,29 +218,32 @@
 #define CFG_BLE_NUM_CTE_IQ_SAMPLES_MAX                  (0)
 
 /**
- * Maximum number of slots for synchronizing to a Broadcast Isochronous Group. 
+ * Maximum number of slots for synchronizing to a Broadcast Isochronous Group.
  */
 #define CFG_BLE_NUM_SYNC_BIG_MAX                        (1U)
+
 /**
- * Maximum number of slots for synchronizing to a Broadcast Isochronous Stream. 
+ * Maximum number of slots for synchronizing to a Broadcast Isochronous Stream.
  */
 #define CFG_BLE_NUM_SYNC_BIS_MAX                        (2U)
+
 /**
- * Maximum number of slots for broadcasting a Broadcast Isochronous Group. 
+ * Maximum number of slots for broadcasting a Broadcast Isochronous Group.
  */
 #define CFG_BLE_NUM_BRC_BIG_MAX                         (1U)
+
 /**
- * Maximum number of slots for broadcasting a Broadcast Isochronous Stream. 
+ * Maximum number of slots for broadcasting a Broadcast Isochronous Stream.
  */
 #define CFG_BLE_NUM_BRC_BIS_MAX                         (2U)
 
 /**
- * Maximum number of Connected Isochronous Groups. 
+ * Maximum number of Connected Isochronous Groups.
  */
 #define CFG_BLE_NUM_CIG_MAX                             (2U)
 
 /**
- * Maximum number of Connected Isochronous Streams. 
+ * Maximum number of Connected Isochronous Streams.
  */
 #define CFG_BLE_NUM_CIS_MAX                             (2U)
 
@@ -262,6 +265,15 @@
  */
 #define CFG_BLE_USER_FIFO_SIZE                          (1024)
 
+/**
+ * If 1, Peripheral Preferred Connection Parameters Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_PERIPH_PREF_CONN_PARAM_CHARACTERISTIC  (0)
+
+/**
+ * If 1, Encrypted Key Material Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC  (0)
 
 /**
  * Number of allocated memory blocks used for packet allocation.
@@ -307,16 +319,16 @@
  * BLE Stack modularity options
  ******************************************************************************/
 #define CFG_BLE_CONTROLLER_SCAN_ENABLED                   (0U)
-#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U) 
-#define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (0U) 
-#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (0U) 
+#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U)
+#define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (0U)
+#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (0U)
 #define CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED           (0U)
-#define CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED           (0U) 
-#define CFG_BLE_L2CAP_COS_ENABLED                         (0U) 
+#define CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED           (0U)
+#define CFG_BLE_L2CAP_COS_ENABLED                         (0U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_ENABLED           (0U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED        (0U)
 #define CFG_BLE_CONTROLLER_CTE_ENABLED                    (0U)
-#define CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED          (0U) 
+#define CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED          (0U)
 #define CFG_BLE_CONNECTION_ENABLED                        (1U)
 #define CFG_BLE_CONTROLLER_CHAN_CLASS_ENABLED             (0U)
 #define CFG_BLE_CONTROLLER_BIS_ENABLED                    (0U)
@@ -339,7 +351,7 @@
 
 #define CFG_FULL_LOW_POWER       (0)
 
-#define CFG_LPM_SUPPORTED        (0)
+#define CFG_LPM_SUPPORTED        (1)
 
 /**
  * Low Power configuration
@@ -369,7 +381,6 @@ typedef enum
 
 /* USER CODE END Low_Power 1 */
 
-
 /*****************************************************************************
  * Traces
  * Enable or Disable traces in application
@@ -394,7 +405,6 @@ typedef enum
 #undef CFG_DEBUG_APP_ADV_TRACE
 #define CFG_DEBUG_APP_ADV_TRACE         (0)
 #endif
-
 
 #if (CFG_DEBUG_APP_ADV_TRACE != 0)
 
@@ -471,13 +481,11 @@ typedef enum
   /* USER CODE END CFG_IdleEvt_Id_t */
 } CFG_IdleEvt_Id_t;
 
-
 /******************************************************************************
  * RT GPIO debug module configuration
  ******************************************************************************/
 
 #define RT_DEBUG_GPIO_MODULE         (0)
-
 
 /* USER CODE BEGIN Defines */
 /**

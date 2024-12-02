@@ -51,13 +51,9 @@
 #define BASIC_STATE_PENDING_LED_UPDATE_BIT      (0x08)
 #define BASIC_STATE_PENDING_DISPLAY_UPDATE_BIT  (0x10)
 
-/* Error codes for Error Response */
-#define ERROR_INVALID_OPCODE                    (0x02)
-#define ERROR_INVALID_PARAMETERS                (0x06)
-
 #define BRC_ESL_ID                              (0xFF)
 
-#define MAX_TXT_LENGHT                           (11U)
+#define MAX_TXT_LENGTH                           (11U)
 
 #define GET_PARAM_LENGTH_FROM_OPCODE(opcode)          ((((opcode) & 0xF0) >> 4) + 1)
 
@@ -65,15 +61,6 @@
 
 #define SET_LENGTH_TO_OPCODE(tag, param_length)       (((tag) & 0x0F) | ((((param_length) - 1) & 0x0F) << 4))
 
-
-#define LED_OFF                                     0
-#define LED_ON                                      1
-
-typedef struct
-{
-  uint16_t int_part;
-  uint8_t fract_part;  
-}price_t;
 
 typedef struct
 {
@@ -83,12 +70,6 @@ typedef struct
   uint8_t esl_id;
   uint16_t esl_state;
   uint8_t a_resp[MAX_ESL_PAYLOAD_SIZE+2];
-  char curr_txt[MAX_TXT_LENGHT + 1];
-  char next_txt[MAX_TXT_LENGHT + 1];
-  price_t curr_price;
-  price_t next_price;  
-  uint8_t curr_img_index;
-  uint8_t next_img_index;
 } ESL_PROFILE_Context_t;
 
 ESL_PROFILE_Context_t ESL_PROFILE_Context = 
@@ -96,23 +77,10 @@ ESL_PROFILE_Context_t ESL_PROFILE_Context =
   .group_id = GROUP_ID,
   .esl_id = ESL_ID,
   .esl_state = 0,
-  .curr_txt = {0},
-  .next_txt = {0},
-  .curr_price = {0},
-  .next_price = {0},
-  .curr_img_index = 0xFF, // Set to 0xFF so that if a watchdog reset occurs, the icon idx can be set again to 0.
-  .next_img_index = 0xFF,
 };
-
-VTIMER_HandleType led_on_timer_h;
-VTIMER_HandleType led_blink_timer_h;
-uint8_t led_state = LED_OFF;
 
 static void synch_packet_received(uint16_t pa_event, uint8_t *p_esl_data, uint8_t size);
 static void send_resp(uint16_t pa_event, uint8_t resp_slot, uint8_t *p_esl_resp, uint8_t resp_size);
-static int LEDControl(uint16_t led_repeat);
-static void led_blink(void *arg);
-static void led_on_timeout_cb(void *arg);
 
 void ESL_PROFILE_Init(void)
 {
@@ -128,10 +96,7 @@ void ESL_PROFILE_Init(void)
   else
   {
     APP_DBG_MSG("==>> hci_le_set_default_periodic_advertising_sync_transfer_parameters : Success\n");
-  }
-  
-  led_on_timer_h.callback = led_on_timeout_cb;
-  led_blink_timer_h.callback = led_blink;
+  }  
 }
 
 void ESL_PROFILE_ConnectionComplete(uint16_t connection_handle)
@@ -180,7 +145,6 @@ void ESL_PROFILE_SyncInfoReceived(uint16_t sync_handle)
   }
     
 }
-
 
 void ESL_PROFILE_AdvPayloadReceived(uint16_t pa_event, uint8_t *p_adv_data, uint8_t size)
 {
@@ -257,24 +221,23 @@ static void synch_packet_received(uint16_t pa_event, uint8_t *p_esl_data, uint8_
       case ESL_CMD_LED_CONTROL:
         {
           uint8_t led_index;
-          uint16_t led_repeat; /* Repeate type and duration. */
-          int ret;
-          bool error = false;
+          uint16_t led_repeat; /* Repeat type and duration. */
+          uint8_t ret;
           
           led_index = p_cmd[2];
           led_repeat = LE_TO_HOST_16(&p_cmd[11]);
           
-          ret = LEDControl(led_repeat);
-          if(ret != 0)
+          ret = ESL_APP_LEDControlCmdCB(led_repeat);
+          
+          if(ret != 0 && esl_cmd_id != BRC_ESL_ID)
           {
             /* Error */
-            error = true;
             esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
-            esl_payload_resp[resp_idx + 1] = ERROR_INVALID_PARAMETERS;
+            esl_payload_resp[resp_idx + 1] = ret;
             resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
           }
           
-          if(!error && esl_cmd_id != BRC_ESL_ID)
+          if(ret == 0 && esl_cmd_id != BRC_ESL_ID)
           {            
             //TBR: to check if response exceeds ESL payload size.
             esl_payload_resp[resp_idx] = ESL_RESP_LED_STATE;
@@ -287,10 +250,11 @@ static void synch_packet_received(uint16_t pa_event, uint8_t *p_esl_data, uint8_
         {
           uint8_t sensor_index;
           uint8_t sensor_data_length;
+          uint8_t ret;
           
           if(esl_cmd_id == BRC_ESL_ID)
           {
-            /* This command cannot have a broadcast address */
+            /* This command cannot have a broadcast address. Do not invoke callback. */
             break;
           }
           
@@ -298,52 +262,81 @@ static void synch_packet_received(uint16_t pa_event, uint8_t *p_esl_data, uint8_
           
           /* TBR: Need to use asynchronous response, since data from sensor may not be available immediately.
                    Check also for available space in response.  */
-          ESL_PROFILE_SensorDataReqCB(sensor_index, &esl_payload_resp[resp_idx + 2], &sensor_data_length);
-
-          esl_payload_resp[resp_idx] = SET_LENGTH_TO_OPCODE(ESL_RESP_SENSOR_VALUE_TAG_NIBBLE, sensor_data_length + 1);
+          ret = ESL_APP_SensorDataCmdCB(sensor_index, &esl_payload_resp[resp_idx + 2], &sensor_data_length);
           
-          esl_payload_resp[resp_idx + 1] = sensor_index;
+          if(ret != 0)
+          {
+            esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
+            esl_payload_resp[resp_idx + 1] = ret;
+            resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
+          }
           
-          resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
+          if(ret == 0)
+          {
+            esl_payload_resp[resp_idx] = SET_LENGTH_TO_OPCODE(ESL_RESP_SENSOR_VALUE_TAG_NIBBLE, sensor_data_length + 1);            
+            esl_payload_resp[resp_idx + 1] = sensor_index;            
+            resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
+          }
         }
         break;
       case ESL_CMD_VS_TXT:
-        {          
-          memset(ESL_PROFILE_Context.next_txt, 0, sizeof(ESL_PROFILE_Context.next_txt));
+        {
+          uint8_t ret;
           
-          /* Here use MIN only for better robustness. */
-          memcpy(ESL_PROFILE_Context.next_txt, &p_cmd[2], MIN(sizeof(ESL_PROFILE_Context.next_txt) - 1, param_length - 1));
+          ret = ESL_APP_TxtVsCmdCB(param_length - 1, (char *)&p_cmd[2]);
           
-          if(esl_cmd_id != BRC_ESL_ID)
+          if(ret != 0 && esl_cmd_id != BRC_ESL_ID)
           {
-            esl_payload_resp[resp_idx] = ESL_RESP_VS_OK;
-            esl_payload_resp[resp_idx + 1] = 0; /* Not used. */
+            esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
+            esl_payload_resp[resp_idx + 1] = ret;
             resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
           }
           
-          ESL_PROFILE_UpdateDisplayReqCB();     
+          if(ret == 0 && esl_cmd_id != BRC_ESL_ID)
+          {
+            esl_payload_resp[resp_idx] = ESL_RESP_VS_OK;
+            esl_payload_resp[resp_idx + 1] = 0; /* Not used. */
+            resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);            
+          }
+          
         }
         break;
       case ESL_CMD_VS_PRICE:
-        {  
-          ESL_PROFILE_Context.next_price.int_part = LE_TO_HOST_16(&p_cmd[2]);
-          ESL_PROFILE_Context.next_price.fract_part = p_cmd[4];
-
-          if(esl_cmd_id != BRC_ESL_ID)
+        {
+          uint8_t ret;
+          
+          ret = ESL_APP_PriceVsCmdCB(LE_TO_HOST_16(&p_cmd[2]), p_cmd[4]);
+          
+          if(ret != 0 && esl_cmd_id != BRC_ESL_ID)
+          {
+            esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
+            esl_payload_resp[resp_idx + 1] = ret;
+            resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
+          }
+          
+          if(ret == 0 && esl_cmd_id != BRC_ESL_ID)
           {
             esl_payload_resp[resp_idx] = ESL_RESP_VS_OK;
             esl_payload_resp[resp_idx + 1] = 0; /* Not used. */
             resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
           }
           
-          ESL_PROFILE_UpdateDisplayReqCB();
         }
         break;
       case ESL_CMD_DISPLAY_IMG:
-        {  
-          ESL_PROFILE_Context.next_img_index = p_cmd[3];
+        {
+          uint8_t ret;
           
-          if(esl_cmd_id != BRC_ESL_ID)
+          ret = ESL_APP_DisplayImageCmdCB(p_cmd[3]);
+          
+          if(ret != 0 && esl_cmd_id != BRC_ESL_ID)
+          {
+            esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
+            esl_payload_resp[resp_idx + 1] = ret;
+            resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
+          }
+          
+          if(ret == 0 && esl_cmd_id != BRC_ESL_ID)
           {
             esl_payload_resp[resp_idx] = ESL_RESP_DISPLAY_STATE;
             esl_payload_resp[resp_idx + 1] = p_cmd[2]; /* Display index */
@@ -351,7 +344,6 @@ static void synch_packet_received(uint16_t pa_event, uint8_t *p_esl_data, uint8_
             resp_idx += GET_LENGTH_FROM_OPCODE(esl_payload_resp[resp_idx]);
           }
           
-          ESL_PROFILE_UpdateDisplayReqCB();
         }
         break;
       default:
@@ -400,66 +392,3 @@ static void send_resp(uint16_t pa_event, uint8_t resp_slot, uint8_t *p_esl_resp,
     APP_DBG_MSG("==>> ll_set_periodic_advertising_response_data_ptr : Success\n");
   }
 }
-
-void ESL_PROFILE_UpdateDisplay(void)
-{
-
-}
-
-static void led_on_timeout_cb(void *arg)
-{
-  BSP_LED_Off(LD1);
-  APP_DBG_MSG("LED OFF\n");
-}
-
-static void led_blink(void *arg)
-{  
-  if(led_state == LED_OFF)
-  {
-    BSP_LED_On(LD1);
-    led_state = LED_ON;
-    HAL_RADIO_TIMER_StartVirtualTimer(&led_blink_timer_h, LED_BLINK_ON_TIME_MS);
-  }
-  else if(led_state == LED_ON)
-  {
-    BSP_LED_Off(LD1);
-    led_state = LED_OFF;
-    HAL_RADIO_TIMER_StartVirtualTimer(&led_blink_timer_h, LED_BLINK_OFF_TIME_MS);
-  }  
-}
-                                          
-static int LEDControl(uint16_t led_repeat)
-{
-  if(led_repeat == 0)
-  {
-    BSP_LED_Off(LD1);
-    APP_DBG_MSG("LED OFF\n");
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_blink_timer_h);
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_on_timer_h);
-  }
-  else if(led_repeat == 1)
-  {
-    BSP_LED_On(LD1);
-    APP_DBG_MSG("LED ON\n");
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_blink_timer_h);
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_on_timer_h);
-    HAL_RADIO_TIMER_StartVirtualTimer(&led_on_timer_h, LED_ON_TIMEOUT_SECONDS*1000);
-  }
-  /* Special value, out of standard, used for blinking led. Need to be
-    done with flashing pattern */
-  else if(led_repeat == 2)
-  {
-    APP_DBG_MSG("LED BLINK\n");
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_on_timer_h);
-    HAL_RADIO_TIMER_StopVirtualTimer(&led_blink_timer_h);
-    led_blink(NULL);
-  }
-  else
-  {
-    return 1;
-  } 
-  
-  return 0;
-}
-
-

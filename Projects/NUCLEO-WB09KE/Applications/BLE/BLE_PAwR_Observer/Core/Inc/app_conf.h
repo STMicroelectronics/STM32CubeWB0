@@ -266,6 +266,16 @@
 #define CFG_BLE_USER_FIFO_SIZE                          (1024)
 
 /**
+ * If 1, Peripheral Preferred Connection Parameters Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_PERIPH_PREF_CONN_PARAM_CHARACTERISTIC   (0)
+   
+/**
+ * If 1, Encrypted Key Material Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC   (0)
+
+/**
  * Number of allocated memory blocks used for packet allocation.
  * The use of BLE_STACK_MBLOCKS_CALC macro is suggested to calculate the minimum
  * number of memory blocks for a given number of supported links and ATT MTU.
@@ -437,7 +447,7 @@ typedef enum
   TASK_BUTTON_2,
   TASK_BUTTON_3,
   CFG_TASK_ADV_CANCEL_ID,
-  CFG_TASK_UPD_DISPLAY,
+  CFG_TASK_ESL_UPD,
   /* USER CODE END CFG_Task_Id_t */
   CFG_TASK_NBR,  /**< Shall be LAST in the list */
 } CFG_Task_Id_t;

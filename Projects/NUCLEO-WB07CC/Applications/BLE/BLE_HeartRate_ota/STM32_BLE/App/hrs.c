@@ -102,6 +102,10 @@ static HRS_Context_t HRS_Context;
 BLE_GATT_SRV_CCCD_DECLARE(hrme, CFG_BLE_NUM_RADIO_TASKS, BLE_GATT_SRV_CCCD_PERM_DEFAULT,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 uint8_t bsl_val_buffer[BSL_SIZE];
 
 static ble_gatt_val_buffer_def_t bsl_val_buffer_def = {

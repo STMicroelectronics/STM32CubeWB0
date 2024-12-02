@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_beacon_aoa_tag-application-description"><strong>BLE_Beacon_AoA_Tag
+        Application Description</strong></h2>
+        <p>It allows to configure a STM32WB0 device as an AoA tag for
+        connectionless scenario. Device advertises beacon packets
+        containing Constant Tone Extension data.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE Direction Finding</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 device.</li>
+        <li>Connect the Nucleo Board to your PC with a USB cable type A
+        to USB type C to ST-LINK USB connector.</li>
+        <li>Another STM32WB0 Nucleo board is necessary to run
+        BLE_Beacon_Scanner_AoA_Locator application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        <li>The application will advertise beacon packets with Constant
+        Tone Extension, to let a Aoa Locator device to locate the Aoa
+        tag.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

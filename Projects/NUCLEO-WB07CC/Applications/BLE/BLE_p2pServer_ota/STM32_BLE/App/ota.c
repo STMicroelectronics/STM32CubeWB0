@@ -105,6 +105,10 @@ static OTA_Confirmation_Status_t OTA_Conf_Status;
 BLE_GATT_SRV_CCCD_DECLARE(conf, CFG_BLE_NUM_RADIO_TASKS, BLE_GATT_SRV_CCCD_PERM_DEFAULT,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 uint8_t base_adr_val_buffer[BASE_ADR_SIZE];
 
 static ble_gatt_val_buffer_def_t base_adr_val_buffer_def = {

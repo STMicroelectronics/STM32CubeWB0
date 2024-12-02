@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    peripheral_lite_server_app.c
+  * @file    Peripheral_Lite_Server_app.c
   * @author  MCD Application Team
-  * @brief   peripheral_lite_server_app application definition.
+  * @brief   Peripheral_Lite_Server_app application definition.
   ******************************************************************************
   * @attention
   *
@@ -25,7 +25,6 @@
 #include "ble.h"
 #include "peripheral_lite_server_app.h"
 #include "peripheral_lite_server.h"
-#include "stm32_seq.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -69,7 +68,7 @@ typedef struct
 
 /* External variables --------------------------------------------------------*/
 /* USER CODE BEGIN EV */
-
+extern BleApplicationContext_t bleAppContext;
 /* USER CODE END EV */
 
 /* Private macros ------------------------------------------------------------*/
@@ -169,11 +168,10 @@ void PERIPHERAL_LITE_SERVER_APP_EvtRx(PERIPHERAL_LITE_SERVER_APP_ConnHandleNotEv
     /* USER CODE END Service1_APP_EvtRx_Service1_EvtOpcode */
     case PERIPHERAL_LITE_SERVER_CONN_HANDLE_EVT :
       PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle = p_Notification->ConnectionHandle;
-      /* USER CODE BEGIN Service1_APP_CONN_HANDLE_EVT */
+      /* USER CODE BEGIN Service1_APP_CENTR_CONN_HANDLE_EVT */
 
-      /* USER CODE END Service1_APP_CONN_HANDLE_EVT */
+      /* USER CODE END Service1_APP_CENTR_CONN_HANDLE_EVT */
       break;
-
     case PERIPHERAL_LITE_SERVER_DISCON_HANDLE_EVT :
       PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle = 0xFFFF;
       /* USER CODE BEGIN Service1_APP_DISCON_HANDLE_EVT */
@@ -200,6 +198,7 @@ void PERIPHERAL_LITE_SERVER_APP_Init(void)
   PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle = 0xFFFF;
   PERIPHERAL_LITE_SERVER_Init();
 
+  /* USER CODE BEGIN Service1_APP_Init */
   /**
    * Initialize Led Service
    */
@@ -209,21 +208,10 @@ void PERIPHERAL_LITE_SERVER_APP_Init(void)
   return;
 }
 
-/* USER CODE BEGIN FD */
-void PERIPHERAL_LITE_SERVER_APP_LED_context_Init(void)
-{  
-  BSP_LED_Off(LED_BLUE); 
-  PERIPHERAL_LITE_SERVER_APP_Context.LedControl.Device_Led_Selection=0x01; /* Device1 */
-  PERIPHERAL_LITE_SERVER_APP_Context.LedControl.Led1=0x00; /* led OFF */
-
-  return;
-}
-/* USER CODE END FD */
-
-
-/* USER CODE BEGIN FD */
-void PERIPHERAL_LITE_SERVER_Process(void) 
+void PERIPHERAL_LITE_SERVER_APP_Process(void)
 {
+  /* USER CODE BEGIN PERIPHERAL_LITE_SERVER_APP_Process_1 */
+
   if (bleAppContext.restartAdv)
   {
     bleAppContext.restartAdv = FALSE; 
@@ -254,6 +242,19 @@ void PERIPHERAL_LITE_SERVER_Process(void)
        HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id, CONN_TIMEOUT_MS);
      }
   }
+  
+  /* USER CODE END PERIPHERAL_LITE_SERVER_APP_Process_1 */
+  return;
+}
+
+/* USER CODE BEGIN FD */
+void PERIPHERAL_LITE_SERVER_APP_LED_context_Init(void)
+{  
+  BSP_LED_Off(LED_BLUE); 
+  PERIPHERAL_LITE_SERVER_APP_Context.LedControl.Device_Led_Selection=0x01; /* Device1 */
+  PERIPHERAL_LITE_SERVER_APP_Context.LedControl.Led1=0x00; /* led OFF */
+
+  return;
 }
 /* USER CODE END FD */
 
@@ -263,7 +264,8 @@ void PERIPHERAL_LITE_SERVER_Process(void)
  *
  *************************************************************/
 __USED void PERIPHERAL_LITE_SERVER_Switch_c_SendNotification(void) /* Property Notification */
-{ 
+{
+  PERIPHERAL_LITE_SERVER_APP_SendInformation_t notification_on_off = Switch_c_NOTIFICATION_OFF;
   PERIPHERAL_LITE_SERVER_Data_t peripheral_lite_server_notification_data;
 
   peripheral_lite_server_notification_data.p_Payload = (uint8_t*)a_PERIPHERAL_LITE_SERVER_UpdateCharData;
@@ -276,11 +278,20 @@ __USED void PERIPHERAL_LITE_SERVER_Switch_c_SendNotification(void) /* Property N
   a_PERIPHERAL_LITE_SERVER_UpdateCharData[1] ^= 0x01;
   /* Update notification data length */
   peripheral_lite_server_notification_data.Length = (peripheral_lite_server_notification_data.Length) + 2; 
-    
+
+  if(PERIPHERAL_LITE_SERVER_APP_Context.Switch_c_Notification_Status == Switch_c_NOTIFICATION_ON)
+  { 
+    APP_DBG_MSG("-- P2P APPLICATION SERVER : INFORM CLIENT BUTTON 1 PUSHED\n");
+    notification_on_off = Switch_c_NOTIFICATION_ON;
+  } 
+  else
+  {
+    APP_DBG_MSG("-- P2P APPLICATION SERVER : CAN'T INFORM CLIENT - NOTIFICATION DISABLED\n"); 
+  }
+
   /* USER CODE END Service1Char2_NS_1*/
 
-  if (PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle != 0xFFFF && 
-      PERIPHERAL_LITE_SERVER_APP_Context.Switch_c_Notification_Status == Switch_c_NOTIFICATION_ON) 
+  if (notification_on_off != Switch_c_NOTIFICATION_OFF && PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle != 0xFFFF)
   {
     PERIPHERAL_LITE_SERVER_NotifyValue(PERIPHERAL_LITE_SERVER_SWITCH_C, &peripheral_lite_server_notification_data, PERIPHERAL_LITE_SERVER_APP_Context.ConnectionHandle);
   }

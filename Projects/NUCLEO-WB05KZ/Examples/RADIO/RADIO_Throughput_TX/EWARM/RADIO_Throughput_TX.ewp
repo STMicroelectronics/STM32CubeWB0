@@ -1118,13 +1118,13 @@
     <group>
       <name>STM32WB0x_HAL_Driver</name>
       <file>
+        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_ll_rcc.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_cortex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_ll_rcc.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc_ex.c</name>

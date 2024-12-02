@@ -193,7 +193,7 @@
 /**
  * Maximum number of subevent data that can be queued in the controller.
  */    
-#define CFG_BLE_PAWR_SUBEVENT_DATA_COUNT_MAX            (2U)
+#define CFG_BLE_PAWR_SUBEVENT_DATA_COUNT_MAX            (4U)
 
 /**
  * Maximum number of slots for scanning on the secondary advertising channel,
@@ -270,6 +270,16 @@
  * outside the ISR.
  */
 #define CFG_BLE_USER_FIFO_SIZE                          (1024)
+
+/**
+ * If 1, Peripheral Preferred Connection Parameters Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_PERIPH_PREF_CONN_PARAM_CHARACTERISTIC   (0)
+   
+/**
+ * If 1, Encrypted Key Material Characteristic is added in GAP service.
+ */
+#define CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC   (0)
 
 /**
  * Number of allocated memory blocks used for packet allocation.

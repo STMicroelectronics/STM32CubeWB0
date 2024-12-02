@@ -170,7 +170,7 @@
   * available RAM.
   */
 #if !defined (CFG_NUM_RADIO_TASKS)
-#define  CFG_NUM_RADIO_TASKS (6)
+#define  CFG_NUM_RADIO_TASKS (4)
 #endif /* CFG_NUM_RADIO_TASKS */
 
 /* ########################### Radio Configuration ######################### */

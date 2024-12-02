@@ -562,9 +562,6 @@ void APP_BLE_Init(void)
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
 
-  /* Need to call stack process at least once. */
-  BLEStack_Process_Schedule();
-
   /**
   * Initialization of the BLE App Context
   */
@@ -759,7 +756,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
       default:
         /* USER CODE BEGIN SUBEVENT_DEFAULT */
-
+        APP_DBG_MSG("HCI_LE_META_EVT: 0x%02X\n", p_meta_evt->subevent);
         /* USER CODE END SUBEVENT_DEFAULT */
         break;
       }
@@ -883,12 +880,38 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
         break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+          
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
 
         /* USER CODE END EVT_VENDOR_1 */
       default:
         /* USER CODE BEGIN EVT_VENDOR_DEFAULT */
-
+        APP_DBG_MSG("HCI_VENDOR_EVT: 0x%04X\n", p_blecore_evt->ecode);
         /* USER CODE END EVT_VENDOR_DEFAULT */
         break;
       }
@@ -913,7 +936,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
   default:
     /* USER CODE BEGIN ECODE_DEFAULT*/
-
+    APP_DBG_MSG("HCI_EVENT: 0x%02X\n", p_event_pckt->evt);
     /* USER CODE END ECODE_DEFAULT*/
     break;
   }
@@ -1229,43 +1252,7 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       }
       break;
     }/* PROC_GAP_PERIPH_ADVERTISE_STOP */
-    case PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE:
-    {
-      Advertising_Set_Parameters_t Advertising_Set_Parameters = {0};
 
-      /* Disable advertising */ //TBR??? Do we need to disable advertising, set advertising data and then enable advertising?
-      status = aci_gap_set_advertising_enable(DISABLE, 0, NULL);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
-        APP_DBG_MSG("Disable advertising - fail, result: 0x%02X\n",status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Disable advertising - Success\n");
-      }
-      /* Set advertising data */
-      status = aci_gap_set_advertising_data(0, ADV_COMPLETE_DATA, sizeof(a_AdvData), (uint8_t*) a_AdvData);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        APP_DBG_MSG("==>> aci_gap_set_advertising_data Failed, result: 0x%02X\n", status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Success: aci_gap_set_advertising_data\n");
-      }
-      /* Enable advertising */
-      status = aci_gap_set_advertising_enable(ENABLE, 1, &Advertising_Set_Parameters);
-      if (status != BLE_STATUS_SUCCESS)
-      {
-        APP_DBG_MSG("==>> aci_gap_set_advertising_enable Failed, result: 0x%02X\n", status);
-      }
-      else
-      {
-        APP_DBG_MSG("==>> Success: aci_gap_set_advertising_enable\n");
-      }
-      break;
-    }/* PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE */
     case PROC_GAP_PERIPH_CONN_PARAM_UPDATE:
     {
        status = aci_l2cap_connection_parameter_update_req(

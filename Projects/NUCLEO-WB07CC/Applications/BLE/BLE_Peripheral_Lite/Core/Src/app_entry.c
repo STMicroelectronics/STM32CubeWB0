@@ -21,7 +21,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "app_common.h"
 #include "main.h"
-#include "stm32_seq.h"
 #include "app_ble.h"
 #include "hw_rng.h"
 #include "hw_aes.h"
@@ -33,7 +32,6 @@
 #include "stm32_lpm_if.h"
 #endif /* CFG_LPM_SUPPORTED */
 #include "app_debug.h"
-#include "app_ble.h"
 
 /* Private includes -----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -48,17 +46,17 @@
 
 /* Private defines -----------------------------------------------------------*/
 
-/* USER CODE BEGIN PD */
-
-/* Section specific to button management using UART */
-#define C_SIZE_CMD_STRING       256U
-
 #if (CFG_LPM_SUPPORTED == 1)
 #define ATOMIC_SECTION_BEGIN() uint32_t uwPRIMASK_Bit = __get_PRIMASK(); \
                                 __disable_irq(); \
 /* Must be called in the same or in a lower scope of ATOMIC_SECTION_BEGIN */
 #define ATOMIC_SECTION_END() __set_PRIMASK(uwPRIMASK_Bit)
 #endif /* CFG_LPM_SUPPORTED */
+
+/* USER CODE BEGIN PD */
+
+/* Section specific to button management using UART */
+#define C_SIZE_CMD_STRING       256U
                                   
 /* USER CODE END PD */
 
@@ -80,14 +78,14 @@
 /* USER CODE END GV */
 
 /* Private functions prototypes-----------------------------------------------*/
+#if (CFG_LPM_SUPPORTED == 1)
+static void Enter_LowPowerMode(void);
+#endif /* CFG_LPM_SUPPORTED */
 
 /* USER CODE BEGIN PFP */
 #if (CFG_LED_SUPPORTED == 1)
 static void Led_Init(void);
 #endif
-#if (CFG_LPM_SUPPORTED == 1)
-static void PERIPHERAL_LITE_SERVER_Enter_LowPowerMode(void); 
-#endif /* CFG_LPM_SUPPORTED */
 /* USER CODE END PFP */
 
 /* External variables --------------------------------------------------------*/
@@ -102,15 +100,15 @@ uint32_t MX_APPE_Init(void *p_param)
 {
 
   UNUSED(p_param);
-  
+
   APP_DEBUG_SIGNAL_SET(APP_APPE_INIT);
-  
+
 #if (CFG_DEBUG_APP_ADV_TRACE != 0)
   UTIL_ADV_TRACE_Init();
   UTIL_ADV_TRACE_SetVerboseLevel(VLEVEL_L); /* functional traces*/
   UTIL_ADV_TRACE_SetRegion(~0x0);
 #endif
-  
+
   /* USER CODE BEGIN APPE_Init_1 */
 #if (CFG_LED_SUPPORTED == 1)
   Led_Init();
@@ -130,23 +128,22 @@ uint32_t MX_APPE_Init(void *p_param)
 #endif  
     
   /* USER CODE END APPE_Init_1 */
-  
+
   if (HW_RNG_Init() != HW_RNG_SUCCESS)
   {
     Error_Handler();
   }
-  
+
   /* Init the AES block */
   HW_AES_Init();
   HW_PKA_Init();
-
   APP_BLE_Init();
 
 /* USER CODE BEGIN APPE_Init_2 */
   
 /* USER CODE END APPE_Init_2 */
   APP_DEBUG_SIGNAL_RESET(APP_APPE_INIT);
-  return STM32_BLE_SUCCESS;
+  return BLE_STATUS_SUCCESS;
 }
 
 /* USER CODE BEGIN FD */
@@ -193,7 +190,7 @@ static PowerSaveLevels App_PowerSaveLevel_Check(void)
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
   
   /* USER CODE END App_PowerSaveLevel_Check_1 */
-  
+
   return output_level;
 }
 #endif
@@ -223,26 +220,22 @@ static void Led_Init( void )
 void MX_APPE_Process(void)
 {
   /* USER CODE BEGIN MX_APPE_Process_1 */
-  VTimer_Process(); 
+  
   /* USER CODE END MX_APPE_Process_1 */
- 
-  /* USER CODE BEGIN MX_APPE_Process_2 */
+  VTimer_Process();
+
   BLEStack_Process();
-  /* USER CODE END MX_APPE_Process_2 */
-  
-  /* USER CODE BEGIN MX_APPE_Process_3 */
+
   NVM_Process();
-  /* USER CODE END MX_APPE_Process_3 */
-  
-  /* USER CODE BEGIN MX_APPE_Process_4 */
-  PERIPHERAL_LITE_SERVER_Process();
-  /* USER CODE END MX_APPE_Process_4 */
-  
-  /* USER CODE BEGIN MX_APPE_Process_5 */
+
+  SERVICE_APP_Process();
 #if (CFG_LPM_SUPPORTED == 1)
-  PERIPHERAL_LITE_SERVER_Enter_LowPowerMode();
+  Enter_LowPowerMode();
 #endif /* CFG_LPM_SUPPORTED */
-  /* USER CODE END MX_APPE_Process_5 */
+
+  /* USER CODE BEGIN MX_APPE_Process_2 */
+  
+  /* USER CODE END MX_APPE_Process_2 */
 }
 
 #if (CFG_LPM_SUPPORTED == 1)
@@ -266,13 +259,23 @@ static void sleep(void)
 /**
   * @brief  This function configures the device in DEEPSTOP mode with the low
   *         speed oscillator enabled.
-  * @note   At waekup the hardware resources located in the VDD12i power domain 
+  * @note   At waekup the hardware resources located in the VDD12i power domain
   *         are reset and the CPU reboots.
   * @param  None
   * @retval None
   */
 static void deepstopTimer(void)
 {
+   /* To consume additional CSTACK location */
+   volatile uint32_t dummy[15];
+   uint8_t i;
+
+   for (i=0; i<10; i++)
+   {
+     dummy[i] = 0;
+     __NOP();
+   }
+
    /* Low Power sequence */
    ATOMIC_SECTION_BEGIN();
    PWR_EnterStopMode();
@@ -283,13 +286,23 @@ static void deepstopTimer(void)
 /**
   * @brief  This function configures the device in DEEPSTOP mode with the low
   *         speed oscillator disabled.
-  * @note   At waekup the hardware resources located in the VDD12i power domain 
+  * @note   At waekup the hardware resources located in the VDD12i power domain
   *         are reset and the CPU reboots.
   * @param  None
   * @retval None
   */
 static void deepstop(void)
 {
+   /* To consume additional CSTACK location */
+   volatile uint32_t dummy[15];
+   uint8_t i;
+
+   for (i=0; i<10; i++)
+   {
+     dummy[i] = 0;
+     __NOP();
+   }
+
   /* Low Power sequence */
    ATOMIC_SECTION_BEGIN();
    PWR_EnterOffMode();
@@ -297,18 +310,18 @@ static void deepstop(void)
    ATOMIC_SECTION_END();
 }
 
-static void PERIPHERAL_LITE_SERVER_Enter_LowPowerMode(void)
+static void Enter_LowPowerMode(void)
 {
   PowerSaveLevels app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
-  
+
   if ((BLE_STACK_SleepCheck() != POWER_SAVE_LEVEL_RUNNING) &&
-      ((app_powerSave_level = App_PowerSaveLevel_Check()) != POWER_SAVE_LEVEL_RUNNING)) 
-  {  
+      ((app_powerSave_level = App_PowerSaveLevel_Check()) != POWER_SAVE_LEVEL_RUNNING))
+  {
     vtimer_powerSave_level = HAL_RADIO_TIMER_PowerSaveLevelCheck();
     pka_level = (PowerSaveLevels) HW_PKA_PowerSaveLevelCheck();
     final_level = (PowerSaveLevels)MIN(vtimer_powerSave_level, app_powerSave_level);
     final_level = (PowerSaveLevels)MIN(pka_level, final_level);
-     
+
     switch(final_level)
     {
     case POWER_SAVE_LEVEL_RUNNING:
@@ -351,4 +364,3 @@ void HAL_GPIO_EXTI_Callback(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin)
 #endif /* (CFG_BUTTON_SUPPORTED == 1) */
 
 /* USER CODE END FD_WRAP_FUNCTIONS */
-

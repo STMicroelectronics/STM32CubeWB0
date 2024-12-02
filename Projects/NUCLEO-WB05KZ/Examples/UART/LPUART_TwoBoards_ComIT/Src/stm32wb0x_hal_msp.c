@@ -67,6 +67,8 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -114,12 +116,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Alternate = GPIO_AF3_LPUART1;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    LL_PWR_EnableGPIOPullUp(LL_PWR_GPIO_B, LL_PWR_GPIO_BIT_7|LL_PWR_GPIO_BIT_6);
+
     /* LPUART1 interrupt Init */
     HAL_NVIC_SetPriority(LPUART1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(LPUART1_IRQn);
   /* USER CODE BEGIN LPUART1_MspInit 1 */
 
   /* USER CODE END LPUART1_MspInit 1 */
+
   }
 
 }

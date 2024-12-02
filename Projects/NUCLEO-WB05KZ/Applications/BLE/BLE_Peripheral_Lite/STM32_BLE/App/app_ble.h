@@ -34,7 +34,7 @@ extern "C" {
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
-  
+
 typedef enum
 {
   APP_BLE_IDLE,
@@ -43,7 +43,9 @@ typedef enum
   APP_BLE_CONNECTED_CLIENT,
   APP_BLE_ADV_FAST,
   APP_BLE_ADV_LP,
+/* USER CODE BEGIN ConnStatus_t */
 
+/* USER CODE END ConnStatus_t */
 } APP_BLE_ConnStatus_t;
 
 typedef enum
@@ -63,6 +65,7 @@ typedef enum
   PROC_GAP_PERIPH_ADVERTISE_STOP,
   PROC_GAP_PERIPH_ADVERTISE_DATA_UPDATE,
   PROC_GAP_PERIPH_CONN_PARAM_UPDATE,
+  PROC_GAP_PERIPH_CONN_TERMINATE,
 
   PROC_GAP_PERIPH_SET_BROADCAST_MODE,
   /* USER CODE BEGIN ProcGapPeripheralId_t */
@@ -184,17 +187,15 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
-/* USER CODE BEGIN EF */
-//void BLEStack_Process_Schedule(void);
-//void VTimer_Process(void);
-//void VTimer_Process_Schedule(void);
-//void NVM_Process(void);
-//void NVM_Process_Schedule(void);
+
 void BLEEVT_App_Notification(const hci_pckt *hci_pckt);
-void VTimer_Process(void); 
+void VTimer_Process(void);
 void BLEStack_Process(void);
-void NVM_Process(void ); 
-void PERIPHERAL_LITE_SERVER_Process(void);
+void NVM_Process(void );
+void SERVICE_APP_Process(void);
+
+/* USER CODE BEGIN EF */
+
 /* USER CODE END EF */
 
 #ifdef __cplusplus

@@ -688,8 +688,8 @@
  * @name Authentication requirements
  * @{
  */
-#define BONDING                (0x01)
-#define NO_BONDING         (0x00)
+#define BONDING                                                 0x01
+#define NO_BONDING                                              0x00
 /**
  * @}
  */

@@ -70,6 +70,8 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -105,6 +107,8 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF0_USART1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_PWR_EnableGPIOPullUp(LL_PWR_GPIO_A, LL_PWR_GPIO_BIT_9|LL_PWR_GPIO_BIT_8);
 
     /* USART1 DMA Init */
     /* USART1_RX Init */
@@ -147,6 +151,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
   /* USER CODE BEGIN USART1_MspInit 1 */
 
   /* USER CODE END USART1_MspInit 1 */
+
   }
 
 }

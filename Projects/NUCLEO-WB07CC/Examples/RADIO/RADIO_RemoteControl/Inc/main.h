@@ -30,7 +30,7 @@ extern "C" {
 #include "stm32wb0x_hal.h"
 
 /* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */  
+/* USER CODE BEGIN Includes */
 #include "stm32wb0x_nucleo.h"
 #include <stdio.h>  
 /* USER CODE END Includes */

@@ -340,14 +340,6 @@
           <state>$PROJ_DIR$/../STM32_BLE/Target</state>
           <state>$PROJ_DIR$/../System/Config/Debug_GPIO</state>
           <state>$PROJ_DIR$/../System/Interfaces</state>
-          <state>$PROJ_DIR$/../System/Modules</state>
-          <state>$PROJ_DIR$/../System/Modules/Flash</state>
-          <state>$PROJ_DIR$/../System/Modules/NVMDB/Inc</state>
-          <state>$PROJ_DIR$/../System/Modules/PKAMGR/Inc</state>
-          <state>$PROJ_DIR$/../System/Modules/Profiles/Inc</state>
-          <state>$PROJ_DIR$/../System/Modules/RADIO_utils/Inc</state>
-          <state>$PROJ_DIR$/../System/Modules/RTDebug</state>
-          <state>$PROJ_DIR$/../System/Startup</state>
           <state>$PROJ_DIR$/../../../../../../Utilities/trace/adv_trace</state>
           <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc</state>
           <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy</state>
@@ -368,6 +360,15 @@
           <state>$PROJ_DIR$/../../../../../../Middlewares/ST/STM32_BLE/stack/include</state>
           <state>$PROJ_DIR$/../../../../../../Drivers/CMSIS/Include</state>
           <state>$PROJ_DIR$/../../../../../../Drivers/BSP/STM32WB0x-nucleo</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RTDebug</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Profiles/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Startup</state>
         </option>
         <option>
           <name>CCStdIncCheck</name>
@@ -1130,97 +1131,10 @@
       <group>
         <name>System</name>
         <group>
-          <name>Startup</name>
-          <file>
-            <name>$PROJ_DIR$/../System/Startup/cpu_context_switch.s</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Startup/device_context_switch.c</name>
-          </file>
-        </group>
-        <group>
           <name>Interfaces</name>
-          <file>
-            <name>$PROJ_DIR$/../System/Interfaces/stm32_lpm_if.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Interfaces/cryptolib_hw_aes.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Interfaces/hw_aes.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Interfaces/hw_pka.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Interfaces/hw_rng.c</name>
-          </file>
           <file>
             <name>$PROJ_DIR$/../System/Interfaces/usart_if.c</name>
           </file>
-        </group>
-        <group>
-          <name>Modules</name>
-          <file>
-            <name>$PROJ_DIR$/../System/Modules/blue_unit_conversion.s</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Modules/osal_memcpy.s</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Modules/miscutil.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Modules/osal.c</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$/../System/Modules/stm_list.c</name>
-          </file>
-          <group>
-            <name>PKAMGR</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/PKAMGR/Src/pka_manager.c</name>
-            </file>
-          </group>
-          <group>
-            <name>RADIO_utils</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/RADIO_utils/Src/RADIO_utils.c</name>
-            </file>
-          </group>
-          <group>
-            <name>RTDebug</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/RTDebug/RTDebug.c</name>
-            </file>
-          </group>
-          <group>
-            <name>Profiles</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/Profiles/Src/gap_profile.c</name>
-            </file>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/Profiles/Src/gatt_profile.c</name>
-            </file>
-          </group>
-          <group>
-            <name>Flash</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/Flash/flash_driver.c</name>
-            </file>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/Flash/flash_manager.c</name>
-            </file>
-          </group>
-          <group>
-            <name>NVMDB</name>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/NVMDB/Src/nvm_db.c</name>
-            </file>
-            <file>
-              <name>$PROJ_DIR$/../System/Modules/NVMDB/Src/nvm_db_conf.c</name>
-            </file>
-          </group>
         </group>
         <group>
           <name>Config</name>
@@ -1323,12 +1237,6 @@
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rng.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</name>
-      </file>
-      <file>
         <name>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart.c</name>
       </file>
       <file>
@@ -1377,6 +1285,102 @@
     <file>
       <name>$PROJ_DIR$/../../../../../../Utilities/lpm/tiny_lpm/stm32_lpm.c</name>
     </file>
+  </group>
+  <group>
+    <name>Common</name>
+    <group>
+      <name>BLE</name>
+      <group>
+        <name>Interface</name>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces/stm32_lpm_if.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces/hw_rng.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces/hw_pka.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces/hw_aes.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces/cryptolib_hw_aes.c</name>
+        </file>
+      </group>
+      <group>
+        <name>Modules</name>
+        <group>
+          <name>RTDebug</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RTDebug/RTDebug.c</name>
+          </file>
+        </group>
+        <group>
+          <name>RADIO_utils</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Src/RADIO_utils.c</name>
+          </file>
+        </group>
+        <group>
+          <name>Profiles</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Profiles/Src/gatt_profile.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Profiles/Src/gap_profile.c</name>
+          </file>
+        </group>
+        <group>
+          <name>PKAMGR</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/PKAMGR/Src/pka_manager.c</name>
+          </file>
+        </group>
+        <group>
+          <name>NVMDB</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/NVMDB/Src/nvm_db_conf.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/NVMDB/Src/nvm_db.c</name>
+          </file>
+        </group>
+        <group>
+          <name>Flash</name>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash/flash_manager.c</name>
+          </file>
+          <file>
+            <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash/flash_driver.c</name>
+          </file>
+        </group>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/stm_list.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/miscutil.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</name>
+        </file>
+      </group>
+      <group>
+        <name>Startup</name>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Startup/device_context_switch.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Startup/cpu_context_switch.s</name>
+        </file>
+      </group>
+    </group>
   </group>
 </project>
 

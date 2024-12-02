@@ -35,6 +35,8 @@ In order to make the program work, you must do the following:
 
 For more info on how to send commands from the PAwR broadcaster, see the related documentation.
 
+When not synchronized with Access Point, after reset/power-up or after a loss of synchronization, the board is in advertising state for a limited amount of time (15 minutes). After exiting advertising state, press button 1 to start advertising again.
+
 ### __Notes__
                                             
  - On Keil framework, the following compilation setting are applied:

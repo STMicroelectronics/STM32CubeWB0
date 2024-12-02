@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_transparentmode_c_o-application-description"><strong>BLE_TransparentMode_C_O
+        Application Description</strong></h2>
+        <p>How to use Bluetooth LE stack running on STM32WB0 device
+        configured as a network coprocessor controller only (UART
+        mode).</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li><p>This example runs on STM32WB0 devices.</p>
+        <p>Connect the Nucleo Board to your PC with a USB cable type A
+        to USB type C to ST-LINK USB connector.</p></li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it ?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        <li>Run the example</li>
+        </ul>
+        <p>To test the BLE Transparent_C_O Mode application, open the
+        STM32CubeMonitor-RF PC tool:</p>
+        <ul>
+        <li>Open the COM port associated to the board running the
+        BLE_TransparentMode_C_O application</li>
+        <li>You can send all the ACI commands supported by the Bluetooth
+        LE stack, either standard, such as HCI_RESET, or proprietary,
+        such as ACI_GAP_* and and ACI_GATT_* commands.</li>
+        </ul>
+        <h3
+        id="ble_transparentmode_c_o-bluetooth-le-configuration">BLE_TransparentMode_C_O
+        Bluetooth LE configuration</h3>
+        <ul>
+        <li>BLE_TransparentMode_C_O application is configured in order
+        to support the controller only mode for interacting with an
+        external microcontroller providing the Bluetooth LE Host stack
+        features. The BLESTACK_CONTROLLER_ONLY=1 option is added on
+        project preproprocessor options and refer to
+        stm32wb0x_ble_stack_controller_only.a library.</li>
+        <li>Refer to the BLE_TransparentMode_C_O_conf.h file, BLE Stack
+        modularity options section for getting the specific Bluetooth LE
+        features supported by the BLE_TransparentMode_C_O
+        application.</li>
+        <li>Refer to the BLE_TransparentMode_C_O_conf.h file, BLE Stack
+        initialization parameters section for getting the specific
+        Bluetooth LE stack initialization parameters used by the
+        BLE_TransparentMode_C_O application.</li>
+        <li>Refer to the BLE_TransparentMode_C_O32wb0x_hal_conf.h file,
+        CFG_NUM_RADIO_TASKS define for getting the Maximum number of
+        simultaneous radio tasks supported by the
+        BLE_TransparentMode_C_O application.</li>
+        <li>NOTE: BLE Stack modularity options, Bluetooth LE stack
+        initialization parameters and CFG_NUM_RADIO_TASKS values can be
+        configured through the STM32CubeMX tool when defining an
+        STM32_BLE application (STM32WB0 series Bluetooth LE
+        middleware)</li>
+        </ul>
+        <h3
+        id="ble_transparentmode_c_o-uart-configuration">BLE_TransparentMode_C_O
+        UART configuration</h3>
+        <ul>
+        <li>Baudrate: 921600</li>
+        <li>Word Length: 8</li>
+        <li>Stop bits: 1</li>
+        <li>Parity: None</li>
+        <li>Mode: TX, RX</li>
+        <li>Flow Control: None</li>
+        <li>NOTE: These parameters are defined on
+        MX_USART1_UART_Init(void) function on main.c file.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

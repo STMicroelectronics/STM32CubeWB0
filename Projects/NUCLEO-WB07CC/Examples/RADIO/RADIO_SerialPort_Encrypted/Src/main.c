@@ -31,7 +31,7 @@ typedef struct circular_fifo_s {
   uint16_t tail_index;
   uint8_t curr_size;
   uint8_t max_size;
-  uint8_t elem_size;
+  uint16_t elem_size;
   uint8_t *buffer;
 } circular_fifo_t;
 
@@ -99,7 +99,7 @@ static void MX_GPIO_Init(void);
 static void MX_RADIO_Init(void);
 static void MX_RADIO_TIMER_Init(void);
 /* USER CODE BEGIN PFP */
-void fifo_init(circular_fifo_t *fifo, uint8_t *buffer, uint8_t size, uint8_t elem_size);
+void fifo_init(circular_fifo_t *fifo, uint8_t *buffer, uint8_t size, uint16_t elem_size);
 uint8_t fifo_size(circular_fifo_t *fifo);
 uint8_t fifo_put(circular_fifo_t *fifo, uint8_t size, uint8_t offset, uint8_t *elem);
 uint8_t fifo_get(circular_fifo_t *fifo, uint8_t *elem);
@@ -134,7 +134,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
@@ -538,7 +538,7 @@ void HAL_RADIO_CallbackTxDone(void)
   /* USER CODE END HAL_RADIO_CallbackTxDone 1 */
 }
 
-void fifo_init(circular_fifo_t *fifo, uint8_t *buffer, uint8_t size, uint8_t elem_size)
+void fifo_init(circular_fifo_t *fifo, uint8_t *buffer, uint8_t size, uint16_t elem_size)
 {
   fifo->tail_index = fifo->head_index = 0;
   fifo->curr_size = 0;
@@ -558,7 +558,7 @@ uint8_t fifo_put(circular_fifo_t *fifo, uint8_t size, uint8_t offset, uint8_t *e
   {
     //printf("PUT: Curr Size [%d], Head Index [%d], Tail Index [%d] \n", fifo->curr_size, fifo->head_index, fifo->tail_index);
     /*copy element*/
-    uint8_t fifo_ind = fifo->tail_index*fifo->elem_size;
+    uint16_t fifo_ind = fifo->tail_index*fifo->elem_size;
     for (uint8_t i = 0; i<size; i++)
     {
       fifo->buffer[fifo_ind] = elem[i+offset];
@@ -586,7 +586,7 @@ uint8_t fifo_get(circular_fifo_t *fifo, uint8_t *elem)
   //printf("GET: Curr Size [%d], Head Index [%d], Tail Index [%d] \n", fifo->curr_size, fifo->head_index, fifo->tail_index);
   if (fifo->curr_size > 0)
   {
-    uint8_t fifo_ind = fifo->head_index * fifo->elem_size;
+    uint16_t fifo_ind = fifo->head_index * fifo->elem_size;
     for (uint8_t i = 0; i < fifo->elem_size; i++)
     {
       elem[i] = fifo->buffer[fifo_ind];
@@ -611,7 +611,7 @@ uint8_t fifo_get_elem_size(circular_fifo_t *fifo, uint8_t size, uint8_t *elem)
   //printf("GET: Curr Size [%d], Head Index [%d], Tail Index [%d] \n", fifo->curr_size, fifo->head_index, fifo->tail_index);
   if (fifo->curr_size > 0)
   {
-    uint8_t fifo_ind = fifo->head_index * fifo->elem_size;
+    uint16_t fifo_ind = fifo->head_index * fifo->elem_size;
     for (uint8_t i = 0; i < size; i++)
     {
       elem[i] = fifo->buffer[fifo_ind];

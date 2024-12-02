@@ -39,7 +39,6 @@ extern "C" {
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
-#define STM32_BLE_SUCCESS 0u
 
 /* USER CODE BEGIN EC */
 

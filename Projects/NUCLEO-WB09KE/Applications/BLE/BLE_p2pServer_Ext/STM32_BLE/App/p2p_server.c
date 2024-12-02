@@ -97,6 +97,10 @@ static P2P_SERVER_Context_t P2P_SERVER_Context;
 BLE_GATT_SRV_CCCD_DECLARE(switch_c, CFG_BLE_NUM_RADIO_TASKS, BLE_GATT_SRV_CCCD_PERM_DEFAULT,
                           BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 uint8_t led_c_val_buffer[LED_C_SIZE];
 
 static ble_gatt_val_buffer_def_t led_c_val_buffer_def = {

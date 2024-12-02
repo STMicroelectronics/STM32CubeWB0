@@ -117,11 +117,14 @@
 					<Key>ST-LINKIII-KEIL_SWO</Key>
 					<Name>-U-O142 -O206 -SF4000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P1 -TO131090 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO7 -FD20000000 -FC8000 -FN1 -FF0STM32WB0x_512K -FS010040000 -FL080000 -FP0($$Device:STM32WB09KEVxT$CMSIS\Flash\STM32WB0x_512K.FLM)</Name>
 				</SetRegEntry>
-				<SetRegEntry>
-					<Number>0</Number>
-					<Key />
-					<Name />
-				</SetRegEntry>
+				
+    <SetRegEntry>
+          <Number>0</Number>
+          <Key>UL2V8M</Key>
+          <Name>UL2V8M(-S0 -C0 -P0 -FD20000000 -FC1000)</Name>
+        </SetRegEntry>
+  
+
 			</TargetDriverDllRegistry>
 			<Breakpoint />
 			<Tracepoint>

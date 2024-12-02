@@ -142,7 +142,7 @@ typedef struct
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MAX_NUM_ESL_DEVICES     4
+
 /* USER CODE END PD */
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
@@ -496,11 +496,6 @@ static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
   BLE_STACK_Tick();
-  
-  if(BLE_STACK_SleepCheck() == 0)
-  {  
-    BLEStack_Process_Schedule();
-  }
   APP_DEBUG_SIGNAL_RESET(APP_STACK_PROCESS);
 }
 
@@ -524,24 +519,16 @@ void NVM_Process_Schedule(void)
   UTIL_SEQ_SetTask( 1U << CFG_TASK_NVM, CFG_SEQ_PRIO_1);
 }
 
-/* Function called from PKA_IRQHandler() context. */
-void PKAMGR_IRQCallback(void)
-{
-  BLEStack_Process_Schedule();
-}
-
 /* Function called from RADIO_TIMER_TXRX_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_TxRxWakeUpCallback(void)
 {
-  VTimer_Process_Schedule();  
-  BLEStack_Process_Schedule();
+  VTimer_Process_Schedule();
 }
 
 /* Function called from RADIO_TIMER_CPU_WKUP_IRQHandler() context. */
 void HAL_RADIO_TIMER_CpuWakeUpCallback(void)
 {
-  VTimer_Process_Schedule();  
-  BLEStack_Process_Schedule();
+  VTimer_Process_Schedule();
 }
 
 /* Function called from RADIO_TXRX_IRQHandler() context. */
@@ -549,9 +536,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 {
   BLE_STACK_RadioHandler(flags);
   
-  BLEStack_Process_Schedule();
   VTimer_Process_Schedule();
-  NVM_Process_Schedule(); 
+  NVM_Process_Schedule();
+}
+
+void BLE_STACK_ProcessRequest(void)
+{
+  BLEStack_Process_Schedule();
 }
 
 void UART_CMD_ProcessRequestCB(void)
@@ -574,9 +565,6 @@ void APP_BLE_Init(void)
   
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
-  
-  /* Need to call stack process at least once. */
-  BLEStack_Process_Schedule();
   
   /* USER CODE BEGIN APP_BLE_Init_2 */
   UTIL_SEQ_RegTask(1U << CFG_TASK_UART_CMD_PROCESS, UTIL_SEQ_RFU, UART_CMD_Process);
@@ -951,6 +939,32 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
         break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+          
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+          
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
         
       case ACI_HAL_FW_ERROR_VSEVT_CODE:
@@ -1368,7 +1382,12 @@ static void start_periodic_adv(void)
     APP_DBG_MSG("==>> Success: hci_le_set_extended_advertising_enable\n");
   }
   
-  status = hci_le_set_extended_advertising_enable(HCI_DISABLE, 1, &advertising_set_parameters);  
+  status = hci_le_set_extended_advertising_enable(HCI_DISABLE, 1, &advertising_set_parameters); 
+  
+  if (status != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("==>> hci_le_set_extended_advertising_enable - fail, result: 0x%02X\n", status);
+  }
 }
 
 static void start_auto_connection(void)

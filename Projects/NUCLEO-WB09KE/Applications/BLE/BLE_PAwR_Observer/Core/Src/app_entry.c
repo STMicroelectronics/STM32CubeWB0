@@ -98,12 +98,8 @@ static void Led_Init(void);
 static void Button_Init(void);
 static void Button_TriggerActions(void *arg);
 #endif
-#if ESL_BOARD == 1
-static void ExtFlashInit(void);
-#endif
 /* Section specific to button management using UART */
 static void RxUART_Init(void);
-//static void RxCpltCallback(uint8_t * pRxDataBuff, uint16_t nDataSize);
 static void UartCmdExecute(void);
 /* USER CODE END PFP */
 
@@ -377,14 +373,6 @@ static void UartCmdExecute(void)
     APP_DBG_MSG("NOT RECOGNIZED COMMAND : %s\n", CommandString);
   }
 }
-
-#if ESL_BOARD == 1
-static void ExtFlashInit(void)
-{
-  W25Q_Reset();        
-  W25Q_PowerDown();  
-}
-#endif
 
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 

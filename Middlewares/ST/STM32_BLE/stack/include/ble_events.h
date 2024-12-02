@@ -1944,8 +1944,20 @@ typedef PACKED(struct) hci_le_transmit_power_reporting_event_rp0_s {
 } hci_le_transmit_power_reporting_event_rp0;
 
 /**
- * The HCI_LE_BIG_Sync_Established event indicates that the
- * HCI_LE_BIG_Create_Sync command has completed.
+ * The HCI_LE_BIGInfo_Advertising_Report event indicates that the Controller has
+ * received an Advertising PDU that contained a BIGInfo field. If the Controller
+ * also generates an HCI_LE_Periodic_Advertising_Report event, the
+ * HCI_LE_BIGInfo_Advertising_Report event shall immediately follow that event.
+ * An HCI_LE_BIGInfo_Advertising_Report event shall be generated even if the
+ * Controller is already synchronized to the BIG. The Sync_Handle parameter
+ * shall identify the periodic advertising train containing the BIGInfo field
+ * and shall be the same as the corresponding field in the
+ * HCI_LE_Periodic_Advertising_Report event if one is generated. The Num_BIS,
+ * NSE, ISO_Interval, BN, PTO, IRC, Max_PDU, SDU_Interval, Max_SDU, PHY, and
+ * Framing parameters correspond to the associated fields in the BIGInfo field
+ * of the Advertising PDU. If the BIGInfo field indicates that the corresponding
+ * BIG is encrypted, the Encryption parameter shall be set to 0x01. Otherwise,
+ * the Encryption parameter shall be set to 0x00.
  */
 typedef PACKED(struct) hci_le_biginfo_advertising_report_event_rp0_s {
 /**

@@ -40,10 +40,10 @@
 /*#define HAL_I2S_MODULE_ENABLED   */
 /*#define HAL_IRDA_MODULE_ENABLED   */
 /*#define HAL_IWDG_MODULE_ENABLED   */
-#define HAL_PKA_MODULE_ENABLED
-#define HAL_RADIO_MODULE_ENABLED
-#define HAL_RADIO_TIMER_MODULE_ENABLED
-#define HAL_RNG_MODULE_ENABLED
+/*#define HAL_PKA_MODULE_ENABLED   */
+/*#define HAL_RADIO_MODULE_ENABLED   */
+/*#define HAL_RADIO_TIMER_MODULE_ENABLED   */
+/*#define HAL_RNG_MODULE_ENABLED   */
 /*#define HAL_RTC_MODULE_ENABLED   */
 /*#define HAL_SMARTCARD_MODULE_ENABLED   */
 /*#define HAL_SMBUS_MODULE_ENABLED   */
@@ -56,7 +56,7 @@
 #define HAL_FLASH_MODULE_ENABLED
 #define HAL_GPIO_MODULE_ENABLED
 #define HAL_PWR_MODULE_ENABLED
-#define HAL_RCC_MODULE_ENABLED  
+#define HAL_RCC_MODULE_ENABLED
 
 #define USE_HAL_ADC_REGISTER_CALLBACKS       0u
 #define USE_HAL_I2C_REGISTER_CALLBACKS       0u
@@ -77,6 +77,7 @@
   *        This value is used by the RCC HAL module to compute the system frequency
   *        (when HSE is used as system clock source, directly or through the PLL).
   */
+
 #if !defined  (HSE_VALUE)
   #define HSE_VALUE    (32000000UL) /*!< Value of the External oscillator in Hz */
 #endif /* HSE_VALUE */
@@ -120,16 +121,14 @@
 #if !defined (RC64MPLL_VALUE)
   #define RC64MPLL_VALUE    (64000000UL) /*!< Value of the Internal oscillator in Hz*/
 #endif /* RC64MPLL_VALUE */
-   
-#if !defined  (LSE_STARTUP_TIMEOUT)
+
+#if !defined (LSE_STARTUP_TIMEOUT)
   #define LSE_STARTUP_TIMEOUT    (100UL)   /*!< Time out for LSE start up, in ms */
 #endif /* LSE_STARTUP_TIMEOUT */
-   
+
 #if !defined  (LSE_DRIVE_LEVEL)
-#define LSE_DRIVE_LEVEL    RCC_LSEDRIVE_MEDIUMLOW      /*!< Drive level for LSE oscillator. */
+#define LSE_DRIVE_LEVEL    RCC_LSEDRIVE_MEDIUMLOW     /*!< Drive level for LSE oscillator. */
 #endif /* LSE_DRIVE_LEVEL */
-
-
 
 /* ########################### System Configuration ######################### */
 /**
@@ -155,7 +154,6 @@
 
 #define USE_SPI_CRC                   0U
 
-
 /* ################ HSE Capacitor tuning configuration ###################### */
 /**
   * @brief Default value of the HSE capacitor tuning.
@@ -180,9 +178,6 @@
   * @brief This macro must be set to 0 when BLE stack is used. Set to 1 to use
   * radio proprietary protocol with action packets.
   */
-#if !defined (USE_RADIO_PROPRIETARY_DRIVER)
-#define USE_RADIO_PROPRIETARY_DRIVER  0U
-#endif /* USE_RADIO_PROPRIETARY_DRIVER */
 
 /* Includes ------------------------------------------------------------------*/
 /**

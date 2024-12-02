@@ -28,13 +28,13 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "cmsis_compiler.h"
-  
+
 /* definitions to be provided to "sequencer" utility */
 #include "stm32_mem.h"
 
 /* definition of NULL */
 #include "app_common.h"
-  
+
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */

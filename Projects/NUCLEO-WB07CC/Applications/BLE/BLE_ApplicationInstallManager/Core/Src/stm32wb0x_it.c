@@ -23,10 +23,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32wb0x_it.h"
-#include "hw_pka.h"
-#include "ble_stack.h"
-#include "miscutil.h"
-#include "stm32wb0x_ll_usart.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -63,7 +59,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern PKA_HandleTypeDef hpka;
+
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -146,133 +142,6 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32wb0x.s).                    */
 /******************************************************************************/
 
-/**
-  * @brief This function handles USART1 Interrupt.
-  */
-void USART1_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART1_IRQn 0 */
-  uint8_t read_data; 
-  
-  /* If the RX FIFO is Not Empty */
-  if(LL_USART_IsActiveFlag_RXNE(USART1) == 1) {
-    /* Read a byte from the RX FIFO */
-    read_data = LL_USART_ReceiveData8(USART1);
-    
-    /* Send the data received to the user RX callback */
-    UartRxCpltCallback(&read_data, 1);
-  }
-  /* USER CODE END USART1_IRQn 0 */
-  
-  /* USER CODE BEGIN USART1_IRQn 1 */
-  
-  /* USER CODE END USART1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles PKA global interrupt.
-  */
-void PKA_IRQHandler(void)
-{
-  /* USER CODE BEGIN PKA_IRQn 0 */
-
-  /* USER CODE END PKA_IRQn 0 */
-  
-  HAL_PKA_IRQHandler(&hpka);
-  
-  /* USER CODE BEGIN PKA_IRQn 1 */
-
-  /* USER CODE END PKA_IRQn 1 */
-}
-
-void RADIO_TIMER_TXRX_WKUP_IRQHandler(void)
-{
-  /* USER CODE BEGIN RADIO_TIMER_TXRX_WKUP_IRQn 0 */
-  
-  /* USER CODE END RADIO_TIMER_TXRX_WKUP_IRQn 0 */
-  
-  HAL_RADIO_TIMER_TXRX_WKUP_IRQHandler();
-
-  /* USER CODE BEGIN RADIO_TIMER_TXRX_WKUP_IRQn 1 */
-  
-  /* USER CODE END RADIO_TIMER_TXRX_WKUP_IRQn 1 */
-}
-
-/**
-  * @brief This function handles RADIO_TIMER_CPU_WKUP global interrupt.
-  */
-void RADIO_TIMER_CPU_WKUP_IRQHandler(void) 
-{
-  /* USER CODE BEGIN RADIO_TIMER_CPU_WKUP_IRQn 0 */
-
-  /* USER CODE END RADIO_TIMER_CPU_WKUP_IRQn 0 */
-
-  HAL_RADIO_TIMER_CPU_WKUP_IRQHandler();
-  
-  /* USER CODE BEGIN RADIO_TIMER_CPU_WKUP_IRQn 1 */
-
-  /* USER CODE END RADIO_TIMER_CPU_WKUP_IRQn 1 */
-
-}
-
-/**
-  * @brief This function handles RADIO_ERROR global interrupt.
-  */
-void RADIO_TIMER_ERROR_IRQHandler(void)
-{  
-  /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 0 */
-  
-  /* USER CODE END RADIO_TIMER_ERROR_IRQn 0 */
-
-  HAL_RADIO_TIMER_ERROR_IRQHandler();
-
-  /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 1 */
-
-  /* USER CODE END RADIO_TIMER_ERROR_IRQn 1 */
-}
-
-/**
-  * @brief This function handles RADIO_TXRX global interrupt.
-  */
-void RADIO_TXRX_IRQHandler(void)
-{  
-  /* USER CODE BEGIN RADIO_TXRX_IRQn 0 */
-  
-  /* USER CODE END RADIO_TXRX_IRQn 0 */
-  
-  HAL_RADIO_TXRX_IRQHandler();
-
-  /* USER CODE BEGIN RADIO_TXRX_IRQn 1 */
-  
-  /* USER CODE END RADIO_TXRX_IRQn 1 */  
-}
-
-/**
-  * @brief This function handles RADIO_TXRX_SEQ global interrupt.
-  */
- void RADIO_TXRX_SEQ_IRQHandler(void)
-{
-  /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 0 */
-
-  /* USER CODE END RADIO_TXRX_SEQ_IRQn 0 */
-  
-  HAL_RADIO_TXRX_SEQ_IRQHandler();
-  
-  /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 1 */
-
-  /* USER CODE END RADIO_TXRX_SEQ_IRQn 1 */
-}
-
-
 /* USER CODE BEGIN 1 */
-void GPIOA_IRQHandler(void)
-{
-  BSP_PB_IRQHandler(B1_GPIO_PORT, B1_PIN);
-}
 
-void GPIOB_IRQHandler(void)
-{
-  BSP_PB_IRQHandler(B2_GPIO_PORT, B2_PIN);
-  BSP_PB_IRQHandler(B3_GPIO_PORT, B3_PIN);
-}
 /* USER CODE END 1 */

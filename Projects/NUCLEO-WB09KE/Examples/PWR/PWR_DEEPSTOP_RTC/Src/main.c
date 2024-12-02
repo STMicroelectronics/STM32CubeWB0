@@ -97,7 +97,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 
-/* Configure the peripherals common clocks */
+  /* Configure the peripherals common clocks */
   PeriphCommonClock_Config();
 
   /* USER CODE BEGIN SysInit */
@@ -234,7 +234,18 @@ static void MX_RTC_Init(void)
   /* USER CODE END RTC_Init 0 */
 
   /* USER CODE BEGIN RTC_Init 1 */
+  /* RTC clock enable */
+  __HAL_RCC_RTC_CLK_ENABLE();
 
+  __HAL_RCC_CLEAR_IT(RCC_IT_RTCRSTRELRDY);
+  /* Force RTC peripheral reset */
+  __HAL_RCC_RTC_FORCE_RESET();
+  __HAL_RCC_RTC_RELEASE_RESET();
+  /* Check if RTC Reset Release flag interrupt occurred or not */
+  while(__HAL_RCC_GET_IT(RCC_IT_RTCRSTRELRDY) == 0)
+  {
+  }
+  __HAL_RCC_CLEAR_IT(RCC_IT_RTCRSTRELRDY);
   /* USER CODE END RTC_Init 1 */
 
   /** Initialize RTC Only

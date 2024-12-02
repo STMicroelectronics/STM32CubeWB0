@@ -106,8 +106,8 @@ keep {section TAG_OTA_END};
 *******************************************************************************/
 
 /*-Sizes-*/
-define symbol __ICFEDIT_size_cstack__ = 0x200;
-define symbol __ICFEDIT_size_heap__   = 0x400;
+define symbol __ICFEDIT_size_cstack__ = 0x400;
+define symbol __ICFEDIT_size_heap__   = 0x200;
 /**** End of ICF editor section. ###ICF###*/
 
 define block CSTACK    with alignment = 8, size = __ICFEDIT_size_cstack__   { };

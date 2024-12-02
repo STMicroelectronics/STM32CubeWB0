@@ -7,7 +7,7 @@
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2023 STMicroelectronics.
+  * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -67,6 +67,8 @@ void HAL_MspInit(void)
   
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -100,17 +102,21 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     */
     GPIO_InitStruct.Pin = GPIO_PIN_3;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF4_SPI3;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_11;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF3_SPI3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    LL_PWR_SetNoPullB(LL_PWR_GPIO_BIT_3);
+
+    LL_PWR_SetNoPullA(LL_PWR_GPIO_BIT_8|LL_PWR_GPIO_BIT_11);
 
   /* USER CODE BEGIN SPI3_MspInit 1 */
 

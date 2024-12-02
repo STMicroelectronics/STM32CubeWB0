@@ -42,6 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 PKA_HandleTypeDef hpka;
+ADC_HandleTypeDef hadc;
 IWDG_HandleTypeDef hiwdg;
 
 /* USER CODE BEGIN PV */
@@ -55,6 +56,7 @@ static void MX_GPIO_Init(void);
 static void MX_RADIO_Init(void);
 static void MX_RADIO_TIMER_Init(void);
 static void MX_PKA_Init(void);
+void MX_ADC_Init(void);
 #ifndef DISABLE_WATCHDOG
 static void MX_IWDG_Init(void);
 #endif
@@ -103,6 +105,7 @@ int main(void)
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
   MX_PKA_Init();
+  MX_ADC_Init();
 #ifndef DISABLE_WATCHDOG
   MX_IWDG_Init();
 #endif
@@ -295,9 +298,10 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
   
-#ifdef ENABLE_TXRX_SIGNAL
-  
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+  (void)GPIO_InitStruct;  
+  
+#ifdef ENABLE_TXRX_SIGNAL
   
   GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -308,6 +312,57 @@ static void MX_GPIO_Init(void)
   
 #endif
 /* USER CODE END MX_GPIO_Init_2 */
+}
+
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_ADC_Init(void)
+{
+/* USER CODE BEGIN MX_ADC_Init_1 */
+/* USER CODE END MX_ADC_Init_1 */  
+  
+  ADC_ChannelConfTypeDef xChannel;
+  
+  /* Parameters for ADC initialization */
+  __HAL_RCC_ADCDIG_CLK_ENABLE();
+  __HAL_RCC_ADCANA_CLK_ENABLE();
+
+    /* Enable the ADC peripheral */
+  hadc.Instance = ADC1;
+  hadc.Init.DownSamplerConfig.DataRatio = ADC_DS_RATIO_128;
+  hadc.Init.DownSamplerConfig.DataWidth = ADC_DS_DATA_WIDTH_16_BIT;
+  hadc.Init.InvertOutputMode = ADC_DATA_INVERT_SING;
+  hadc.Init.Overrun = ADC_NEW_DATA_IS_KEPT;
+  hadc.Init.SampleRate = ADC_SAMPLE_RATE_64;
+  hadc.Init.SamplingMode = ADC_SAMPLING_AT_END;
+  hadc.Init.SequenceLength = 1;
+
+  if (HAL_ADC_Init(&hadc) != HAL_OK) {
+    Error_Handler();
+  }
+
+  /* Set the input channel */
+  xChannel.Channel = ADC_CHANNEL_VBAT;
+  xChannel.Rank = ADC_RANK_1;
+  xChannel.VoltRange = ADC_VIN_RANGE_3V6;
+  xChannel.CalibrationPoint.Number = ADC_CALIB_POINT_1;
+  xChannel.CalibrationPoint.Offset = 0;
+  xChannel.CalibrationPoint.Gain = LL_ADC_DEFAULT_RANGE_VALUE_3V6;
+  
+  if(LL_ADC_GET_CALIB_GAIN_FOR_VINMX_3V6() != 0xFFF)
+  {
+    xChannel.CalibrationPoint.Offset = LL_ADC_GET_CALIB_OFFSET_FOR_VINMX_3V6();
+    xChannel.CalibrationPoint.Gain = LL_ADC_GET_CALIB_GAIN_FOR_VINMX_3V6();
+  }
+  
+  HAL_ADC_ConfigChannel(&hadc, &xChannel);
+  
+/* USER CODE BEGIN MX_ADC_Init_2 */
+   
+/* USER CODE END MX_ADC_Init_2 */
 }
 
 #ifndef DISABLE_WATCHDOG

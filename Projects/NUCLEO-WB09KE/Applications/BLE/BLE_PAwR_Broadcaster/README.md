@@ -22,7 +22,7 @@ The following commands are supported.
 *ATE* can also be typed to enable local echo.
 
 An "OK" or "ERROR" is given after a command is received. When a response is received from the peer, this is notified on the terminal with a string like *+\<RESP>:\<group_id>,\<esl_id>,\<status>*.
-Only Ping, Led Control and Read Battery are currently implemented on the PAwR observer.
+Only Ping, Led Control and Read Battery are currently implemented on the PAwR observer running on Nucleo board.
 Commands which do not require a response, e.g. LED Control, can be sent in broadcast with all the ESLs in the group, by specifying ESL_ID 0xFF. Broadcast commands are retransmitted to increase reliability.
 
 For each AT command, an ESL-like command is queued and sent as soon as possible.

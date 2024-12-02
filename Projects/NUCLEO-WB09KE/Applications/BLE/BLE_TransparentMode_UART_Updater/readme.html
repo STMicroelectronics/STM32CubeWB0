@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_transparentmode_uart_updater-application-description"><strong>BLE_TransparentMode_UART_Updater
+        Application Description</strong></h2>
+        <p>Updater application to be used with
+        BLE_TransparentMode_UART_for_Updater.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li><p>This example runs on STM32WB0 devices.</p>
+        <p>Connect the Nucleo Board to your PC with a USB cable type A
+        to USB type C to ST-LINK USB connector.</p></li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it ?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        <li>Load the BLE_TransparentMode_UART_for_Updater
+        application.</li>
+        <li>Run the example</li>
+        </ul>
+        <h3
+        id="ble_transparentmode-with-updater-capability">BLE_TransparentMode
+        with Updater capability</h3>
+        <ul>
+        <li>The BLE_TransparentMode_UART_for_Updater application is
+        equivalent to BLE_TransparentMode (UART mode) application. The
+        only difference is that the “with Updater” variant is built with
+        an offset defined by linker configuration symbol
+        MEMORY_FLASH_APP_OFFSET=4096.</li>
+        <li>This allows to use this application in combination with the
+        BLE_TransparentMode_UART_Updater application which offers the
+        capability to update the BLE_TransparentMode_UART_for_Updater
+        application through the supported channel (UART).</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

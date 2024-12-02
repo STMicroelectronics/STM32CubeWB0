@@ -65,11 +65,11 @@ typedef struct
 
 /* It is important to set same priority for BLE Task and other tasks calling
    BLE stack API's to avoid protecting these functions from concurrent calls. */
-#define BUTTON1_TASK_STACK_SIZE         (700)
+#define BUTTON1_TASK_STACK_SIZE         (800)
 #define BUTTON1_TASK_PRIORITY           (tskIDLE_PRIORITY + 1)
-#define BUTTON2_TASK_STACK_SIZE         (700)
+#define BUTTON2_TASK_STACK_SIZE         (800)
 #define BUTTON2_TASK_PRIORITY           (tskIDLE_PRIORITY + 1)
-#define BUTTON3_TASK_STACK_SIZE         (700)
+#define BUTTON3_TASK_STACK_SIZE         (800)
 #define BUTTON3_TASK_PRIORITY           (tskIDLE_PRIORITY + 1)
 
 /* USER CODE END PD */

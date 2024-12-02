@@ -67,6 +67,8 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -117,6 +119,7 @@ void HAL_RADIO_MspInit(RADIO_HandleTypeDef* hradio)
   /* USER CODE BEGIN RADIO_MspInit 1 */
 
   /* USER CODE END RADIO_MspInit 1 */
+
   }
 
 }
@@ -170,6 +173,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
   /* USER CODE BEGIN TIM2_MspInit 1 */
 
   /* USER CODE END TIM2_MspInit 1 */
+
   }
 
 }

@@ -433,7 +433,6 @@ void MX_APPE_Process(void)
 
   /* USER CODE END MX_APPE_Process_2 */
 }
-
 void UTIL_SEQ_PreIdle( void )
 {
 #if (CFG_LPM_SUPPORTED == 1)

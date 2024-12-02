@@ -67,8 +67,9 @@ void HAL_MspInit(void)
 {
 
   /* USER CODE BEGIN MspInit 0 */
-  __HAL_RCC_SYSCFG_CLK_ENABLE();
   /* USER CODE END MspInit 0 */
+
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
 
   /* System interrupt init*/
 
@@ -122,6 +123,12 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     GPIO_InitStruct.Alternate = GPIO_AF3_SPI3;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    LL_PWR_SetNoPullB(LL_PWR_GPIO_BIT_3);
+
+    LL_PWR_SetNoPullA(LL_PWR_GPIO_BIT_8);
+
+    LL_PWR_EnableGPIOPullDown(LL_PWR_GPIO_A, LL_PWR_GPIO_BIT_11);
+
     /* SPI3 DMA Init */
     /* SPI3_TX Init */
     hdma_spi3_tx.Instance = DMA1_Channel1;
@@ -160,6 +167,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
   /* USER CODE BEGIN SPI3_MspInit 1 */
 
   /* USER CODE END SPI3_MspInit 1 */
+
   }
 
 }

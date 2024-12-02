@@ -27,6 +27,7 @@
 #include "stm32_lpm.h"
 #include "stm32wb0x_hal.h"
 #include "app_freertos.h"
+#include "app_ble.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -97,9 +98,11 @@ static uint8_t freertos_power_save(PowerSaveLevels level)
     __NOP();
   }
   
-  PowerSaveLevels app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
+  PowerSaveLevels stack_powerSave_level, app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
   
-  if ((BLE_STACK_SleepCheck() != POWER_SAVE_LEVEL_RUNNING) &&
+  stack_powerSave_level = (PowerSaveLevels)BLE_STACK_SleepCheck();
+  
+  if ((stack_powerSave_level != POWER_SAVE_LEVEL_RUNNING) &&
       ((app_powerSave_level = App_PowerSaveLevel_Check()) != POWER_SAVE_LEVEL_RUNNING)) 
   {  
     vtimer_powerSave_level = HAL_RADIO_TIMER_PowerSaveLevelCheck();
@@ -135,6 +138,10 @@ static uint8_t freertos_power_save(PowerSaveLevels level)
     {
       stop_off_mode = TRUE;
     }
+  }
+  else if(stack_powerSave_level == POWER_SAVE_LEVEL_RUNNING)
+  {
+    BLEStack_Process_Schedule();
   }
 #endif /* CFG_LPM_SUPPORTED */
   

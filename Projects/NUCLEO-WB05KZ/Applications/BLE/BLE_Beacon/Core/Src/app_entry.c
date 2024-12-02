@@ -49,6 +49,9 @@
 
 /* USER CODE BEGIN PD */
 
+/* Section specific to button management using UART */
+#define C_SIZE_CMD_STRING       256U
+
 /* USER CODE END PD */
 
 /* Private macros ------------------------------------------------------------*/
@@ -59,6 +62,10 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+/* Section specific to button management using UART */
+static uint8_t CommandString[C_SIZE_CMD_STRING];
+static uint16_t indexReceiveChar = 0;
 
 /* USER CODE END PV */
 
@@ -71,6 +78,12 @@
 /* Private functions prototypes-----------------------------------------------*/
 
 /* USER CODE BEGIN PFP */
+
+/* Section specific to button management using UART */
+static void RxUART_Init(void);
+//static void RxCpltCallback(uint8_t * pRxDataBuff, uint16_t nDataSize);
+static void UartCmdExecute(void);
+void UartRxCpltCallback(uint8_t * pRxDataBuff, uint16_t nDataSize);
 
 /* USER CODE END PFP */
 
@@ -96,6 +109,20 @@ uint32_t MX_APPE_Init(void *p_param)
 #endif
 
   /* USER CODE BEGIN APPE_Init_1 */
+#if (CFG_DEBUG_APP_TRACE != 0) && (CFG_DEBUG_APP_ADV_TRACE == 0)
+  COM_InitTypeDef COM_Init =
+  {
+   .BaudRate = 115200,
+   .WordLength= COM_WORDLENGTH_8B,
+   .StopBits = COM_STOPBITS_1,
+   .Parity = COM_PARITY_NONE,
+   .HwFlowCtl = COM_HWCONTROL_NONE
+  };
+  BSP_COM_Init(COM1, &COM_Init);
+
+#endif
+  
+  RxUART_Init();
   
   /* USER CODE END APPE_Init_1 */
 
@@ -143,6 +170,47 @@ static PowerSaveLevels App_PowerSaveLevel_Check(void)
 
 /* USER CODE BEGIN FD_LOCAL_FUNCTIONS */
 
+static void RxUART_Init(void)
+{
+  /* Enable the RX not empty interrupt */
+  LL_USART_EnableIT_RXNE(USART1);
+
+  /* Enable the UART IRQ */
+  NVIC_SetPriority(USART1_IRQn, IRQ_HIGH_PRIORITY);
+  NVIC_EnableIRQ(USART1_IRQn);
+#if defined(__GNUC__) && !defined(__ARMCC_VERSION)
+  setvbuf(stdout, NULL, _IONBF, 0);
+#endif
+}
+
+void UartRxCpltCallback(uint8_t * pRxDataBuff, uint16_t nDataSize)
+{
+  // Loop in case nDataSize > 1 (always 1 in current implementation).
+  /* Filling buffer and wait for '\r' char */
+  if (indexReceiveChar < C_SIZE_CMD_STRING)
+  {
+    if (*pRxDataBuff == '\r')
+    {
+      APP_DBG_MSG("received %s\n", CommandString);
+
+      UartCmdExecute();
+
+      /* Clear receive buffer and character counter*/
+      indexReceiveChar = 0;
+      memset(CommandString, 0, C_SIZE_CMD_STRING);
+    }
+    else
+    {
+      CommandString[indexReceiveChar++] = *pRxDataBuff;
+    }
+  }
+}
+
+static void UartCmdExecute(void)
+{
+
+}
+
 /* USER CODE END FD_LOCAL_FUNCTIONS */
 
 /*************************************************************
@@ -160,7 +228,6 @@ void MX_APPE_Process(void)
 
   /* USER CODE END MX_APPE_Process_2 */
 }
-
 void UTIL_SEQ_PreIdle( void )
 {
 #if (CFG_LPM_SUPPORTED == 1)

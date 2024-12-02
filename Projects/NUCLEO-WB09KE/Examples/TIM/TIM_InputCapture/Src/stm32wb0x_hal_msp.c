@@ -68,6 +68,8 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -103,12 +105,15 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef* htim_ic)
     GPIO_InitStruct.Alternate = GPIO_AF4_TIM2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    LL_PWR_SetNoPullB(LL_PWR_GPIO_BIT_7);
+
     /* TIM2 interrupt Init */
     HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM2_IRQn);
   /* USER CODE BEGIN TIM2_MspInit 1 */
 
   /* USER CODE END TIM2_MspInit 1 */
+
   }
 
 }

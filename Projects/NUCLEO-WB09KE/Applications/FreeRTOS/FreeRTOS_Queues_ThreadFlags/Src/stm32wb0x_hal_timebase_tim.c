@@ -43,7 +43,8 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   RCC_ClkInitTypeDef    clkconfig;
   uint32_t              uwTimclock = 0;
   uint32_t              uwPrescalerValue = 0;
-  uint32_t              pFLatency;
+ uint32_t              pFLatency;
+
   /*Configure the TIM2 IRQ priority */
   HAL_NVIC_SetPriority(TIM2_IRQn, TickPriority ,0);
   /* Enable the TIM2 global Interrupt */
@@ -51,10 +52,12 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 
   /* Enable TIM2 clock */
   __HAL_RCC_TIM2_CLK_ENABLE();
-  /* Get clock configuration */
+
+/* Get clock configuration */
   HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
-  /* Compute TIM2 clock */
-  uwTimclock = HAL_RCC_GetSysClockFreq();
+
+/* Compute TIM2 clock */
+uwTimclock = HAL_RCC_GetSysClockFreq();
 
   /* Compute the prescaler value to have TIM2 counter clock equal to 1MHz */
   uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000U) - 1U);

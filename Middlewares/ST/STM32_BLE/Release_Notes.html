@@ -24,9 +24,6 @@
   </style>
   <link rel="stylesheet" href="../../../_htmresc/mini-st_2020.css" />
   <link rel="icon" type="image/x-icon" href="../../../_htmresc/favicon.png"/>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
 </head>
 <body>
 <div class="row">
@@ -40,7 +37,7 @@
 src="../../../_htmresc/st_logo_2020.png" alt="ST logo" /></a>
 </center>
 <h1 id="purpose">Purpose</h1>
-<p>STM32_BLE Middleware for ST Bluetooth LE stack v4.0.</p>
+<p>STM32_BLE Middleware for ST Bluetooth LE stack v4.x.</p>
 <p>The following Bluetooth LE specification v5.4 features are
 supported:</p>
 <ul>
@@ -81,9 +78,9 @@ supported:</p>
 <li>Bluetooth LE stack modular configurations allowing to optimize
 Bluetooth LE stack memory footprints based on user application
 scenario</li>
-<li>Single Bluetooth LE stack v4.0 binary image (stm32wb0x_ble_stack.a)
+<li>Single Bluetooth LE stack v4.x binary image (stm32wb0x_ble_stack.a)
 which can be used for all the supported supported toolchains</li>
-<li>Dedicated Bluetooth LE stack v4.0 binary image
+<li>Dedicated Bluetooth LE stack v4.x binary image
 (stm32wb0x_ble_stack_controller_only.a) for the HCI controller only
 configuration</li>
 </ul>
@@ -94,10 +91,116 @@ folder.</p>
 <section id="update-history" class="col-sm-12 col-lg-8">
 <h1>Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section5" checked aria-hidden="true">
+<input type="checkbox" id="collapse-section4" checked aria-hidden="true">
+<label for="collapse-section4"  aria-hidden="true"><strong>V1.1.0 /
+30-October-2024</strong></label>
+<h2 id="main-changes">Main Changes</h2>
+<p>ST Bluetooth LE stack v4.0b release:</p>
+<ul>
+<li>New features/updates (compared to Bluetooth LE stack v4.0):
+<ul>
+<li>Added support for LTK request event bypass for management at
+application level (by writing 0x01 with ACI_HAL_WRITE_CONFIG_DATA at
+offset 0xD2).</li>
+<li>Added new callback BLE_STACK_ProcessRequest() to know when stack
+tick should be called.</li>
+<li>Added option to disable automatic generation of RPA (by writing 0x00
+with ACI_HAL_WRITE_CONFIG_DATA at offset 0x33)</li>
+<li>Sent ACI_HAL_FW_ERROR_EVENT when it is not possible to allocate a
+radio task (error type 0x0A)</li>
+<li>Improved scan procedure in order to optimize scan efficiency.</li>
+<li>Added command ACI_L2CAP_SEND_FLOW_CONTROL_CREDITS</li>
+</ul></li>
+<li>Solved issues (compared to Bluetooth LE stack v4.0):
+<ul>
+<li>ID 1165728: Fixed issue related to GATT Indications/Notifications
+sent to Upper layer even when received with insufficient security
+level.</li>
+<li>ID 1324048: Aligned the HCI LE CONNECTION UPDATE’s modularity to ACI
+GAP START CONNECTION UPDATE’s one</li>
+<li>ID 1335303: Fixed issue with HCI LE Set Event mask command, not
+correctly masking events with Host+Controller configuration.</li>
+<li>ID 1284129: Sporadic ADV Data corruption in PAWR scenarios</li>
+<li>ID 1284159, 1286588: Not expected status error returned by
+HCI_LE_SET_PERIODIC_ADVERTISING_RESPONSE_DATA</li>
+<li>ID 1284313: Data provided on time by the Host for a PAwR subevent
+may be ignored when received from the Controller after the TX of the
+subevent has been programmed.</li>
+<li>ID 1288472: Fix corruption of first byte of PADV subevent data,
+happening because “too late” error was not returned.</li>
+<li>ID 1317805: Fix problem causing missed
+HCI_LE_PERIODIC_ADVERTISING_SUBEVENT_DATA_REQUEST_EVENT with some
+specific configurations.</li>
+<li>ID 1335400: Fixed issue with HCI LE Extended Create Connection v2
+command, returning an “invalid command parameter” error the second time
+it was called.</li>
+<li>ID 1288139: Fixed sequence number disalignment on CIG.</li>
+<li>ID 1309634: Fixed time conversion for long intervals used in
+ISOAL/BIG procedures, which was causing wrong timestamps.</li>
+<li>ID 1327059: Fixed wrong error code returned if an unexpected
+response is received by Central after it has sent a CIS_REQ PDU</li>
+<li>ID 1335915: Minor fix to avoid that a function could get stuck when
+too many radio events are skipped and ISO channels are used.</li>
+<li>ID 1336417: No error was returned when trying to allocate more CISes
+than supported.</li>
+<li>ID 1338913: Fixed missed packets on peripheral device in CIS
+scenarios</li>
+<li>ID 1333091: Fixed SMP security level upgrade request on Central
+device</li>
+<li>ID 1336195: Fixed case of reconnection with a bonded device
+preventing pairing with other devices in case of SC pairing.</li>
+<li>ID 1311228: Fixed case of device not returning the Database Out of
+Sync error.</li>
+</ul></li>
+<li>Known limitations:
+<ul>
+<li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
+command shall be avoided during intense radio activities (also when a
+connection is active).</li>
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+than right value.</li>
+<li>ID 1074817: Different advertising filter policies are allowed among
+different adverting sets. It should be forbidden according to GAP
+specifications.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
+<li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
+a GATT characteristic.</li>
+<li>ID 1197644: Non-optimal pre-scheduler allocation under 10 ms of
+connection interval.</li>
+<li>ID 1198031: GAP handles for advertising sets cannot be greater than
+or equal to NumOfAdvDataSet.</li>
+<li>ID 1221480: The Path loss estimated with and without Power Control
+may be very different.</li>
+<li>ID 1258605: HCI commands starting LL procedures may return “LL busy”
+error when LE Power Control is active.</li>
+<li>ID 1277942: Pairing may fail when a device is not in the bonding
+table but it is present in the resolving list.</li>
+<li>ID 1282732: Interpacket spacing in transmitter test mode is not
+compliant with spec.</li>
+<li>ID 1313986: LE Set Random Address may return Invalid HCI Command
+Parameters (0x12) when used together with extended advertising
+commands</li>
+<li>ID 1333960: Disconnection with “instant passed” error if stack tick
+not called promptly</li>
+<li>ID 1247513: PAwR limitations: last response slot of a subevent must
+end 150 us before the start of the next subevent (this affects both
+synchronizer and advertiser); controller privacy is not supported on the
+synchronizer side.</li>
+<li>ID 1354339: Issue with hci_le_set_data_related_address_changes
+command: RPA change not synchronized with change of advertising
+data</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
+</ul></li>
+</ul>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section5" aria-hidden="true">
 <label for="collapse-section5"  aria-hidden="true"><strong>V1.0.0 /
 05-June-2024</strong></label>
-<h2 id="main-changes">Main Changes</h2>
+<h2 id="main-changes-1">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0 release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v3.x)
@@ -195,46 +298,18 @@ tests</li>
 </ul></li>
 <li>Known limitations:
 <ul>
-<li>ID 600131: HCI timeout on ACI_GAP_CLEAR_SECURITY_DB command:
-<ul>
-<li>Erasing the SDB through the aci_gap_clear_security_db command shall
-be avoided during intense radio activities (also when a connection is
-active).</li>
-</ul></li>
-<li>ID 603240 : Extended/legacy advertising usage check:
-<ul>
-<li>This problem is not expected to happen in real conditions since the
-application should not use the HCI_LE_SET_ADVERTISING_PARAMETERS
-directly.</li>
-<li>Currently the error is returned because of a promiscuous usage of
-GAP and HCI level commands, that happens when the application uses HCI
-commands for legacy advertising after having initialized GAP component
-(through ACI_GAP_INIT); GAP returns an error because it tries to use
-extended commands that are blocked at that point</li>
-</ul></li>
 <li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
 than right value.</li>
-<li>ID 1007074: Define a FW Error Event code to report malformed or
-out-of-spec packets (applicable to all Bluetooth layers)</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different adverting sets. It should be forbidden according to GAP
 specifications.</li>
 <li>ID 1164880: Some requirements for the Access Address generation are
 not implemented.</li>
-<li>ID 1165728: GATT Indications sent to Upper layer even when received
-with insufficient security level:
-<ul>
-<li>The link security requirements when receiving the indications shall
-be verified directly by the application layer that may then discard
-those not satisfying the minimum requirements.</li>
-</ul></li>
-<li>ID 1165731: GATT Notifications sent to Upper layer even when
-received with insufficient security level:
-<ul>
-<li>The link security requirements when receiving the notifications
-shall be verified directly by the application layer that may then
-discard those not satisfying the minimum requirements.</li>
-</ul></li>
+<li>ID 1165728, 1165731: GATT Notifications/Indications sent to Upper
+layer even when received with insufficient security level: the link
+security requirements when receiving the indications shall be verified
+directly by the application layer that may then discard those not
+satisfying the minimum requirements.</li>
 <li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
 a GATT characteristic.
 <ul>
@@ -245,22 +320,18 @@ level.</li>
 connection interval</li>
 <li>ID 1198031: GAP handles for advertising sets cannot be greater than
 or equal to NumOfAdvDataSet</li>
-<li>ID 1213293: The Advertiser_Address shall be checked in according to
-Advertiser_Address_Type value for some HCI commands</li>
 <li>ID 1221480: The Path loss estimated with and without Power Control
 may be very different.</li>
-<li>ID 1258605: Limitations when Power Control is active (some commands
-may remain pending)</li>
-<li>ID 1277942: Pairing may fail when Resolving list is not aligned to
-the bonding table</li>
-<li>ID 1286651: Scan performance issue related to the different numbers
-of received advertising packets compared to Nordic solution.</li>
-<li>ID 1247513: On PAwR context, if the end of the last response slot of
-a sub-event is at the 150us limit from the start of the next subevent
-there is not enough time to program the timer. This affects both
-synchronizer and advertiser. Further, controller privacy is not
-supported on the synchronizer side</li>
-<li>ID 1284129: Sporadic ADV Data corruption in PAWR scenarios</li>
+<li>ID 1258605: HCI commands starting LL procedures may return “LL busy”
+error when LE Power Control is active.</li>
+<li>ID 1277942: Pairing may fail when a device is not in the bonding
+table but it is present in the resolving list.</li>
+<li>ID 1286651: Non-optimal scan performance when lots of advertising
+packets are received.</li>
+<li>ID 1247513: PAwR limitations: last response slot of a subevent must
+end 150 us before the start of the next subevent (this affects both
+synchronizer and advertiser); controller privacy is not supported on the
+synchronizer side.</li>
 <li>ID 1284159, 1286588: Not expected status error returned by
 HCI_LE_SET_PERIODIC_ADVERTISING_RESPONSE_DATA</li>
 <li>ID 1284313: Data provided on time by the Host for a PAwR subevent

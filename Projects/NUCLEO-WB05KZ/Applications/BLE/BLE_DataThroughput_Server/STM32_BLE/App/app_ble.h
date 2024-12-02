@@ -141,6 +141,7 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
+
 /* USER CODE BEGIN EF */
 uint8_t APP_BLE_ComputeCRC8( uint8_t *DataPtr , uint8_t Datalen );
 void BLE_SVC_GAP_Change_PHY(void);

@@ -143,13 +143,5 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
-/**
-  * @brief  This function handles external B1_PIN interrupt request.
-  * @param  None
-  * @retval None
-  */
-void GPIOA_IRQHandler(void)
-{
-  HAL_GPIO_EXTI_IRQHandler(GPIOA,B1_PIN);
-}
+
 /* USER CODE END 1 */

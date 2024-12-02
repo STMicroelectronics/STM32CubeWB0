@@ -97,6 +97,10 @@ static DIS_Context_t DIS_Context;
 #define MODEL_NUMBER_UUID			(0x2A24)
 #define SYSTEM_ID_UUID			(0x2A23)
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 uint8_t mans_val_buffer[MANS_SIZE];
 
 static ble_gatt_val_buffer_def_t mans_val_buffer_def = {

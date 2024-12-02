@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    peripheral_lite_server.h
+  * @file    Peripheral_Lite_Server.h
   * @author  MCD Application Team
-  * @brief   Header for peripheral_lite_server.c 
+  * @brief   Header for Peripheral_Lite_Server.c 
   ******************************************************************************
   * @attention
   *
@@ -42,9 +42,11 @@ typedef enum
 {
   PERIPHERAL_LITE_SERVER_LED_C,
   PERIPHERAL_LITE_SERVER_SWITCH_C,
+
   /* USER CODE BEGIN Service1_CharOpcode_t */
 
   /* USER CODE END Service1_CharOpcode_t */
+
   PERIPHERAL_LITE_SERVER_CHAROPCODE_LAST
 } PERIPHERAL_LITE_SERVER_CharOpcode_t;
 
@@ -54,9 +56,11 @@ typedef enum
   PERIPHERAL_LITE_SERVER_LED_C_WRITE_NO_RESP_EVT,
   PERIPHERAL_LITE_SERVER_SWITCH_C_NOTIFY_ENABLED_EVT,
   PERIPHERAL_LITE_SERVER_SWITCH_C_NOTIFY_DISABLED_EVT,
+
   /* USER CODE BEGIN Service1_OpcodeEvt_t */
 
   /* USER CODE END Service1_OpcodeEvt_t */
+
   PERIPHERAL_LITE_SERVER_BOOT_REQUEST_EVT
 } PERIPHERAL_LITE_SERVER_OpcodeEvt_t;
 
@@ -64,9 +68,11 @@ typedef struct
 {
   uint8_t *p_Payload;
   uint8_t Length;
+
   /* USER CODE BEGIN Service1_Data_t */
 
   /* USER CODE END Service1_Data_t */
+
 } PERIPHERAL_LITE_SERVER_Data_t;
 
 typedef struct
@@ -76,9 +82,11 @@ typedef struct
   uint16_t                ConnectionHandle;
   uint16_t                AttributeHandle;
   uint8_t                 ServiceInstance;
+
   /* USER CODE BEGIN Service1_NotificationEvt_t */
 
   /* USER CODE END Service1_NotificationEvt_t */
+
 } PERIPHERAL_LITE_SERVER_NotificationEvt_t;
 
 /* USER CODE BEGIN ET */

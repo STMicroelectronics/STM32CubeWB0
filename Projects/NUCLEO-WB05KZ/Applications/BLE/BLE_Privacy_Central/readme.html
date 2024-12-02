@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_privacy_central-application-description"><strong>BLE_Privacy_Central
+        Application Description</strong></h2>
+        <p>Demonstrate STM32WB0 acting as BLE peripheral and GATT
+        server.</p>
+        <p>This demo implements a Controller Privacy scenario using
+        Privacy 1.2 available with STM32WB0 Bluetooth LE stack v4.x. Two
+        devices Peripheral, Central, both configured with
+        aci_gap_init(privacy flag = 0x02), which should perform these
+        macro steps:</p>
+        <p>Initially, Central and Peripheral devices have no info on
+        their security database: the two devices should connect and make
+        a paring and bonding (fixed key: 123456). After the first
+        connection and the pairing/bonding phase is completed, pressing
+        Push1 on the Peripheral, devices disconnect and the Peripheral
+        calls the aci_gap_configure_filter_accept_and_resolving_list()
+        API to add its bonded device address to the controller’s filter
+        list and to the list of resolvable addresses. The Central device
+        enables the Peripheral characteristic notification at pairing
+        complete. The Peripheral send one notification per every
+        notification enable received, sending a counter as payload
+        data.</p>
+        <p>The Peripheral enters undirected connectable mode with its
+        own address type = resolvable address and filter list = 0x03 as
+        advertising filter policy. The Central device performs a direct
+        connection to the detected Peripheral device, which accepts the
+        connection since the Central address is on its filter list: the
+        two devices reconnect and the Peripheral starts a notification
+        to the Peripheral. NOTES:</p>
+        <p>If the user presses the button PUSH3 on the Central device,
+        the device disconnect</p>
+        <p>Press the button Push1 on Peripheral when connected : the
+        Peripheral disconnects all devices connected and enters in
+        undirected connectable mode with filtering enabled. This implies
+        that Peripheral device accepts connection requests only from
+        devices on its filter list.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
+        BLE Controller Privacy</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board may be necessary to run
+        BLE_Privacy_Peripheral application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target
+        memory</li>
+        <li>Run the example</li>
+        </ul>
+        <p><strong>You can interact with BLE_Privacy_Peripheral
+        application with another Nucleo board:</strong></p>
+        <ul>
+        <li>Power up BLE_Privacy_Peripheral device next to a
+        BLE_Privacy_Central device.</li>
+        <li>On BLE_Privacy_Peripheral press button Push2: to clear the
+        security DB.</li>
+        <li>On BLE_Privacy_Central press button Push2: to clear the
+        security DB.</li>
+        <li>On BLE_Privacy_Peripheral press button Push1: the
+        advertising is initiated.</li>
+        <li>On BLE_Privacy_Central press button Push1: scan is initiated
+        and connection is established to the first
+        BLE_Privacy_Peripheral device that is found.</li>
+        <li>On BLE_Privacy_Peripheral press button Push1: if some bonded
+        devices are found, it will added to the filter list. The
+        BLE_Privacy_Peripheral disconnect the bonded devices and enters
+        undirected connectable mode with filter policy enabled.</li>
+        <li>On BLE_Privacy_Central press button Push1: scan is initiated
+        and connection is established without passing the password.</li>
+        </ul>
+        <p>When not connected, a click on button Push2 allows to clear
+        the security database.</p>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

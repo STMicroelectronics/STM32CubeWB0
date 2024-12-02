@@ -12,7 +12,7 @@
         id="ble_transparentmode-application-description"><strong>BLE_TransparentMode
         Application Description</strong></h2>
         <p>How to use Bluetooth LE stack running on STM32WB0 device
-        configured as a network coprocessor.</p>
+        configured as a network coprocessor (UART mode).</p>
         <h3 id="keywords"><strong>Keywords</strong></h3>
         <p>Connectivity, BLE, BLE protocol</p>
         <h3 id="hardware-and-software-environment"><strong>Hardware and
@@ -32,14 +32,54 @@
         <li>Run the example</li>
         </ul>
         <p>To test the BLE Transparent Mode application, open the
-        BlueNRG GUI PC tool:</p>
+        STM32CubeMonitor-RF PC tool:</p>
         <ul>
         <li>Open the COM port associated to the board running the
         BLE_TransparentMode application</li>
         <li>You can send all the ACI commands supported by the Bluetooth
-        LE stack, either standard, such as HCI_RESET,
-        HCI_LE_RECEIVER_TEST, HCI_LE_TRANSMITTER_TEST, or proprietary,
+        LE stack, either standard, such as HCI_RESET, or proprietary,
         such as ACI_GAP_* and and ACI_GATT_* commands.</li>
+        </ul>
+        <h3
+        id="ble_transparentmode-bluetooth-le-configuration">BLE_TransparentMode
+        Bluetooth LE configuration</h3>
+        <ul>
+        <li>BLE_TransparentMode application can be also configured in
+        order to support the controller only mode for interacting with
+        an external microcontroller providing the Bluetooth LE Host
+        stack features. User is requested to rebuild the application by
+        adding the BLESTACK_CONTROLLER_ONLY=1 on project preproprocessor
+        options and refer to stm32wb0x_ble_stack_controller_only.a
+        library.</li>
+        <li>Refer to the BLE_TransparentMode_conf.h file, BLE Stack
+        modularity options section for getting the specific Bluetooth LE
+        features supported by the BLE_TransparentMode application.</li>
+        <li>Refer to the BLE_TransparentMode_conf.h file, BLE Stack
+        initialization parameters section for getting the specific
+        Bluetooth LE stack initialization parameters used by the
+        BLE_TransparentMode application.</li>
+        <li>Refer to the BLE_TransparentMode32wb0x_hal_conf.h file,
+        CFG_NUM_RADIO_TASKS define for getting the Maximum number of
+        simultaneous radio tasks supported by the BLE_TransparentMode
+        application.</li>
+        <li>NOTE: BLE Stack modularity options, Bluetooth LE stack
+        initialization parameters and CFG_NUM_RADIO_TASKS values can be
+        configured through the STM32CubeMX tool when defining an
+        STM32_BLE application (STM32WB0 series Bluetooth LE
+        middleware)</li>
+        </ul>
+        <h3
+        id="ble_transparentmode-uart-configuration">BLE_TransparentMode
+        UART configuration</h3>
+        <ul>
+        <li>Baudrate: 921600</li>
+        <li>Word Length: 8</li>
+        <li>Stop bits: 1</li>
+        <li>Parity: None</li>
+        <li>Mode: TX, RX</li>
+        <li>Flow Control: None</li>
+        <li>NOTE: These parameters are defined on
+        MX_USART1_UART_Init(void) function on main.c file.</li>
         </ul>
         <h3 id="notes"><strong>Notes</strong></h3>
         <ul>

@@ -103,6 +103,10 @@ static DIS_Context_t DIS_Context;
 #define HARDWARE_REVISION_UUID			(0x2A27)
 #define FIRMWARE_REVISION_UUID			(0x2A26)
 
+/* USER CODE BEGIN DESCRIPTORS DECLARATION */
+
+/* USER CODE END DESCRIPTORS DECLARATION */
+
 uint8_t mans_val_buffer[MANS_SIZE];
 
 static ble_gatt_val_buffer_def_t mans_val_buffer_def = {

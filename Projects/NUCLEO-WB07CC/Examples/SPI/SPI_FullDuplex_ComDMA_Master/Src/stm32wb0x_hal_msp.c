@@ -70,6 +70,8 @@ void HAL_MspInit(void)
 
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
@@ -114,6 +116,10 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
     GPIO_InitStruct.Alternate = GPIO_AF1_SPI2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+    LL_PWR_SetNoPullA(LL_PWR_GPIO_BIT_5|LL_PWR_GPIO_BIT_7);
+
+    LL_PWR_EnableGPIOPullDown(LL_PWR_GPIO_A, LL_PWR_GPIO_BIT_6);
+
     /* SPI2 DMA Init */
     /* SPI2_TX Init */
     hdma_spi2_tx.Instance = DMA1_Channel1;
@@ -152,6 +158,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
   /* USER CODE BEGIN SPI2_MspInit 1 */
 
   /* USER CODE END SPI2_MspInit 1 */
+
   }
 
 }

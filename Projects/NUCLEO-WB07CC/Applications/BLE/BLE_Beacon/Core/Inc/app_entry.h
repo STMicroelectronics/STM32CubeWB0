@@ -61,6 +61,8 @@ void MX_APPE_Process(void);
 
 /* USER CODE BEGIN EF */
 
+void UartRxCpltCallback(uint8_t * pRxDataBuff, uint16_t nDataSize);
+
 /* USER CODE END EF */
 
 #ifdef __cplusplus

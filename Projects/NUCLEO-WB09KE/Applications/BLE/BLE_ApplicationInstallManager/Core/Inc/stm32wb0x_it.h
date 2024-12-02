@@ -52,15 +52,8 @@ void HardFault_Handler(void);
 void SVC_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
-void USART1_IRQHandler(void);
-void PKA_IRQHandler(void);
-void RADIO_TIMER_CPU_WKUP_IRQHandler(void);
-void RADIO_TIMER_ERROR_IRQHandler(void);
-void RADIO_TXRX_IRQHandler(void);
-void RADIO_TXRX_SEQ_IRQHandler(void);
 /* USER CODE BEGIN EFP */
-void GPIOB_IRQHandler(void);
-void GPIOA_IRQHandler(void);
+
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

@@ -59,9 +59,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern RTC_HandleTypeDef hrtc;
+
 /* USER CODE BEGIN EV */
-extern RTC_HandleTypeDef hrtc;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -141,20 +141,6 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32wb0x.s).                    */
 /******************************************************************************/
-
-/**
-  * @brief This function handles RTC interrupt.
-  */
-void RTC_IRQHandler(void)
-{
-  /* USER CODE BEGIN RTC_IRQn 0 */
-
-  /* USER CODE END RTC_IRQn 0 */
-  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc);
-  /* USER CODE BEGIN RTC_IRQn 1 */
-
-  /* USER CODE END RTC_IRQn 1 */
-}
 
 /* USER CODE BEGIN 1 */
 

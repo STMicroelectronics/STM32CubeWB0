@@ -64,6 +64,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern PKA_HandleTypeDef hpka;
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -163,7 +164,6 @@ void USART1_IRQHandler(void)
 //    UartRxCpltCallback(&read_data, 1);
   }
   /* USER CODE END USART1_IRQn 0 */
-  
   /* USER CODE BEGIN USART1_IRQn 1 */
   
   /* USER CODE END USART1_IRQn 1 */
@@ -177,43 +177,35 @@ void PKA_IRQHandler(void)
   /* USER CODE BEGIN PKA_IRQn 0 */
 
   /* USER CODE END PKA_IRQn 0 */
-  
   HAL_PKA_IRQHandler(&hpka);
-  
   /* USER CODE BEGIN PKA_IRQn 1 */
 
   /* USER CODE END PKA_IRQn 1 */
 }
 
-
 /**
   * @brief This function handles RADIO_TIMER_CPU_WKUP global interrupt.
   */
-void RADIO_TIMER_CPU_WKUP_IRQHandler(void) 
+void RADIO_TIMER_CPU_WKUP_IRQHandler(void)
 {
   /* USER CODE BEGIN RADIO_TIMER_CPU_WKUP_IRQn 0 */
 
   /* USER CODE END RADIO_TIMER_CPU_WKUP_IRQn 0 */
-
   HAL_RADIO_TIMER_CPU_WKUP_IRQHandler();
-  
   /* USER CODE BEGIN RADIO_TIMER_CPU_WKUP_IRQn 1 */
 
   /* USER CODE END RADIO_TIMER_CPU_WKUP_IRQn 1 */
-
 }
 
 /**
   * @brief This function handles RADIO_TIMER_ERROR global interrupt.
   */
 void RADIO_TIMER_ERROR_IRQHandler(void)
-{  
+{
   /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 0 */
   
   /* USER CODE END RADIO_TIMER_ERROR_IRQn 0 */
-
   HAL_RADIO_TIMER_ERROR_IRQHandler();
-
   /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 1 */
 
   /* USER CODE END RADIO_TIMER_ERROR_IRQn 1 */
@@ -223,34 +215,29 @@ void RADIO_TIMER_ERROR_IRQHandler(void)
   * @brief This function handles RADIO_TXRX global interrupt.
   */
 void RADIO_TXRX_IRQHandler(void)
-{  
+{
   /* USER CODE BEGIN RADIO_TXRX_IRQn 0 */
   
   /* USER CODE END RADIO_TXRX_IRQn 0 */
-  
   HAL_RADIO_TXRX_IRQHandler();
-
   /* USER CODE BEGIN RADIO_TXRX_IRQn 1 */
   
-  /* USER CODE END RADIO_TXRX_IRQn 1 */  
+  /* USER CODE END RADIO_TXRX_IRQn 1 */
 }
 
 /**
   * @brief This function handles RADIO_TXRX_SEQ global interrupt.
   */
- void RADIO_TXRX_SEQ_IRQHandler(void)
+void RADIO_TXRX_SEQ_IRQHandler(void)
 {
   /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 0 */
 
   /* USER CODE END RADIO_TXRX_SEQ_IRQn 0 */
-  
   HAL_RADIO_TXRX_SEQ_IRQHandler();
-  
   /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 1 */
 
   /* USER CODE END RADIO_TXRX_SEQ_IRQn 1 */
 }
-
 
 /* USER CODE BEGIN 1 */
 void GPIOA_IRQHandler(void)

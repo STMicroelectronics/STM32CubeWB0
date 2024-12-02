@@ -10,7 +10,7 @@
       <TargetName>BLE_p2pServer_FreeRTOS</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
+      <pCCUsed>6210000::V6.21::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -340,7 +340,7 @@
               <MiscControls>-fshort-enums</MiscControls>
               <Define>USE_HAL_DRIVER STM32WB05 NUCLEO_WB05KZ USE_FULL_LL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0x/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../System/Config\Debug_GPIO;../System/Interfaces;../System/Modules/PKAMGR/Inc;../System/Modules/NVMDB/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../System/Modules/RADIO_utils/Inc;../System/Modules/RTDebug;../System/Modules;../System/Startup;../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../../../../../../Utilities/sequencer;../../../../../../Utilities/misc;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Utilities/trace/adv_trace;../System/Modules/Profiles/Inc;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../System/Modules/Flash;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/ECB;..\..\..\..\..\..\Middlewares\Third_Party\FreeRTOS\Source\include;..\..\..\..\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM0</IncludePath>
+              <IncludePath>../Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0x/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../System/Config\Debug_GPIO;../System/Interfaces;..\..\..\..\..\..\Projects\Common\BLE\Interfaces;..\..\..\..\..\..\Projects\Common\BLE\Modules\PKAMGR\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\NVMDB\Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\RADIO_utils\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\RTDebug;..\..\..\..\..\..\Projects\Common\BLE\Modules;..\..\..\..\..\..\Projects\Common\BLE\Startup;../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../../../../../../Utilities/sequencer;../../../../../../Utilities/misc;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Utilities/trace/adv_trace;..\..\..\..\..\..\Projects\Common\BLE\Modules\Profiles\Inc;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\Flash;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/inc/AES/ECB;..\..\..\..\..\..\Middlewares\Third_Party\FreeRTOS\Source\include;..\..\..\..\..\..\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM0</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -480,31 +480,6 @@
           <GroupName>Application/User/System/Interfaces</GroupName>
           <Files>
             <File>
-              <FileName>cryptolib_hw_aes.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/cryptolib_hw_aes.c</FilePath>
-            </File>
-            <File>
-              <FileName>hw_aes.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/hw_aes.c</FilePath>
-            </File>
-            <File>
-              <FileName>hw_pka.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/hw_pka.c</FilePath>
-            </File>
-            <File>
-              <FileName>hw_rng.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/hw_rng.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32_lpm_if.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/stm32_lpm_if.c</FilePath>
-            </File>
-            <File>
               <FileName>usart_if.c</FileName>
               <FileType>1</FileType>
               <FilePath>../System/Interfaces/usart_if.c</FilePath>
@@ -512,122 +487,122 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/Flash</GroupName>
+          <GroupName>Common/BLE/Modules/Flash</GroupName>
           <Files>
             <File>
               <FileName>flash_driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/Flash/flash_driver.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/Flash/flash_driver.c</FilePath>
             </File>
             <File>
               <FileName>flash_manager.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/Flash/flash_manager.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/Flash/flash_manager.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/NVMDB</GroupName>
+          <GroupName>Common/BLE/Modules/NVMDB</GroupName>
           <Files>
             <File>
               <FileName>nvm_db.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/NVMDB/Src/nvm_db.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/NVMDB/Src/nvm_db.c</FilePath>
             </File>
             <File>
               <FileName>nvm_db_conf.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/NVMDB/Src/nvm_db_conf.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/NVMDB/Src/nvm_db_conf.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/PKAMGR</GroupName>
+          <GroupName>Common/BLE/Modules/PKAMGR</GroupName>
           <Files>
             <File>
               <FileName>pka_manager.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/PKAMGR/Src/pka_manager.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/PKAMGR/Src/pka_manager.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/Profiles</GroupName>
+          <GroupName>Common/BLE/Modules/Profiles</GroupName>
           <Files>
             <File>
               <FileName>gap_profile.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/Profiles/Src/gap_profile.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/Profiles/Src/gap_profile.c</FilePath>
             </File>
             <File>
               <FileName>gatt_profile.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/Profiles/Src/gatt_profile.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/Profiles/Src/gatt_profile.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/RADIO_utils</GroupName>
+          <GroupName>Common/BLE/Modules/RADIO_utils</GroupName>
           <Files>
             <File>
               <FileName>RADIO_utils.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/RADIO_utils/Src/RADIO_utils.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Src/RADIO_utils.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules/RTDebug</GroupName>
+          <GroupName>Common/BLE/Modules/RTDebug</GroupName>
           <Files>
             <File>
               <FileName>RTDebug.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/RTDebug/RTDebug.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/RTDebug/RTDebug.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Modules</GroupName>
+          <GroupName>Common/BLE/Modules</GroupName>
           <Files>
             <File>
               <FileName>blue_unit_conversion.s</FileName>
               <FileType>2</FileType>
-              <FilePath>../System/Modules/blue_unit_conversion.s</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</FilePath>
             </File>
             <File>
               <FileName>miscutil.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/miscutil.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/miscutil.c</FilePath>
             </File>
             <File>
               <FileName>osal.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/osal.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/osal.c</FilePath>
             </File>
             <File>
               <FileName>osal_memcpy.s</FileName>
               <FileType>2</FileType>
-              <FilePath>../System/Modules/osal_memcpy.s</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</FilePath>
             </File>
             <File>
               <FileName>stm_list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Modules/stm_list.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Modules/stm_list.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Startup</GroupName>
+          <GroupName>Common/BLE/Startup</GroupName>
           <Files>
             <File>
               <FileName>cpu_context_switch.s</FileName>
               <FileType>2</FileType>
-              <FilePath>../System/Startup/cpu_context_switch.s</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Startup/cpu_context_switch.s</FilePath>
             </File>
             <File>
               <FileName>device_context_switch.c</FileName>
               <FileType>1</FileType>
-              <FilePath>../System/Startup/device_context_switch.c</FilePath>
+              <FilePath>../../../../../../Projects/Common/BLE/Startup/device_context_switch.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -642,7 +617,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/BSP/NUCLEO-WB09KE</GroupName>
+          <GroupName>Drivers/BSP/NUCLEO-WB05KZ</GroupName>
           <Files>
             <File>
               <FileName>stm32wb0x_nucleo.c</FileName>
@@ -958,6 +933,36 @@
               <FileName>stm32_seq.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../../Utilities/sequencer/stm32_seq.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common/BLE/Interface</GroupName>
+          <Files>
+            <File>
+              <FileName>cryptolib_hw_aes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Projects/Common/BLE/Interfaces/cryptolib_hw_aes.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_aes.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Projects/Common/BLE/Interfaces/hw_aes.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_pka.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Projects/Common/BLE/Interfaces/hw_pka.c</FilePath>
+            </File>
+            <File>
+              <FileName>hw_rng.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Projects/Common/BLE/Interfaces/hw_rng.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32_lpm_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Projects/Common/BLE/Interfaces/stm32_lpm_if.c</FilePath>
             </File>
           </Files>
         </Group>

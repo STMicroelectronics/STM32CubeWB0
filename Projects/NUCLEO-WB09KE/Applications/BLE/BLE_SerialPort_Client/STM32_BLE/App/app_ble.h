@@ -101,6 +101,7 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId);
+
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 void VTimer_Process(void);

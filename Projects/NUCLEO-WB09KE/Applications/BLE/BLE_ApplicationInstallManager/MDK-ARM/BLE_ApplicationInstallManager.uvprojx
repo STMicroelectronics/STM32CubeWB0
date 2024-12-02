@@ -18,12 +18,12 @@
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32WB0x_DFP.1.0.0</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000,0x10000) IROM(0x10040000,0x80000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000-0x2000FFFF) IROM(0x10040000-0x100BFFFF) IROM2(0x10000000-0x100017FF) CLOCK(8000000) CPUTYPE("Cortex-M0+") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20001000 -FC2000 -FN1 -FF0STM32WB09xE -FS010040000 -FL080000 -FP0($$Device:STM32WB09KE$CMSIS\Flash\STM32WB09xE.FLM))</FlashDriverDll>
+          <FlashDriverDll></FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32WB09KE$Drivers\CMSIS\Device\ST\STM32WB0x\Include\stm32wb09xx.h</RegisterFile>
+          <RegisterFile></RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -33,7 +33,7 @@
           <SLE66CMisc></SLE66CMisc>
           <SLE66AMisc></SLE66AMisc>
           <SLE66LinkerMisc></SLE66LinkerMisc>
-          <SFDFile>$$Device:STM32WB09KE$CMSIS\SVD\stm32wb09.svd</SFDFile>
+          <SFDFile>$$Device:STM32WB09KEVxT$CMSIS\SVD\STM32WB09.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
@@ -55,7 +55,7 @@
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>.\BLE_ApplicationInstallManager\Listings\</ListingPath>
+          <ListingPath></ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
@@ -80,16 +80,16 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>1</RunUserProg1>
+            <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>fromelf #L --bincombined  --output=$L@L.bin</UserProg1Name>
+            <UserProg1Name></UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
             <nStopA2X>0</nStopA2X>
           </AfterMake>
-          <SelectedForBatchBuild>0</SelectedForBatchBuild>
+          <SelectedForBatchBuild>1</SelectedForBatchBuild>
           <SVCSIdString></SVCSIdString>
         </TargetCommonOption>
         <CommonProperty>
@@ -106,15 +106,15 @@
           <StopOnExitCode>3</StopOnExitCode>
           <CustomArgument></CustomArgument>
           <IncludeLibraryModules></IncludeLibraryModules>
-          <ComprImg>1</ComprImg>
+          <ComprImg>0</ComprImg>
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
-          <SimDllArguments> -REMAP </SimDllArguments>
+          <SimDllArguments>-REMAP</SimDllArguments>
           <SimDlgDll>DARMCM1.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCM0+</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
-          <TargetDllArguments> </TargetDllArguments>
+          <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TARMCM1.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCM0+</TargetDlgDllArguments>
         </DllOption>
@@ -134,11 +134,11 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4096</DriverSelection>
+            <DriverSelection>4101</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash2>BIN\UL2V8M.DLL</Flash2>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -188,14 +188,14 @@
             <RvdsCdeCp>0</RvdsCdeCp>
             <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
-            <hadIROM2>0</hadIROM2>
+            <hadIROM2>1</hadIROM2>
             <StupSel>8</StupSel>
             <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
             <RoSelD>3</RoSelD>
-            <RwSelD>3</RwSelD>
+            <RwSelD>4</RwSelD>
             <CodeSel>0</CodeSel>
             <OptFeed>0</OptFeed>
             <NoZi1>0</NoZi1>
@@ -207,7 +207,7 @@
             <Ro2Chk>0</Ro2Chk>
             <Ro3Chk>0</Ro3Chk>
             <Ir1Chk>1</Ir1Chk>
-            <Ir2Chk>0</Ir2Chk>
+            <Ir2Chk>1</Ir2Chk>
             <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
@@ -281,8 +281,8 @@
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x10000000</StartAddress>
+                <Size>0x1800</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
@@ -338,9 +338,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>-fshort-enums</MiscControls>
-              <Define>USE_HAL_DRIVER STM32WB09 NUCLEO_WB09KE</Define>
+              <Define>NUCLEO_WB09KE,USE_HAL_DRIVER,STM32WB09</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0x/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../System/Config\Debug_GPIO;../System/Interfaces;../System/Modules/PKAMGR/Inc;../System/Modules/NVMDB/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../System/Modules/RADIO_utils/Inc;../System/Modules/RTDebug;../System/Modules;../System/Startup;../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../../../../../../Utilities/sequencer;../../../../../../Utilities/misc;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Utilities/trace/adv_trace;../System/Modules/Profiles/Inc;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc</IncludePath>
+              <IncludePath>../Core/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -368,15 +368,17 @@
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
             <useFile>0</useFile>
-            <TextAddressRange>0x10040000</TextAddressRange>
-            <DataAddressRange>0x20000000</DataAddressRange>
+            <TextAddressRange></TextAddressRange>
+            <DataAddressRange></DataAddressRange>
             <pXoBase></pXoBase>
             <ScatterFile>stm32wb09_flash.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>--predefine="-DMEMORY_FLASH_APP_SIZE=0x1000 "</Misc>
+            <Misc>--diag_suppress L6312W
+--diag_suppress L6314W
+--diag_suppress L6329W</Misc>
             <LinkerInputFile></LinkerInputFile>
-            <DisabledWarnings>6312,6314,6329,1215</DisabledWarnings>
+            <DisabledWarnings></DisabledWarnings>
           </LDads>
         </TargetArmAds>
       </TargetOption>
@@ -399,6 +401,16 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32wb0x_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/stm32wb0x_it.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/stm32wb0x_hal_msp.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -408,6 +420,91 @@
               <FileName>README.md</FileName>
               <FileType>5</FileType>
               <FilePath>../README.md</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/BSP/NUCLEO-WB09KE</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32wb0x_nucleo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/STM32WB0x_HAL_Driver</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32wb0x_hal_cortex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_cortex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_rcc_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_flash_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_flash_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_gpio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_gpio.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_dma.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_pwr.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_pwr_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_pwr_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_tim_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32wb0x_hal_uart_ex.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart_ex.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -422,39 +519,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/STM32WB0x_HAL_Driver</GroupName>
-          <Files>
-            <File>
-              <FileName>stm32wb0x_hal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_cortex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_cortex.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_flash.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_flash_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_flash_ex.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_rcc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\..\Drivers\STM32WB0x_HAL_Driver\Src\stm32wb0x_hal_gpio.c</FilePath>
-            </File>
-          </Files>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>
@@ -462,7 +527,14 @@
 
   <RTE>
     <apis/>
-    <components/>
+    <components>
+      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="4.3.0" condition="CMSIS Core">
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="4.5.0"/>
+        <targetInfos>
+          <targetInfo name="BLE_ApplicationInstallManager"/>
+        </targetInfos>
+      </component>
+    </components>
     <files/>
   </RTE>
 

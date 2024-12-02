@@ -1,9 +1,15 @@
 #MicroXplorer Configuration settings - do not modify
 ADC1.Channel-4\#ChannelRegularConversion=ADC_CHANNEL_VINP1
 ADC1.DataRatio=ADC_DS_RATIO_16
-ADC1.IPParameters=Rank-4\#ChannelRegularConversion,RankArg-4\#ChannelRegularConversion,Channel-4\#ChannelRegularConversion,NbrOfConversionFlag,DataRatio,Overrun,master,SelectedChannel,NbrOfConversion,VoltRange-4\#ChannelRegularConversion
+ADC1.Gain-4\#ChannelRegularConversion=uADCxCalibrationPoint1_Gain
+ADC1.Gain1=uADCxCalibrationPoint1_Gain
+ADC1.IPParameters=Rank-4\#ChannelRegularConversion,RankArg-4\#ChannelRegularConversion,Channel-4\#ChannelRegularConversion,NbrOfConversionFlag,DataRatio,Overrun,master,SelectedChannel,NbrOfConversion,VoltRange-4\#ChannelRegularConversion,Number-4\#ChannelRegularConversion,Gain-4\#ChannelRegularConversion,Offset-4\#ChannelRegularConversion,Gain1,Offset1
+ADC1.IPParametersWithoutCheck=Offset1,Gain1
 ADC1.NbrOfConversion=1
 ADC1.NbrOfConversionFlag=1
+ADC1.Number-4\#ChannelRegularConversion=ADC_CALIB_POINT_1
+ADC1.Offset-4\#ChannelRegularConversion=uADCxCalibrationPoint1_Offset
+ADC1.Offset1=uADCxCalibrationPoint1_Offset
 ADC1.Overrun=ADC_NEW_DATA_IS_LOST
 ADC1.Rank-4\#ChannelRegularConversion=1
 ADC1.RankArg-4\#ChannelRegularConversion=ADC_RANK_1
@@ -40,8 +46,8 @@ Mcu.PinsNb=6
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32WB07CCVx
-MxCube.Version=6.12.0
-MxDb.Version=DB.6.0.120
+MxCube.Version=6.13.0
+MxDb.Version=DB.6.0.130
 NVIC.ForceEnableDMAVector=true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false
 NVIC.NonMaskableInt_IRQn=true\:0\:0\:false\:false\:true\:false\:false\:false

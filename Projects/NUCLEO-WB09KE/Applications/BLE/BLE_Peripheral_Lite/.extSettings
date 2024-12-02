@@ -1,0 +1,7 @@
+[ProjectFiles]
+HeaderPath=../../../../../../Drivers/BSP/STM32WB0x-nucleo;
+[Others]
+Define=NUCLEO_WB09KE
+[Groups]
+Doc=../README.md;
+Drivers/BSP/NUCLEO-WB09KE=../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c;

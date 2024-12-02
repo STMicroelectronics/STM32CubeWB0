@@ -50,10 +50,11 @@
         terminal with a string like
         <em>+&lt;RESP&gt;:&lt;group_id&gt;,&lt;esl_id&gt;,&lt;status&gt;</em>.
         Only Ping, Led Control and Read Battery are currently
-        implemented on the PAwR observer. Commands which do not require
-        a response, e.g. LED Control, can be sent in broadcast with all
-        the ESLs in the group, by specifying ESL_ID 0xFF. Broadcast
-        commands are retransmitted to increase reliability.</p>
+        implemented on the PAwR observer running on Nucleo board.
+        Commands which do not require a response, e.g. LED Control, can
+        be sent in broadcast with all the ESLs in the group, by
+        specifying ESL_ID 0xFF. Broadcast commands are retransmitted to
+        increase reliability.</p>
         <p>For each AT command, an ESL-like command is queued and sent
         as soon as possible.</p>
         <h3 id="keywords"><strong>Keywords</strong></h3>

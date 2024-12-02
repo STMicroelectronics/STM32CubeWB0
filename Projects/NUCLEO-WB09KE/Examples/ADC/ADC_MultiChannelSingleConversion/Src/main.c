@@ -315,8 +315,8 @@ static void MX_ADC1_Init(void)
   ConfigChannel.Rank = ADC_RANK_1;
   ConfigChannel.VoltRange = ADC_VIN_RANGE_1V2;
   ConfigChannel.CalibrationPoint.Number = ADC_CALIB_POINT_1;
-  ConfigChannel.CalibrationPoint.Gain = 0x0;
-  ConfigChannel.CalibrationPoint.Offset = 0x0;
+  ConfigChannel.CalibrationPoint.Gain = 0x00;
+  ConfigChannel.CalibrationPoint.Offset = 0x00;
   if (HAL_ADC_ConfigChannel(&hadc1, &ConfigChannel) != HAL_OK)
   {
     Error_Handler();

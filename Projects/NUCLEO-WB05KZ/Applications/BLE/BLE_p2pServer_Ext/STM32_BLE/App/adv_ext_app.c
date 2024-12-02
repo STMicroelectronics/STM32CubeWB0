@@ -251,7 +251,7 @@ uint8_t ADV_EXT_Start(void)
                                                      0, /* 0 skips */
                                                      HCI_ADV_PHY_LE_1M, /* Secondary advertising PHY. Not used with legacy advertising. */
                                                      adv_set_param[loop].sid, /* SID */
-                                                     1 /* Scan request notifications */);
+                                                     0 /* Scan request notifications */);
       if (status == BLE_STATUS_SUCCESS)
       {
         APP_DBG_MSG("  Success: aci_gap_set_advertising_configuration\n");
