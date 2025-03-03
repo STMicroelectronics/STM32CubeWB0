@@ -226,7 +226,6 @@
                     <state>USE_FULL_LL_DRIVER</state>
                     <state>STM32WB09</state>
                     <state>NUCLEO_WB09KE</state>
-                    <state>CONFIG_HW_SMPS_10uH</state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>

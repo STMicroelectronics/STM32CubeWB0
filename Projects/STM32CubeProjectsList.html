@@ -1030,8 +1030,19 @@ them into a global information buffer.
         <td>5</td>
       </tr>
       <tr align=center>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" rowspan=45><p id="Applications">Applications</p></td>
-        <td align=left rowspan=41><p id="BLE">BLE</p></td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" rowspan=60><p id="Applications">Applications</p></td>
+        <td align=left rowspan=56><p id="BLE">BLE</p></td>
+        <td align=left><p id="BLE_ANCS_CentralPeripheral">BLE_ANCS_CentralPeripheral</p></td>
+        <td align=left>
+The ANCS (Apple Notification Center Service) demo configures a STM32WB0x device as a Notification Consumer.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_ApplicationInstallManager">BLE_ApplicationInstallManager</p></td>
         <td align=left>
 The BLE_ApplicationInstallManager application, associated to a BLE application embedding OTA service, manages the firmware update over the air of a BLE application. 
@@ -1098,6 +1109,28 @@ How to demonstrate Point-to-Point communication using BLE component (as GATT ser
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_DirectionFinding_Central_Locator">BLE_DirectionFinding_Central_Locator</p></td>
+        <td align=left>
+This demo implements a basic Direction Finding scenario using tag and locator roles (connection CTE mode) to demonstrate how to utilize the related Bluetooth LE stack capabilities.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>2</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td>-</td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_DirectionFinding_Peripheral_Tag">BLE_DirectionFinding_Peripheral_Tag</p></td>
+        <td align=left>
+This demo implements a basic Direction Finding scenario using tag and locator roles (connection CTE mode) to demonstrate how to utilize the related Bluetooth LE stack capabilities.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>2</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td>-</td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_HID_Keyboard">BLE_HID_Keyboard</p></td>
         <td align=left>
 How to use Human Interface Device over GATT profile for a keyboard as specified by the Bluetooth LE SIG.
@@ -1153,6 +1186,39 @@ How to use the Heart Rate and OTA profile as specified by the Bluetooth LE SIG.
         <td>-</td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_MultipleConnections_Central">BLE_MultipleConnections_Central</p></td>
+        <td align=left>
+Demonstrate STM32WB0 acting as GATT client.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_MultipleConnections_CentralPeripheral">BLE_MultipleConnections_CentralPeripheral</p></td>
+        <td align=left>
+Demonstrate STM32WB0 acting as BLE central and GATT client.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_MultipleConnections_Peripheral">BLE_MultipleConnections_Peripheral</p></td>
+        <td align=left>
+Demonstrate STM32WB0 acting as BLE GATT client.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_PAwR_Broadcaster">BLE_PAwR_Broadcaster</p></td>
         <td align=left>
 Demonstrate STM32WB0 acting as a Broadcaster of a Periodic Advertising with Response (PAwR) train.
@@ -1186,6 +1252,34 @@ Demonstrate how to communicate with simple Bluetooth LE peripheral with minimum 
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_PowerControl_Central">BLE_PowerControl_Central</p></td>
+        <td align=left>
+This example shows the LE Power Control features:
+- Dynamic adjustment of TX power level on a connection, based on RSSI
+- TX power reporting
+- Path loss monitoring.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_PowerControl_Peripheral">BLE_PowerControl_Peripheral</p></td>
+        <td align=left>
+This example shows the LE Power Control features:
+- Dynamic adjustment of TX power level on a connection, based on RSSI
+- TX power reporting
+- Path loss monitoring.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_Power_Consumption">BLE_Power_Consumption</p></td>
         <td align=left>
 Basic Bluetooth LE demo to demonstrate the device power consumption in specific scenarios (ADV 100 ms, ADV 1000 ms and CONNECTION).
@@ -1199,7 +1293,7 @@ Basic Bluetooth LE demo to demonstrate the device power consumption in specific 
       <tr align=center>
         <td align=left><p id="BLE_Privacy_Central">BLE_Privacy_Central</p></td>
         <td align=left>
-Demonstrate STM32WB0 acting as BLE peripheral and GATT server.
+Demonstrate STM32WB0 acting as a BLE peripheral and GATT central.
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
@@ -1210,7 +1304,29 @@ Demonstrate STM32WB0 acting as BLE peripheral and GATT server.
       <tr align=center>
         <td align=left><p id="BLE_Privacy_Peripheral">BLE_Privacy_Peripheral</p></td>
         <td align=left>
-This demo implements a Controller Privacy scenario using Privacy 1.2 available with STM32WB0 Bluetooth LE stack v4.x. 
+Demonstrate STM32WB0 acting as a BLE peripheral and GATT peripheral.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_RC_LongRange_Central">BLE_RC_LongRange_Central</p></td>
+        <td align=left>
+This demo shows how to control a remote device (e.g., to drive an actuator) using the STM32WB09 on Coded PHY (Bluetooth LE specifications v5.0) to reach longer distances.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_RC_LongRange_Peripheral">BLE_RC_LongRange_Peripheral</p></td>
+        <td align=left>
+This demo shows how to control a remote device (e.g., to drive an actuator) using the STM32WB09 on Coded PHY (Bluetooth LE specifications v5.0) to reach longer distances.
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
@@ -1263,6 +1379,17 @@ How to demonstrate Point-to-Point communication using Bluetooth Low Energy L2CAP
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_SerialPort_CentralPeripheral">BLE_SerialPort_CentralPeripheral</p></td>
+        <td align=left>
+Demonstrating Point-to-Point Communication with Bluetooth Low Energy (BLE) GATT.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_SerialPort_Client">BLE_SerialPort_Client</p></td>
         <td align=left>
 How to demonstrate Point-to-Point communication using Bluetooth Low Energy GATT component. 
@@ -1296,6 +1423,28 @@ Bluetooth Low Energy application skeleton (Bluetooth LE stack modular configurat
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_StaticStack">BLE_StaticStack</p></td>
+        <td align=left>
+Demonstrate how to build a Bluetooth stack for a STM32WB0 device that can be used by an application programmed in a separated area of Flash memory.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_StaticStack_ota">BLE_StaticStack_ota</p></td>
+        <td align=left>
+Demonstrate how to build a Bluetooth stack for a STM32WB0 device that can be used by an application programmed in a separated area of Flash memory.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>2</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td>-</td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_TransparentMode">BLE_TransparentMode</p></td>
         <td align=left>
 How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor (UART mode).
@@ -1311,10 +1460,10 @@ How to use Bluetooth LE stack running on STM32WB0 device configured as a network
         <td align=left>
 How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor controller only (UART mode).
 </td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
-        <td>-</td>
-        <td>-</td>
+        <td><font size="5" color=green>CubeMx</font></td>
+        <td><font size="5" color=green>CubeMx</font></td>
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
@@ -1333,10 +1482,10 @@ How to use Bluetooth LE stack running on STM32WB0 device configured as a network
         <td align=left>
 How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor controller only (SPI mode).
 </td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
-        <td>-</td>
-        <td>-</td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
         <td><font size="5" color=green>X</font></td>
       </tr>
       <tr align=center>
@@ -1397,15 +1546,7 @@ How to use Bluetooth LE stack running on STM32WB0 device configured as a network
       <tr align=center>
         <td align=left><p id="BLE_TransparentMode_UART_for_Updater_C_O">BLE_TransparentMode_UART_for_Updater_C_O</p></td>
         <td align=left>
-How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor, controller only (UART mode)
-
-### __Keywords__
-
-Connectivity, BLE, BLE protocol
-
-### __Hardware and Software environment__
-
-  - This example runs on STM32WB0 devices.
+How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor, controller only (UART mode).
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
@@ -1480,6 +1621,28 @@ Demonstrate STM32WB0 acting as BLE peripheral and GATT server with FreeRTOS.
         <td><font size="5" color=green>X</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_p2pServer_StaticStack">BLE_p2pServer_StaticStack</p></td>
+        <td align=left>
+Demonstrate how to build an application referencing a Bluetooth stack located in a separate area of Flash Memory. In this way, it is possible to update the application without the need to program the Bluetooth stack.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_p2pServer_StaticStack_ota">BLE_p2pServer_StaticStack_ota</p></td>
+        <td align=left>
+Demonstrate how to build an application referencing a Bluetooth stack located in a separate area of Flash Memory. In this way, it is possible to update the application without the need to program the Bluetooth stack. Firmware Upgrade Over-The-Air (FUOTA) is also supported to update the application over Bluetooth. The new application is temporarily stored in a dedicated area of Flash memory (download area) and then copied by BLE_StaticStack_ota from the download area to the application area.
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>2</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td><font size="5" color=green>X</font></td>
+        <td>-</td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_p2pServer_ota">BLE_p2pServer_ota</p></td>
         <td align=left>
 Demonstrate STM32WB0 acting as BLE peripheral and GATT server and offering OTA firmware update service.
@@ -1493,7 +1656,9 @@ Demonstrate STM32WB0 acting as BLE peripheral and GATT server and offering OTA f
       <tr align=center>
         <td align=left rowspan=3><p id="FreeRTOS">FreeRTOS</p></td>
         <td align=left><p id="FreeRTOS_Mutex">FreeRTOS_Mutex</p></td>
-        <td align=left></td>
+        <td align=left>
+This application demonstrates the use of mutexes to serialize access to a shared resource.
+</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>2</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
         <td><font size="5" color=green>CubeMx</font></td>
@@ -1523,11 +1688,11 @@ This application demonstrates the use of FreeRTOS tickless low power mode and se
         <td>-</td>
       </tr>
       <tr style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>
-        <td colspan="3"><b>Total number of applications</b></td><td>111</td>
-        <td>44</td>
-        <td>40</td>
-        <td>34</td>
-        <td>37</td>
+        <td colspan="3"><b>Total number of applications</b></td><td>156</td>
+        <td>59</td>
+        <td>57</td>
+        <td>49</td>
+        <td>50</td>
       </tr>
       <tr align=center>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" rowspan=11><p id="Demonstrations">Demonstrations</p></td>
@@ -1650,11 +1815,11 @@ How to calculate HSE startup time.
         <td>10</td>
       </tr>
       <tr style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>
-      	<td colspan="4"><b>Total number of projects</b></td><td>298</td>
-          <td>129</td>
-      	<td>123</td>
-      	<td>86</td>
-      	<td>89</td>
+      	<td colspan="4"><b>Total number of projects</b></td><td>343</td>
+          <td>144</td>
+      	<td>140</td>
+      	<td>101</td>
+      	<td>102</td>
       </tr>
     </table>
   </body>

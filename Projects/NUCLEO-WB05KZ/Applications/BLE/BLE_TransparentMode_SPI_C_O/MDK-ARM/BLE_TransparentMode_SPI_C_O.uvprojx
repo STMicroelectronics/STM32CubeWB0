@@ -937,7 +937,7 @@
             <File>
               <FileName>stm32wb0x_ble_stack_controller_only.a</FileName>
               <FileType>4</FileType>
-              <FilePath>../../../../../../Middlewares/ST/STM32_BLE/stack/lib/stm32wb0x_ble_stack_controller_only.a</FilePath>
+              <FilePath>..\..\..\..\..\..\Middlewares\ST\STM32_BLE\stack\lib\stm32wb0x_ble_stack_controller_only.a</FilePath>
             </File>
           </Files>
         </Group>

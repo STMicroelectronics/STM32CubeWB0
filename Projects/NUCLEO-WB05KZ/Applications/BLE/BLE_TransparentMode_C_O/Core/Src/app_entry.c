@@ -135,6 +135,8 @@ static PowerSaveLevels App_PowerSaveLevel_Check(void)
   PowerSaveLevels output_level = POWER_SAVE_LEVEL_STOP;
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
 
+  output_level = POWER_SAVE_LEVEL_CPU_HALT;
+  
   /* USER CODE END App_PowerSaveLevel_Check_1 */
 
   return output_level;

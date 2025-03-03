@@ -80,7 +80,7 @@ typedef struct
    * the security, wait for pairing or does not have any security
    * requirements.
    * 0x00 : no security required
-   * 0x01 : host should initiate security by sending the slave security
+   * 0x01 : host should initiate security by sending the security
    *        request command
    * 0x02 : host need not send the clave security request but it
    * has to wait for paiirng to complete before doing any other
@@ -314,7 +314,7 @@ void BLE_Init(void)
 #endif
 
 /* USER CODE BEGIN Role_Mngt*/
-
+  APP_DBG_MSG("\n * * * * Application name : BLE_Security_Central * * * *\n");
 /* USER CODE END Role_Mngt */
 
   ret = aci_gap_init(privacy_type, CFG_BD_ADDRESS_TYPE);
@@ -385,10 +385,9 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
 
-  APP_DBG_MSG("\n\n\n");
-  APP_DBG_MSG("\t\t* * * BLE_Security_Central * * *\n");
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
   ret = aci_gap_set_security_requirements(bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode,
                                                bleAppContext.BleApplicationContext_legacy.bleSecurityParam.mitm_mode,
@@ -900,6 +899,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  if(Status != 0)
+  {
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
+  }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
@@ -1091,6 +1096,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       /* USER CODE END PROC_GAP_CENTRAL_SCAN_TERMINATE */
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_1 */
+
+    /* USER CODE END GAP_CENTRAL_1 */
     default:
       break;
   }
@@ -1136,7 +1144,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       }
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_2 */
 
+    /* USER CODE END GAP_CENTRAL_2 */
     default:
       break;
   }
@@ -1196,16 +1206,6 @@ static uint8_t analyse_adv_report(uint8_t adv_data_size, uint8_t *p_adv_data,
             (p_adv_data[i + 7] == FW_DATA_SECURITY_PERIPHERAL_1)&&
             (p_adv_data[i + 8] == FW_DATA_SECURITY_PERIPHERAL_2)&&
             (p_adv_data[i + 9] == FW_DATA_SECURITY_PERIPHERAL_3))
-          
-          /** 
-  * FIRMWARE ID 
-  */
-
-#define FW_ID_SECURITY_PERIPHERAL          0x13 /* FW ID */
-#define FW_DATA_SECURITY_PERIPHERAL_1      0x01 /* Data1 */ 
-#define FW_DATA_SECURITY_PERIPHERAL_2      0x02 /* Data2 */ 
-#define FW_DATA_SECURITY_PERIPHERAL_3      0x03 /* Data1 */ 
-          
         {
           /* SECURITY BlueST v2 detected */
           bleAppContext.deviceServerBdAddrType = address_type;
@@ -1264,11 +1264,11 @@ static void Connect_Request(void)
     
     if (result == BLE_STATUS_SUCCESS)
     {
-      APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02x\n", result);
+      APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02X\n", result);
     }
     else
     {
-      APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , result: 0x%02x\n", result);
+      APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , result: 0x%02X\n", result);
     }  
     result = aci_gap_create_connection(LE_1M_PHY_BIT,
                                        bleAppContext.deviceServerBdAddrType,
@@ -1286,7 +1286,7 @@ static void Connect_Request(void)
     }
     else
     {
-      APP_DBG_MSG("==>> GAP Create connection Failed , result: 0x%02x\n", result);
+      APP_DBG_MSG("==>> GAP Create connection Failed , result: 0x%02X\n", result);
     }
   }
 

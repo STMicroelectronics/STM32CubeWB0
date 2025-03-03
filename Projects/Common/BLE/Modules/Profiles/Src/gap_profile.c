@@ -360,6 +360,14 @@ tBleStatus Gap_profile_set_char_value(uint16_t attr_h,
          */
         return BLE_STATUS_INVALID_PARAMS;
     }
+    
+    if(gap_chrs[i].val_buffer_p == NULL)
+    {
+      /**
+       * The given attribute handle is not related to a buffered characteristic.
+       */
+      return BLE_STATUS_INVALID_PARAMS;
+    }
 
     /**
      * Write characteristic value.

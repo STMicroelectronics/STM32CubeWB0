@@ -331,6 +331,7 @@ void BAS_Init(void)
 
   /* USER CODE BEGIN InitService1Svc_2 */
   devContext.batteryServHandle = BAS_Context.BasSvcHdle;
+  bal_val_buffer[BAL_SIZE-1] = 100;
   /* USER CODE END InitService1Svc_2 */
 
   if (ret != BLE_STATUS_SUCCESS)
@@ -380,7 +381,7 @@ tBleStatus BAS_NotifyValue(BAS_CharOpcode_t CharOpcode, BAS_Data_t *pData, uint1
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   /* USER CODE BEGIN Service3_App_Notify_Char_1 */
-
+  
   /* USER CODE END Service3_App_Notify_Char_1 */
 
   switch(CharOpcode)

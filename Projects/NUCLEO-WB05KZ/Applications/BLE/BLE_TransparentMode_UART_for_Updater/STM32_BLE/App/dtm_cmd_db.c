@@ -3931,7 +3931,7 @@ const hci_command_table_type hci_command_table[] = {
   /* aci_hal_set_le_power_control */
   {0xfc1c, aci_hal_set_le_power_control_process},
 #endif
-#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_DISABLED
+#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_FORCE_DISABLED
   /* aci_hal_updater_start */
   {0xfc20, aci_hal_updater_start_process},
 #endif
@@ -10645,7 +10645,7 @@ fail:
 }
 #endif
 
-#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_DISABLED
+#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_FORCE_DISABLED
 /* tBleStatus aci_hal_updater_start(void);
  */
 /* Command len: 0 */

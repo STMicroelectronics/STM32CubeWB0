@@ -43,7 +43,9 @@ typedef enum
   APP_BLE_CONNECTED_CLIENT,
   APP_BLE_ADV_FAST,
   APP_BLE_ADV_LP,
+/* USER CODE BEGIN ConnStatus_t */
 
+/* USER CODE END ConnStatus_t */
 } APP_BLE_ConnStatus_t;
 
 typedef enum
@@ -137,6 +139,7 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
+
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 void BLEStack_Process_Schedule_From_ISR(void);

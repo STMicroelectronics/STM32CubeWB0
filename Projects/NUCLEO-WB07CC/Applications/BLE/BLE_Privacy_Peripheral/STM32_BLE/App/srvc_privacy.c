@@ -300,7 +300,7 @@ static BLEEVT_EvtAckStatus_t SRVC_PRIVACY_EventHandler(aci_blecore_event *p_evt)
       status = aci_gatt_clt_confirm_indication(pr->Connection_Handle, BLE_GATT_UNENHANCED_ATT_L2CAP_CID);
       if (status != BLE_STATUS_SUCCESS)
       {
-        APP_DBG_MSG("  Fail   : aci_gatt_confirm_indication command, result: 0x%x \n", status);
+        APP_DBG_MSG("  Fail   : aci_gatt_confirm_indication command, result: 0x%X \n", status);
       }
       else
       {

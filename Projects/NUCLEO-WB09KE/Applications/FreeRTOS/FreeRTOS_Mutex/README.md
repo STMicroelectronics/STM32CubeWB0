@@ -1,5 +1,5 @@
 
-## <b>FreeRTOS_Mutex application description</b>
+## <b>FreeRTOS_Mutex Application Description</b>
 
 This application demonstrates the use of mutexes to serialize access to a shared resource.
 

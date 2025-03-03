@@ -45,6 +45,15 @@ When the BLE_Security_Central is not connected, pressing the B2 button clears th
 If the Central is connected, pressing the B3 button starts the procedure to disconnect from the Peripheral.
 Once connected, pressing the B1 button on the Central sends a GATT write command to the connected BLE_Security_Peripheral device, causing LED1 on the Peripheral to toggle.
 
+| **Device**                  | **Button** | **Function**                                                                                     |
+|-----------------------------|------------|--------------------------------------------------------------------------------------------------|
+| **BLE_Security_Peripheral** | B1         | If idle: Start advertising procedure with a one-minute timeout (LED2 blinks). If connected: Start the procedure to disconnect from the Central. |
+|                             | B2         | When not connected: Clear the security database.                                                 |
+|                             | B3         | When connected: Update the connection interval parameters.                                       |
+| **BLE_Security_Central**    | B1         | If idle: Initiate a scan and establish a connection to the first BLE_Security_Peripheral device found. If connected: Send a GATT write command to the connected Peripheral, causing LED1 on the Peripheral to toggle. |
+|                             | B2         | When not connected: Clear the security database.                                                 |
+|                             | B3         | When connected: Start the procedure to disconnect from the Peripheral.                           |
+
 
 ### __Notes__
                                             

@@ -10,7 +10,7 @@
       <TargetName>BLE_Security_Central</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6140001::V6.14.1::ARMCLANG</pCCUsed>
+      <pCCUsed>6210000::V6.21::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>-fshort-enums</MiscControls>
-              <Define>NUCLEO_WB05KZ,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB07</Define>
+              <Define>NUCLEO_WB07CC,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB07</Define>
               <Undefine></Undefine>
               <IncludePath>../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../System/Config/Debug_GPIO;../System/Interfaces;../../../../../../Utilities/trace/adv_trace;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Projects/Common/BLE/Interfaces;../../../../../../Projects/Common/BLE/Modules;../../../../../../Projects/Common/BLE/Modules/RTDebug;../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc;../../../../../../Projects/Common/BLE/Modules/Profiles/Inc;../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc;../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc;../../../../../../Projects/Common/BLE/Modules/Flash;../../../../../../Projects/Common/BLE/Startup;../../../../../../Utilities/misc;../../../../../../Utilities/sequencer;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/ECB;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo</IncludePath>
             </VariousControls>
@@ -634,16 +634,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/BSP/NUCLEO-WB05KZ</GroupName>
-          <Files>
-            <File>
-              <FileName>stm32wb0x_nucleo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Drivers/STM32WB0x_HAL_Driver</GroupName>
           <Files>
             <File>
@@ -794,6 +784,136 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Drivers/BSP/NUCLEO-WB07CC</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>2</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>4</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <uGnu>2</uGnu>
+                <useXO>2</useXO>
+                <v6Lang>0</v6Lang>
+                <v6LangP>0</v6LangP>
+                <vShortEn>2</vShortEn>
+                <vShortWch>2</vShortWch>
+                <v6Lto>2</v6Lto>
+                <v6WtE>2</v6WtE>
+                <v6Rtti>2</v6Rtti>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <ClangAsOpt>1</ClangAsOpt>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>stm32wb0x_nucleo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</FilePath>
+              <FileOption>
+                <CommonProperty>
+                  <UseCPPCompiler>2</UseCPPCompiler>
+                  <RVCTCodeConst>0</RVCTCodeConst>
+                  <RVCTZI>0</RVCTZI>
+                  <RVCTOtherData>0</RVCTOtherData>
+                  <ModuleSelection>0</ModuleSelection>
+                  <IncludeInBuild>1</IncludeInBuild>
+                  <AlwaysBuild>2</AlwaysBuild>
+                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
+                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
+                  <PublicsOnly>2</PublicsOnly>
+                  <StopOnExitCode>11</StopOnExitCode>
+                  <CustomArgument></CustomArgument>
+                  <IncludeLibraryModules></IncludeLibraryModules>
+                  <ComprImg>1</ComprImg>
+                </CommonProperty>
+                <FileArmAds>
+                  <Cads>
+                    <interw>2</interw>
+                    <Optim>0</Optim>
+                    <oTime>2</oTime>
+                    <SplitLS>2</SplitLS>
+                    <OneElfS>2</OneElfS>
+                    <Strict>2</Strict>
+                    <EnumInt>2</EnumInt>
+                    <PlainCh>2</PlainCh>
+                    <Ropi>2</Ropi>
+                    <Rwpi>2</Rwpi>
+                    <wLevel>0</wLevel>
+                    <uThumb>2</uThumb>
+                    <uSurpInc>2</uSurpInc>
+                    <uC99>2</uC99>
+                    <uGnu>2</uGnu>
+                    <useXO>2</useXO>
+                    <v6Lang>0</v6Lang>
+                    <v6LangP>0</v6LangP>
+                    <vShortEn>2</vShortEn>
+                    <vShortWch>2</vShortWch>
+                    <v6Lto>2</v6Lto>
+                    <v6WtE>2</v6WtE>
+                    <v6Rtti>2</v6Rtti>
+                    <VariousControls>
+                      <MiscControls></MiscControls>
+                      <Define></Define>
+                      <Undefine></Undefine>
+                      <IncludePath></IncludePath>
+                    </VariousControls>
+                  </Cads>
+                </FileArmAds>
+              </FileOption>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
@@ -801,16 +921,16 @@
   </Targets>
 
   <RTE>
-    <apis/>
+    <apis />
     <components>
       <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.6.0" condition="CMSIS Core">
-        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.9.0"/>
+        <package name="CMSIS" schemaVersion="1.3" url="http://www.keil.com/pack/" vendor="ARM" version="5.9.0" />
         <targetInfos>
-          <targetInfo name="BLE_Security_Central"/>
+          <targetInfo name="BLE_Security_Central" />
         </targetInfos>
       </component>
     </components>
-    <files/>
+    <files />
   </RTE>
 
 </Project>

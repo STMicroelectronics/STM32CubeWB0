@@ -167,7 +167,6 @@ void DMA_IRQHandler(void)
   /* USER CODE BEGIN DMA_IRQn 0 */
 
   /* USER CODE END DMA_IRQn 0 */
-
   /* USER CODE BEGIN DMA_IRQn 1 */
 
   /* USER CODE END DMA_IRQn 1 */

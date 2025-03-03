@@ -41,6 +41,8 @@
 #include "dtm_burst.h"
 /* Add aci_blue_initialized_event() prototype */
 void aci_blue_initialized_event(uint8_t Reason_Code);
+/* aci_blue_initialized_event with with legacy format (not extended) */
+void aci_blue_initialized_legacy_event(uint8_t Reason_Code);
 
 /* Add aci_blue_crash_info_event() prototype */
 void aci_blue_crash_info_event(uint8_t Crash_Type,
@@ -67,6 +69,7 @@ uint16_t num_packets = 0;
 
 /* USER CODE END PTD */
 /* Private define ------------------------------------------------------------*/
+#define RESET_REASON_NRST       ((uint8_t)0x01)
 #define RESET_REASON_WDG        ((uint8_t)0x05)
 #define RESET_REASON_LOCKUP     ((uint8_t)0x06)
 #define RESET_REASON_POR_BOR    ((uint8_t)0x07)
@@ -156,6 +159,7 @@ void BLE_Init(void)
   if (ret != BLE_STATUS_SUCCESS) {
     Error_Handler();
   }
+
 }
 
 void BLEStack_Process_Schedule(void)
@@ -274,9 +278,7 @@ void APP_BLE_Init(void)
     send_event(buffer_out,7,-1);
   }
 
-#if (BLESTACK_CONTROLLER_ONLY == 0)
-
-  uint8_t reset_reason = 0x01;
+  uint8_t reset_reason = RESET_REASON_NRST;
 
   /* EVT_BLUE_INITIALIZED */
   /* Check the reset reason */
@@ -290,13 +292,26 @@ void APP_BLE_Init(void)
     reset_reason = RESET_REASON_POR_BOR;
   }
 
-  if((crash_info.signature&0xFFFF0000) == CRASH_SIGNATURE_BASE) {
+  if(RAM_VR.ResetReason & RCC_CSR_SFTRSTF && (crash_info.signature&0xFFFF0000) == CRASH_SIGNATURE_BASE) {
     reset_reason = RESET_REASON_CRASH;
   }
 
+#if (BLESTACK_CONTROLLER_ONLY == 1)
+    /* In controller-only mode, let's send the aci_blue_initialized_event only
+     for HW reset or if there is a relevant reset reason. */
+  else if(RAM_VR.ResetReason & RCC_CSR_SFTRSTF){
+    reset_reason = 0;
+  }
+
+  if(reset_reason) {
+    aci_blue_initialized_legacy_event(reset_reason);
+  }
+
+#else
+
   aci_blue_initialized_event(reset_reason);
 
-#endif
+#endif /* (BLESTACK_CONTROLLER_ONLY == 1) */
 
   if((crash_info.signature&0xFFFF0000) == CRASH_SIGNATURE_BASE) {
     aci_blue_crash_info_event(crash_info.signature&0xFF,

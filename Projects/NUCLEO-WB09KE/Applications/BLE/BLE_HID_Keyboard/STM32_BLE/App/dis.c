@@ -332,23 +332,7 @@ static BLEEVT_EvtAckStatus_t DIS_EventHandler(aci_blecore_event *p_evt)
       break;/* ACI_ATT_EXCHANGE_MTU_RESP_VSEVT_CODE */
     }
     /* USER CODE BEGIN BLECORE_EVT */
-    //TBR???
-    /* Manage ACI_GATT_INDICATION_VSEVT_CODE */
-//    case ACI_GATT_CLT_INDICATION_VSEVT_CODE:
-//    {
-//      tBleStatus status = BLE_STATUS_FAILED;
-//      aci_gatt_clt_indication_event_rp0 *pr = (void*)p_evt->data;
-//      status = aci_gatt_clt_confirm_indication(pr->Connection_Handle, BLE_GATT_UNENHANCED_ATT_L2CAP_CID);
-//      if (status != BLE_STATUS_SUCCESS)
-//      {
-//        APP_DBG_MSG("  Fail   : aci_gatt_confirm_indication command, result: 0x%x \n", status);
-//      }
-//      else
-//      {
-//        APP_DBG_MSG("  Success: aci_gatt_confirm_indication command\n");
-//      }   
-//    }
-//    break; /* end ACI_GATT_CLT_INDICATION_VSEVT_CODE */
+
     /* USER CODE END BLECORE_EVT */
   default:
     /* USER CODE BEGIN EVT_DEFAULT */

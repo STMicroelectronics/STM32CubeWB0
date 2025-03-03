@@ -210,10 +210,10 @@
         </option>
         <option>
           <name>CCDefines</name>
-          <state>NUCLEO_WB09KE</state>
           <state>USE_FULL_LL_DRIVER</state>
           <state>USE_HAL_DRIVER</state>
           <state>STM32WB05</state>
+          <state>NUCLEO_WB05KZ</state>
           <state></state>
         </option>
         <option>
@@ -1283,6 +1283,12 @@
       <name>BSP</name>
       <group>
         <name>NUCLEO-WB09KE</name>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</name>
+        </file>
+      </group>
+      <group>
+        <name>NUCLEO-WB05KZ</name>
         <file>
           <name>$PROJ_DIR$/../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</name>
         </file>

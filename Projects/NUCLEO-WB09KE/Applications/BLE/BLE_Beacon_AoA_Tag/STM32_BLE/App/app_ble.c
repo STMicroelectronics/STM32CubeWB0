@@ -216,6 +216,7 @@ void BLE_Init(void)
 #endif
 
   APP_DBG_MSG("BLE stack initialized\r\n");
+
 }
 
 void BLEStack_Process_Schedule(void)

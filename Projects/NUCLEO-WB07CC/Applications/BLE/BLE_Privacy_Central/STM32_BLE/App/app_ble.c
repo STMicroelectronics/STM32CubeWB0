@@ -80,7 +80,7 @@ typedef struct
    * the security, wait for pairing or does not have any security
    * requirements.
    * 0x00 : no security required
-   * 0x01 : host should initiate security by sending the slave security
+   * 0x01 : host should initiate security by sending the security
    *        request command
    * 0x02 : host need not send the clave security request but it
    * has to wait for paiirng to complete before doing any other
@@ -333,7 +333,7 @@ void BLE_Init(void)
   ret = hci_le_set_event_mask(LE_Event_Mask); 
   if (ret != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : hci_le_set_event_mask(), result:0x%02x\n", ret);
+    APP_DBG_MSG("  Fail   : hci_le_set_event_mask(), result:0x%02X\n", ret);
   }
   else
   {
@@ -410,6 +410,7 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
 
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
@@ -849,8 +850,8 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE BEGIN ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
           if (p_pairing_complete->Status == 0)
           {
-            /* At pairing completion, the master writes the characteristic to enable the notification. */
-            APP_DBG_MSG("At pairing completion, the master writes the characteristic to enable the notification.\n");
+            /* At pairing completion, the central writes the characteristic to enable the notification. */
+            APP_DBG_MSG("At pairing completion, the central writes the characteristic to enable the notification.\n");
             UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
           }
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
@@ -927,6 +928,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  if(Status != 0)
+  {
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
+  }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
@@ -1119,6 +1126,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       /* USER CODE END PROC_GAP_CENTRAL_SCAN_TERMINATE */
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_1 */
+
+    /* USER CODE END GAP_CENTRAL_1 */
     default:
       break;
   }
@@ -1164,7 +1174,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       }
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_2 */
 
+    /* USER CODE END GAP_CENTRAL_2 */
     default:
       break;
   }
@@ -1278,7 +1290,7 @@ static void Connect_Request(void)
     /* Clear the deviceServerFound flag for the next execution. */
     bleAppContext.deviceServerFound = 0x00;
 
-    APP_DBG_MSG("Create connection to Privacy Peripheral\n");
+    APP_DBG_MSG("Create connection to Peripheral\n");
  
     result = aci_gap_create_connection(LE_1M_PHY_BIT,
                                        bleAppContext.deviceServerBdAddrType,
@@ -1298,7 +1310,7 @@ static void Connect_Request(void)
     }
     else
     {
-      APP_DBG_MSG("==>> GAP Create connection Failed , result: 0x%02x\n", result);
+      APP_DBG_MSG("==>> GAP Create connection Failed , result: 0x%02X\n", result);
     }
   }
   else
@@ -1342,11 +1354,11 @@ static void General_Connection_Establishment(void)
   
   if (status == BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02x\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02X\n", status);
   }
   else
   {
-    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , status: 0x%02x\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , status: 0x%02X\n", status);
   }  
 
   status = aci_gap_start_procedure (GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC,LE_1M_PHY_BIT,0,0);
@@ -1372,6 +1384,7 @@ static void General_Connection_Establishment(void)
  */
 static void Terminate_Scanning(void)
 {
+  
   uint32_t status = aci_gap_terminate_proc(GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC);
   if (status != BLE_STATUS_SUCCESS)
   {
@@ -1383,7 +1396,8 @@ static void Terminate_Scanning(void)
     APP_DBG_MSG("==>> aci_gap_terminate_gap_proc - Success\n");
   }
 }
-  
+ 
+
 /* USER CODE END FD_LOCAL_FUNCTION */
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */

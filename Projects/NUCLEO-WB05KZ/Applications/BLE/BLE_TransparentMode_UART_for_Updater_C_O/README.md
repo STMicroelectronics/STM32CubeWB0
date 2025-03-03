@@ -1,6 +1,6 @@
 ## __BLE_TransparentMode_UART_for_Updater_C_O Application Description__
 
-How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor, controller only (UART mode)
+How to use Bluetooth LE stack running on STM32WB0 device configured as a network coprocessor, controller only (UART mode).
 
 ### __Keywords__
 

@@ -248,9 +248,13 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     GPIO_InitStruct.Alternate = TM_AF_UART_TX_PIN;
     HAL_GPIO_Init(TM_UART_TX_GPIO_PORT, &GPIO_InitStruct);
 
-    LL_PWR_SetNoPullB(LL_PWR_GPIO_BIT_0);
+    HAL_PWREx_DisableGPIOPullUp(PWR_GPIO_B, PWR_GPIO_BIT_0);
 
-    LL_PWR_SetNoPullA(LL_PWR_GPIO_BIT_1);
+    HAL_PWREx_DisableGPIOPullUp(PWR_GPIO_A, PWR_GPIO_BIT_1);
+
+    HAL_PWREx_DisableGPIOPullDown(PWR_GPIO_B, PWR_GPIO_BIT_0);
+
+    HAL_PWREx_DisableGPIOPullDown(PWR_GPIO_A, PWR_GPIO_BIT_1);
 
     /* USART1 DMA Init */
     /* USART1_TX Init */

@@ -1455,7 +1455,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>../../../../../../Middlewares/ST/STM32_BLE/stack/lib/stm32wb0x_ble_stack_controller_only.a</PathWithFileName>
+      <PathWithFileName>..\..\..\..\..\..\Middlewares\ST\STM32_BLE\stack\lib\stm32wb0x_ble_stack_controller_only.a</PathWithFileName>
       <FilenameWithoutPath>stm32wb0x_ble_stack_controller_only.a</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

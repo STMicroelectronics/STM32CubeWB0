@@ -2913,6 +2913,18 @@ typedef PACKED(struct) aci_l2cap_cos_connection_resp_rp0_s {
   uint16_t CID[(HCI_MAX_PAYLOAD_SIZE - 2)/sizeof(uint16_t)];
 } aci_l2cap_cos_connection_resp_rp0;
 
+typedef PACKED(struct) aci_l2cap_cos_flow_control_credits_ind_cp0_s {
+  uint16_t Connection_Handle;
+  uint16_t CID;
+  uint16_t RX_Credits;
+  uint8_t CFC_Policy;
+} aci_l2cap_cos_flow_control_credits_ind_cp0;
+
+typedef PACKED(struct) aci_l2cap_cos_flow_control_credits_ind_rp0_s {
+  uint8_t Status;
+  uint16_t RX_Credit_Balance;
+} aci_l2cap_cos_flow_control_credits_ind_rp0;
+
 typedef PACKED(struct) aci_l2cap_cos_disconnect_req_cp0_s {
   uint16_t Connection_Handle;
   uint16_t CID;
@@ -3198,6 +3210,7 @@ uint16_t aci_hal_tone_stop_process(uint8_t *buffer_in, uint16_t buffer_in_length
 uint16_t aci_hal_get_link_status_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_hal_set_radio_activity_mask_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_hal_set_le_power_control_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
+uint16_t aci_hal_updater_start_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_hal_transmitter_test_packets_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_hal_transmitter_test_packets_v2_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_hal_write_radio_reg_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
@@ -3287,6 +3300,7 @@ uint16_t aci_l2cap_connection_parameter_update_req_process(uint8_t *buffer_in, u
 uint16_t aci_l2cap_connection_parameter_update_resp_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_l2cap_cos_connection_req_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_l2cap_cos_connection_resp_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
+uint16_t aci_l2cap_cos_flow_control_credits_ind_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_l2cap_cos_disconnect_req_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_l2cap_cos_sdu_data_transmit_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
 uint16_t aci_l2cap_cos_reconfigure_req_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length);
@@ -3917,6 +3931,10 @@ const hci_command_table_type hci_command_table[] = {
   /* aci_hal_set_le_power_control */
   {0xfc1c, aci_hal_set_le_power_control_process},
 #endif
+#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_FORCE_DISABLED
+  /* aci_hal_updater_start */
+  {0xfc20, aci_hal_updater_start_process},
+#endif
 #if (!defined(ACI_HAL_TRANSMITTER_TEST_PACKETS_ENABLED) || ACI_HAL_TRANSMITTER_TEST_PACKETS_ENABLED) && !ACI_HAL_TRANSMITTER_TEST_PACKETS_FORCE_DISABLED
   /* aci_hal_transmitter_test_packets */
   {0xfc2b, aci_hal_transmitter_test_packets_process},
@@ -4275,6 +4293,10 @@ const hci_command_table_type hci_command_table[] = {
 #if (!defined(ACI_L2CAP_COS_CONNECTION_RESP_ENABLED) || ACI_L2CAP_COS_CONNECTION_RESP_ENABLED) && !ACI_L2CAP_COS_CONNECTION_RESP_FORCE_DISABLED
   /* aci_l2cap_cos_connection_resp */
   {0xfd84, aci_l2cap_cos_connection_resp_process},
+#endif
+#if (!defined(ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_ENABLED) || ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_ENABLED) && !ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_FORCE_DISABLED
+  /* aci_l2cap_cos_flow_control_credits_ind */
+  {0xfd85, aci_l2cap_cos_flow_control_credits_ind_process},
 #endif
 #if (!defined(ACI_L2CAP_COS_DISCONNECT_REQ_ENABLED) || ACI_L2CAP_COS_DISCONNECT_REQ_ENABLED) && !ACI_L2CAP_COS_DISCONNECT_REQ_FORCE_DISABLED
   /* aci_l2cap_cos_disconnect_req */
@@ -10126,6 +10148,16 @@ fail:
 }
 #endif
 
+#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_DISABLED
+tBleStatus aci_hal_updater_start(void)
+{
+   // For ACI_HAL_UPDATER_START, set flag to issue a updater start
+   RAM_VR.BlueFlag = BLUE_FLAG_RAM_RESET;
+   TL_ResetReqCallback();
+   return BLE_STATUS_SUCCESS;
+}
+#endif
+
 #if (!defined(ACI_HAL_GET_FIRMWARE_DETAILS_ENABLED) || ACI_HAL_GET_FIRMWARE_DETAILS_ENABLED) && !ACI_HAL_GET_FIRMWARE_DETAILS_FORCE_DISABLED
 /* tBleStatus aci_hal_get_firmware_details(uint8_t *DTM_version_major,
                                         uint8_t *DTM_version_minor,
@@ -10608,6 +10640,37 @@ fail:
   buffer_out[2] = output_size + 3;
   buffer_out[3] = 0x01;
   buffer_out[4] = 0x1c;
+  buffer_out[5] = 0xfc;
+  return (output_size + 6);
+}
+#endif
+
+#if (!defined(ACI_HAL_UPDATER_START_ENABLED) || ACI_HAL_UPDATER_START_ENABLED) && !ACI_HAL_UPDATER_START_FORCE_DISABLED
+/* tBleStatus aci_hal_updater_start(void);
+ */
+/* Command len: 0 */
+/* Response len: 1 */
+uint16_t aci_hal_updater_start_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length)
+{
+
+  int output_size = 1;
+  /* Output params */
+  uint8_t *status = (uint8_t *) (buffer_out + 6);
+
+  *status = BLE_ERROR_INVALID_HCI_CMD_PARAMS;
+  if (buffer_out_max_length < (1 + 6)) { return 0; }
+  if(buffer_in_length != 0)
+  {
+    goto fail;
+  }
+
+  *status = aci_hal_updater_start();
+fail:
+  buffer_out[0] = 0x04;
+  buffer_out[1] = 0x0E;
+  buffer_out[2] = output_size + 3;
+  buffer_out[3] = 0x01;
+  buffer_out[4] = 0x20;
   buffer_out[5] = 0xfc;
   return (output_size + 6);
 }
@@ -14311,6 +14374,49 @@ fail:
   buffer_out[2] = output_size + 3;
   buffer_out[3] = 0x01;
   buffer_out[4] = 0x84;
+  buffer_out[5] = 0xfd;
+  return (output_size + 6);
+}
+#endif
+
+#if (!defined(ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_ENABLED) || ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_ENABLED) && !ACI_L2CAP_COS_FLOW_CONTROL_CREDITS_IND_FORCE_DISABLED
+/* tBleStatus aci_l2cap_cos_flow_control_credits_ind(uint16_t Connection_Handle,
+                                                  uint16_t CID,
+                                                  uint16_t RX_Credits,
+                                                  uint8_t CFC_Policy,
+                                                  uint16_t *RX_Credit_Balance);
+ */
+/* Command len: 2 + 2 + 2 + 1 */
+/* Response len: 1 + 2 */
+uint16_t aci_l2cap_cos_flow_control_credits_ind_process(uint8_t *buffer_in, uint16_t buffer_in_length, uint8_t *buffer_out, uint16_t buffer_out_max_length)
+{
+  /* Input params */
+  aci_l2cap_cos_flow_control_credits_ind_cp0 *cp0 = (aci_l2cap_cos_flow_control_credits_ind_cp0 *)(buffer_in + (0));
+
+  int output_size = 1 + 2;
+  /* Output params */
+  aci_l2cap_cos_flow_control_credits_ind_rp0 *rp0 = (aci_l2cap_cos_flow_control_credits_ind_rp0 *) (buffer_out + 6);
+  uint16_t RX_Credit_Balance = 0;
+
+  rp0->Status = BLE_ERROR_INVALID_HCI_CMD_PARAMS;
+  if (buffer_out_max_length < (1 + 2 + 6)) { return 0; }
+  if(buffer_in_length != 2 + 2 + 2 + 1)
+  {
+    goto fail;
+  }
+
+  rp0->Status = aci_l2cap_cos_flow_control_credits_ind(cp0->Connection_Handle /* 2 */,
+                                                       cp0->CID /* 2 */,
+                                                       cp0->RX_Credits /* 2 */,
+                                                       cp0->CFC_Policy /* 1 */,
+                                                       &RX_Credit_Balance);
+fail:
+  rp0->RX_Credit_Balance = RX_Credit_Balance;
+  buffer_out[0] = 0x04;
+  buffer_out[1] = 0x0E;
+  buffer_out[2] = output_size + 3;
+  buffer_out[3] = 0x01;
+  buffer_out[4] = 0x85;
   buffer_out[5] = 0xfd;
   return (output_size + 6);
 }

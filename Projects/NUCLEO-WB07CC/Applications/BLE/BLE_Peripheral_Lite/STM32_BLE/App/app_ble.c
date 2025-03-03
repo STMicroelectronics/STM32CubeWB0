@@ -272,22 +272,63 @@ void BLE_Init(void)
     APP_DBG_MSG("  Success: Gap_profile_set_appearance - Appearance\n");
   }
 
-#if CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED
-  /* Initialize Default PHY */
-  ret = hci_le_set_default_phy(0x00, HCI_TX_PHYS_LE_2M_PREF, HCI_RX_PHYS_LE_2M_PREF);
+  /**
+   * Initialize IO capability
+   */
+  bleAppContext.BleApplicationContext_legacy.bleSecurityParam.ioCapability = CFG_IO_CAPABILITY;
+  ret = aci_gap_set_io_capability(bleAppContext.BleApplicationContext_legacy.bleSecurityParam.ioCapability);
   if (ret != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : hci_le_set_default_phy command, result: 0x%02X\n", ret);
+    APP_DBG_MSG("  Fail   : aci_gap_set_io_capability command, result: 0x%02X\n", ret);
   }
   else
   {
-    APP_DBG_MSG("  Success: hci_le_set_default_phy command\n");
+    APP_DBG_MSG("  Success: aci_gap_set_io_capability command\n");
   }
 
-#endif
+  /**
+   * Initialize authentication
+   */
+  bleAppContext.BleApplicationContext_legacy.bleSecurityParam.mitm_mode             = CFG_MITM_PROTECTION;
+  bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
+  bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
+  bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   fill_advData(&a_AdvData[0], sizeof(a_AdvData), bd_address);
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
+  ret = aci_gap_set_security_requirements(bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode,
+                                               bleAppContext.BleApplicationContext_legacy.bleSecurityParam.mitm_mode,
+                                               CFG_SC_SUPPORT,
+                                               CFG_KEYPRESS_NOTIFICATION_SUPPORT,
+                                               bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin,
+                                               bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax,
+                                               GAP_PAIRING_RESP_NONE);
+
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : aci_gap_set_security_requirements command, result: 0x%02X\n", ret);
+  }
+  else
+  {
+    APP_DBG_MSG("  Success: aci_gap_set_security_requirements command\n");
+  }
+
+  /**
+   * Initialize Filter Accept List
+   */
+  if (bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode)
+  {
+    ret = aci_gap_configure_filter_accept_and_resolving_list(0x01);
+    if (ret != BLE_STATUS_SUCCESS)
+    {
+      APP_DBG_MSG("  Fail   : aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", ret);
+    }
+    else
+    {
+      APP_DBG_MSG("  Success: aci_gap_configure_filter_accept_and_resolving_list command\n");
+    }
+  }
   APP_DBG_MSG("==>> End BLE_Init function\n");
 
 }
@@ -558,6 +599,80 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
         /* USER CODE END RADIO_ACTIVITY_EVENT*/
         break;
+      case ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE:
+        {
+          APP_DBG_MSG(">>== ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE\n");
+          /* USER CODE BEGIN ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE*/
+
+          /* USER CODE END ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE*/
+        }
+        break;
+      case ACI_GAP_PASSKEY_REQ_VSEVT_CODE:
+        {
+          APP_DBG_MSG(">>== ACI_GAP_PASSKEY_REQ_VSEVT_CODE\n");
+
+          ret = aci_gap_passkey_resp(bleAppContext.BleApplicationContext_legacy.connectionHandle, CFG_FIXED_PIN);
+          if (ret != BLE_STATUS_SUCCESS)
+          {
+            APP_DBG_MSG("==>> aci_gap_passkey_resp : Fail, reason: 0x%02X\n", ret);
+          }
+          else
+          {
+            APP_DBG_MSG("==>> aci_gap_passkey_resp : Success\n");
+          }
+          /* USER CODE BEGIN ACI_GAP_PASSKEY_REQ_VSEVT_CODE*/
+
+          /* USER CODE END ACI_GAP_PASSKEY_REQ_VSEVT_CODE*/
+        }
+        break;
+      case ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE:
+        {
+          APP_DBG_MSG(">>== ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE\n");
+          aci_gap_pairing_complete_event_rp0 *p_pairing_complete;
+          p_pairing_complete = (aci_gap_pairing_complete_event_rp0*)p_blecore_evt->data;
+
+          if (p_pairing_complete->Status != 0)
+          {
+            APP_DBG_MSG("     - Pairing KO\n     - Status: 0x%02X\n     - Reason: 0x%02X\n",
+                        p_pairing_complete->Status, p_pairing_complete->Reason);
+          }
+          else
+          {
+            APP_DBG_MSG("     - Pairing Success\n");
+          }
+          APP_DBG_MSG("\n");
+
+          /* USER CODE BEGIN ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
+
+          /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
+        }
+        break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
 
         /* USER CODE END EVT_VENDOR_1 */
@@ -602,6 +717,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  if(Status != 0)
+  {
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
+  }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
@@ -805,6 +926,9 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       /* USER CODE END CONN_PARAM_UPDATE */
       break;
     }/* PROC_GAP_PERIPH_CONN_PARAM_UPDATE */
+    /* USER CODE BEGIN GAP_PERIPHERAL_1 */
+
+    /* USER CODE END GAP_PERIPHERAL_1 */
     default:
       break;
   }
@@ -877,11 +1001,11 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       status = aci_gap_set_advertising_enable(DISABLE, 0, NULL);
       if (status != BLE_STATUS_SUCCESS)
       {
-        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("Disable advertising - fail, result: 0x%02X\n",status);
       }
       else
       {
+        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("==>> Disable advertising - Success\n");
       }
       break;
@@ -911,6 +1035,9 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
 
       break;
     }/* PROC_GAP_PERIPH_SET_BROADCAST_MODE */
+    /* USER CODE BEGIN GAP_PERIPHERAL_2 */
+
+    /* USER CODE END GAP_PERIPHERAL_2 */
     default:
       break;
   }

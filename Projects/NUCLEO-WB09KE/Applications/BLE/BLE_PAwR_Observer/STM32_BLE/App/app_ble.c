@@ -81,7 +81,7 @@ typedef struct
    * the security, wait for pairing or does not have any security
    * requirements.
    * 0x00 : no security required
-   * 0x01 : host should initiate security by sending the slave security
+   * 0x01 : host should initiate security by sending the security
    *        request command
    * 0x02 : host need not send the clave security request but it
    * has to wait for paiirng to complete before doing any other
@@ -183,6 +183,7 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout);
+
 static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
 
@@ -391,19 +392,7 @@ void BLE_Init(void)
     APP_DBG_MSG("  Success: Gap_profile_set_appearance - Appearance\n");
   }
 
-#if CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED
-  /* Initialize Default PHY */
-  ret = hci_le_set_default_phy(0x00, HCI_TX_PHYS_LE_2M_PREF, HCI_RX_PHYS_LE_2M_PREF);
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    APP_DBG_MSG("  Fail   : hci_le_set_default_phy command, result: 0x%02X\n", ret);
-  }
-  else
-  {
-    APP_DBG_MSG("  Success: hci_le_set_default_phy command\n");
-  }
 
-#endif
   /**
    * Initialize IO capability
    */
@@ -428,7 +417,6 @@ void BLE_Init(void)
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
-
   ret = aci_gap_set_security_requirements(bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode,
                                                bleAppContext.BleApplicationContext_legacy.bleSecurityParam.mitm_mode,
                                                CFG_SC_SUPPORT,
@@ -480,6 +468,7 @@ void BLE_Init(void)
   }  
 
   APP_DBG_MSG("==>> End BLE_Init function\n"); 
+
 }
 
 void BLEStack_Process_Schedule(void)
@@ -488,7 +477,6 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
-
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
@@ -511,7 +499,6 @@ void VTimer_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_VTIMER, CFG_SEQ_PRIO_0);
 }
-
 void NVM_Process(void)
 {
   NVMDB_Tick();
@@ -554,11 +541,9 @@ void APP_BLE_Init(void)
   /* USER CODE BEGIN APP_BLE_Init_1 */
   tBleStatus ret;
   /* USER CODE END APP_BLE_Init_1 */
-
   UTIL_SEQ_RegTask(1U << CFG_TASK_BLE_STACK, UTIL_SEQ_RFU, BLEStack_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_VTIMER, UTIL_SEQ_RFU, VTimer_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_NVM, UTIL_SEQ_RFU, NVM_Process);
-
   ModulesInit();
 
   /* Initialization of HCI & GATT & GAP layer */
@@ -668,9 +653,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
-
       gap_cmd_resp_release();
-
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE_1 */
 
       /* USER CODE END EVT_DISCONN_COMPLETE_1 */
@@ -929,9 +912,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           
           APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
           
-          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
           
-          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
           
           aci_gatt_srv_resp(p_read->Connection_Handle,
                             p_read->CID,
@@ -940,9 +923,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
                             0,
                             NULL);
           
-          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
           
-          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
           break;
         }
         /* USER CODE BEGIN EVT_VENDOR_1 */
@@ -1204,6 +1187,9 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       break;
     }
     /* PROC_GAP_PERIPH_CONN_TERMINATE */
+    /* USER CODE BEGIN GAP_PERIPHERAL_1 */
+
+    /* USER CODE END GAP_PERIPHERAL_1 */
     default:
       break;
   }
@@ -1323,6 +1309,9 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
 
       break;
     }/* PROC_GAP_PERIPH_SET_BROADCAST_MODE */
+    /* USER CODE BEGIN GAP_PERIPHERAL_2 */
+
+    /* USER CODE END GAP_PERIPHERAL_2 */
     default:
       break;
   }
@@ -1344,7 +1333,6 @@ static void gap_cmd_resp_wait(void)
   UTIL_SEQ_WaitEvt(1 << CFG_IDLEEVT_PROC_GAP_COMPLETE);
   return;
 }
-
 /* USER CODE BEGIN FD_LOCAL_FUNCTION */
 
 static void Adv_Cancel_Req(void *arg)

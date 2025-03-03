@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    Peripheral_Lite_Server.c
+  * @file    peripheral_lite_server.c
   * @author  MCD Application Team
-  * @brief   Peripheral_Lite_Server definition.
+  * @brief   peripheral lite  definition.
   ******************************************************************************
   * @attention
   *

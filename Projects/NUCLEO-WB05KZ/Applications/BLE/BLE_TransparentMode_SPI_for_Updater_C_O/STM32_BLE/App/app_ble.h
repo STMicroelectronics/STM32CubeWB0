@@ -106,7 +106,7 @@ typedef enum
 
 /* Transparent Mode/DTM version (Bluetooth LE stack v4.x) */
 #define DTM_FW_VERSION_MAJOR    1
-#define DTM_FW_VERSION_MINOR    1
+#define DTM_FW_VERSION_MINOR    2
 #define DTM_FW_VERSION_PATCH    0
 
 #define SPI_INTERFACE
@@ -125,7 +125,6 @@ typedef enum
 void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
-
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 /* USER CODE END EF */

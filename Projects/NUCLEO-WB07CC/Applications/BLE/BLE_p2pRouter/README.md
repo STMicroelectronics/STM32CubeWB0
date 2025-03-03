@@ -29,7 +29,6 @@ In order to make the program work, you must do the following :
  - On smartphone interface you can see devices appearing.
  - On p2pServer device, a click on B1 sends a notification to BLE_p2pRouter.
     - this GATT notification message is forwarded to the smartphone and displayed on the interface.
-
  - On smartphone interface a GATT write command can be sent to selected p2pServer devices, changing led status.
     - this write message is sent first to BLE_p2pRouter and then routed to its destination. 
 	  The blue led will toggle on selected p2pServer devices.

@@ -77,19 +77,19 @@ void HAL_MspInit(void)
 }
 
 /**
-* @brief RADIO MSP Initialization
-* This function configures the hardware resources used in this example
-* @param hradio: RADIO handle pointer
-* @retval None
-*/
+  * @brief RADIO MSP Initialization
+  * This function configures the hardware resources used in this example
+  * @param hradio: RADIO handle pointer
+  * @retval None
+  */
 void HAL_RADIO_MspInit(RADIO_HandleTypeDef* hradio)
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(hradio->Instance==RADIO)
   {
-  /* USER CODE BEGIN RADIO_MspInit 0 */
+    /* USER CODE BEGIN RADIO_MspInit 0 */
 
-  /* USER CODE END RADIO_MspInit 0 */
+    /* USER CODE END RADIO_MspInit 0 */
 
   /** Initializes the peripherals clock
   */
@@ -116,27 +116,27 @@ void HAL_RADIO_MspInit(RADIO_HandleTypeDef* hradio)
     HAL_NVIC_EnableIRQ(RADIO_TXRX_IRQn);
     HAL_NVIC_SetPriority(RADIO_TXRX_SEQ_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(RADIO_TXRX_SEQ_IRQn);
-  /* USER CODE BEGIN RADIO_MspInit 1 */
+    /* USER CODE BEGIN RADIO_MspInit 1 */
 
-  /* USER CODE END RADIO_MspInit 1 */
+    /* USER CODE END RADIO_MspInit 1 */
 
   }
 
 }
 
 /**
-* @brief RADIO MSP De-Initialization
-* This function freeze the hardware resources used in this example
-* @param hradio: RADIO handle pointer
-* @retval None
-*/
+  * @brief RADIO MSP De-Initialization
+  * This function freeze the hardware resources used in this example
+  * @param hradio: RADIO handle pointer
+  * @retval None
+  */
 void HAL_RADIO_MspDeInit(RADIO_HandleTypeDef* hradio)
 {
   if(hradio->Instance==RADIO)
   {
-  /* USER CODE BEGIN RADIO_MspDeInit 0 */
+    /* USER CODE BEGIN RADIO_MspDeInit 0 */
 
-  /* USER CODE END RADIO_MspDeInit 0 */
+    /* USER CODE END RADIO_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_RADIO_CLK_DISABLE();
     __HAL_RCC_RADIO_FORCE_RESET();
@@ -145,60 +145,60 @@ void HAL_RADIO_MspDeInit(RADIO_HandleTypeDef* hradio)
     /* RADIO interrupt DeInit */
     HAL_NVIC_DisableIRQ(RADIO_TXRX_IRQn);
     HAL_NVIC_DisableIRQ(RADIO_TXRX_SEQ_IRQn);
-  /* USER CODE BEGIN RADIO_MspDeInit 1 */
+    /* USER CODE BEGIN RADIO_MspDeInit 1 */
 
-  /* USER CODE END RADIO_MspDeInit 1 */
+    /* USER CODE END RADIO_MspDeInit 1 */
   }
 
 }
 
 /**
-* @brief TIM_Base MSP Initialization
-* This function configures the hardware resources used in this example
-* @param htim_base: TIM_Base handle pointer
-* @retval None
-*/
+  * @brief TIM_Base MSP Initialization
+  * This function configures the hardware resources used in this example
+  * @param htim_base: TIM_Base handle pointer
+  * @retval None
+  */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 {
   if(htim_base->Instance==TIM1)
   {
-  /* USER CODE BEGIN TIM1_MspInit 0 */
+    /* USER CODE BEGIN TIM1_MspInit 0 */
 
-  /* USER CODE END TIM1_MspInit 0 */
+    /* USER CODE END TIM1_MspInit 0 */
     /* Peripheral clock enable */
     __HAL_RCC_TIM1_CLK_ENABLE();
     /* TIM1 interrupt Init */
     HAL_NVIC_SetPriority(TIM1_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM1_IRQn);
-  /* USER CODE BEGIN TIM1_MspInit 1 */
+    /* USER CODE BEGIN TIM1_MspInit 1 */
 
-  /* USER CODE END TIM1_MspInit 1 */
+    /* USER CODE END TIM1_MspInit 1 */
 
   }
 
 }
 
 /**
-* @brief TIM_Base MSP De-Initialization
-* This function freeze the hardware resources used in this example
-* @param htim_base: TIM_Base handle pointer
-* @retval None
-*/
+  * @brief TIM_Base MSP De-Initialization
+  * This function freeze the hardware resources used in this example
+  * @param htim_base: TIM_Base handle pointer
+  * @retval None
+  */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 {
   if(htim_base->Instance==TIM1)
   {
-  /* USER CODE BEGIN TIM1_MspDeInit 0 */
+    /* USER CODE BEGIN TIM1_MspDeInit 0 */
 
-  /* USER CODE END TIM1_MspDeInit 0 */
+    /* USER CODE END TIM1_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM1_CLK_DISABLE();
 
     /* TIM1 interrupt DeInit */
     HAL_NVIC_DisableIRQ(TIM1_IRQn);
-  /* USER CODE BEGIN TIM1_MspDeInit 1 */
+    /* USER CODE BEGIN TIM1_MspDeInit 1 */
 
-  /* USER CODE END TIM1_MspDeInit 1 */
+    /* USER CODE END TIM1_MspDeInit 1 */
   }
 
 }

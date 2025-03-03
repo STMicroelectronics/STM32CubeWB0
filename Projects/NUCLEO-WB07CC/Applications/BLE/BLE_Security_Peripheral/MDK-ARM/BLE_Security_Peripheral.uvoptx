@@ -728,7 +728,7 @@
   </Group>
 
   <Group>
-    <GroupName>Drivers/BSP/NUCLEO-WB05KZ</GroupName>
+    <GroupName>Drivers/BSP/NUCLEO-WB07CC</GroupName>
     <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>

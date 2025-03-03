@@ -278,23 +278,7 @@ static BLEEVT_EvtAckStatus_t BAS_EventHandler(aci_blecore_event *p_evt)
       break;/* ACI_ATT_EXCHANGE_MTU_RESP_VSEVT_CODE */
     }
     /* USER CODE BEGIN BLECORE_EVT */
-    //TBR???
-//    /* Manage ACI_GATT_INDICATION_VSEVT_CODE occurring on Android 12 */   
-//  case ACI_GATT_CLT_INDICATION_VSEVT_CODE:
-//    {
-//      tBleStatus status = BLE_STATUS_FAILED;
-//      aci_gatt_clt_indication_event_rp0 *pr = (void*)p_evt->data;
-//      status = aci_gatt_clt_confirm_indication(pr->Connection_Handle, BLE_GATT_UNENHANCED_ATT_L2CAP_CID);
-//      if (status != BLE_STATUS_SUCCESS)
-//      {
-//        APP_DBG_MSG("  Fail   : aci_gatt_confirm_indication command, result: 0x%x \n", status);
-//      }
-//      else
-//      {
-//        APP_DBG_MSG("  Success: aci_gatt_confirm_indication command\n");
-//      }   
-//    }
-//    break; /* end ACI_GATT_NOTIFICATION_VSEVT_CODE */
+
     /* USER CODE END BLECORE_EVT */
   default:
     /* USER CODE BEGIN EVT_DEFAULT */
@@ -347,6 +331,7 @@ void BAS_Init(void)
 
   /* USER CODE BEGIN InitService1Svc_2 */
   devContext.batteryServHandle = BAS_Context.BasSvcHdle;
+  bal_val_buffer[BAL_SIZE-1] = 100;
   /* USER CODE END InitService1Svc_2 */
 
   if (ret != BLE_STATUS_SUCCESS)
@@ -396,7 +381,7 @@ tBleStatus BAS_NotifyValue(BAS_CharOpcode_t CharOpcode, BAS_Data_t *pData, uint1
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   /* USER CODE BEGIN Service3_App_Notify_Char_1 */
-
+  
   /* USER CODE END Service3_App_Notify_Char_1 */
 
   switch(CharOpcode)

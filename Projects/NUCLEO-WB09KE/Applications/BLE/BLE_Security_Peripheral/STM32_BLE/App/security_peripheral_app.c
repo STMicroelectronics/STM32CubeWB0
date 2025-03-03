@@ -331,7 +331,7 @@ __USED void SotpTimerNotification(void)
 }
 
 /**
-* @brief Handle the slave security request task.
+* @brief Handle the security request task.
 */
 __USED void Peripheral_Security_Request(void)
 {
@@ -342,7 +342,7 @@ __USED void Peripheral_Security_Request(void)
                                 0x01);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : Pairing request: 0x%x\n", status);
+    APP_DBG_MSG("  Fail   : Pairing request: 0x%X\n", status);
   }
   else
   {

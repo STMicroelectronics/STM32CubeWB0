@@ -332,7 +332,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>-fshort-enums</MiscControls>
-              <Define>NUCLEO_WB09KE,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB05</Define>
+              <Define>NUCLEO_WB05KZ,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB05</Define>
               <Undefine />
               <IncludePath>../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../System/Config/Debug_GPIO;../System/Interfaces;../../../../../../Utilities/trace/adv_trace;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Projects/Common/BLE/Interfaces;../../../../../../Projects/Common/BLE/Modules;../../../../../../Projects/Common/BLE/Modules/RTDebug;../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc;../../../../../../Projects/Common/BLE/Modules/Profiles/Inc;../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc;../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc;../../../../../../Projects/Common/BLE/Modules/Flash;../../../../../../Projects/Common/BLE/Startup;../../../../../../Utilities/misc;../../../../../../Utilities/sequencer;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/ECB;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo</IncludePath>
             </VariousControls>
@@ -628,7 +628,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Drivers/BSP/NUCLEO-WB09KE</GroupName>
+          <GroupName>Drivers/BSP/NUCLEO-WB05KZ</GroupName>
           <Files>
             <File>
               <FileName>stm32wb0x_nucleo.c</FileName>

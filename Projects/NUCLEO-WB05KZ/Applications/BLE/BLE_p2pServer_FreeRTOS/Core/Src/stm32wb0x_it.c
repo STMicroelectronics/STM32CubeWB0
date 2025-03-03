@@ -119,6 +119,13 @@ void TIM2_IRQHandler(void)
   /* USER CODE END TIM2_IRQn 1 */
 }
 
+/******************************************************************************/
+/* STM32WB0x Peripheral Interrupt Handlers                                    */
+/* Add here the Interrupt Handlers for the used peripherals.                  */
+/* For the available peripheral interrupt handler names,                      */
+/* please refer to the startup file (startup_stm32wb0x.s).                    */
+/******************************************************************************/
+
 /**
   * @brief This function handles USART1 Interrupt.
   */

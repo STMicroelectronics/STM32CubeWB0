@@ -275,7 +275,7 @@ static void Timer_Callback_SendNotification(void *args)
 }
 
 /**
-* @brief Handle the slave security request task.
+* @brief Handle the security request task.
 */
 __USED void Peripheral_Security_Request(void)
 {
@@ -286,7 +286,7 @@ __USED void Peripheral_Security_Request(void)
                                 0x01);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("  Fail   : Pairing request: 0x%x\n", status);
+    APP_DBG_MSG("  Fail   : Pairing request: 0x%X\n", status);
   }
   else
   {
@@ -311,19 +311,15 @@ __USED void Do_Get_Bonded_Devices(void)
   status = aci_gap_get_bonded_devices(0, MAX_NUM_BONDED_DEVICES, &num_of_addresses, bonded_device_entry_53);
   if (status != BLE_STATUS_SUCCESS) 
   {
-    APP_DBG_MSG("  Fail   : aci_gap_get_bonded_devices() failed:0x%02x\r\n", status);
+    APP_DBG_MSG("  Fail   : aci_gap_get_bonded_devices() failed:0x%02X\r\n", status);
   }
   else
   {
-////////    APP_DBG_MSG("  Success: aci_gap_get_bonded_devices; N: %d, update_char_value = %d\n", num_of_addresses, update_char_value);
     APP_DBG_MSG("  Success: aci_gap_get_bonded_devices; N: %d\n", num_of_addresses);
     if (num_of_addresses>=1)
     {
-////////      if (update_char_value) 
-////////      {
-        /* Start the timer to send the notification */
-        HAL_RADIO_TIMER_StartVirtualTimer(&(SRVC_PRIVACY_APP_Context.TimerSendNotification_Id), SRVC_PRIVACY_APP_Context.TimerSendNotification_interval);  
-////////      }
+       /* Start the timer to send the notification */
+       HAL_RADIO_TIMER_StartVirtualTimer(&(SRVC_PRIVACY_APP_Context.TimerSendNotification_Id), SRVC_PRIVACY_APP_Context.TimerSendNotification_interval);  
     }
   }
   return;

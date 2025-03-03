@@ -66,8 +66,9 @@ typedef struct clockContextS
   uint8_t  directHSEenabled;
   uint8_t  LSEenabled;
   uint8_t  LSIenabled;
-  uint32_t clkDiv;
 } clockContextT;
+
+#define MIN_ACTIVE_TIME_US          200
 
 /* USER CODE BEGIN Private_Define */
 
@@ -84,11 +85,29 @@ static ahb0PeriphT ahb0={0};
 static cpuPeriphT  cpuPeriph={0};
 static uint32_t    cStackPreamble[CSTACK_PREAMBLE_NUMBER];
 static clockContextT clockContext;
+static uint32_t lastTick;
 
 /* USER CODE BEGIN Private_Variables */
 extern void CPUcontextSave(void);
 
 /* USER CODE END Private_Variables */
+
+static uint8_t checkMinWakeUpTime(void)
+{
+  if(lastTick == HAL_GetTick())
+  {
+    uint32_t systick_reload_val = SysTick->LOAD;
+      
+    /* In this case it is likely that we are going to sleep too early.
+       Check current value of systick counter.  */
+    if(SysTick->VAL > systick_reload_val - MIN_ACTIVE_TIME_US * (HAL_RCC_GetSysClockFreq() / 1000000))
+    {
+      return 1;
+    }
+  }
+  
+  return 0;
+}
 
 /** @addtogroup TINY_LPM_IF_Exported_functions
  * @{
@@ -111,11 +130,6 @@ void PWR_EnterOffMode( void )
   {
     clockContext.directHSEenabled = TRUE;
   }
-#if defined(STM32WB07)
-  clockContext.clkDiv =  LL_RCC_GetRC64MPLLPrescaler();
-#else
-  clockContext.clkDiv = LL_RCC_GetCLKSYSPrescalerStatus();
-#endif
   if (LL_RCC_LSE_IsEnabled())
   {
     clockContext.LSEenabled = TRUE;
@@ -145,10 +159,10 @@ void PWR_EnterOffMode( void )
   /* Set SLEEPDEEP bit of Cortex System Control Register */
   SET_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
   
-  /* Setup the SYS CLK DIV with the reset value */
-  if (clockContext.clkDiv == LL_RCC_RC64MPLL_DIV_1)
+  /* Workaround: do not go to sleep if we have been awake for a too short time. */
+  if(checkMinWakeUpTime() != 0)
   {
-    LL_RCC_SetRC64MPLLPrescaler(LL_RCC_RC64MPLL_DIV_4);
+    return;
   }
   
   /* Save the CPU context & Wait for Interrupt Request to enter in DEEPSTOP */
@@ -164,6 +178,14 @@ void PWR_ExitOffMode( void )
   /* USER CODE BEGIN PWR_ExitOffMode_1 */
 
   /* USER CODE END PWR_ExitOffMode_1 */
+
+  /* Workaround to avoid going to sleep too early after a wakeup.
+     We need to have a time reference. We can save current value of tick.
+   */
+  if(RAM_VR.WakeupFromSleepFlag)
+  {
+    lastTick = HAL_GetTick();
+  }
 
   /* Restore low speed clock configuration */
   if (clockContext.LSEenabled == TRUE)
@@ -187,12 +209,6 @@ void PWR_ExitOffMode( void )
   /* Disable the GPIO retention at wake DEEPSTOP configuration */
   LL_PWR_DisableGPIORET();
 #endif
-  
-  /* Restore the CLK SYS DIV */
-  if (clockContext.clkDiv == LL_RCC_RC64MPLL_DIV_1)
-  {
-    LL_RCC_SetRC64MPLLPrescaler(LL_RCC_RC64MPLL_DIV_1);
-  }
   
   /* Wait until the HSE is ready */
   while(LL_RCC_HSE_IsReady() == 0U);
@@ -245,12 +261,7 @@ void PWR_EnterStopMode( void )
   {
     clockContext.directHSEenabled = TRUE;
   }
-#if defined(STM32WB07)
-  clockContext.clkDiv =  LL_RCC_GetRC64MPLLPrescaler();
-#else
-  clockContext.clkDiv = LL_RCC_GetCLKSYSPrescalerStatus();
-#endif
-  
+
   /* Setup the wakeup sources */
   HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_BLEHOST|PWR_WAKEUP_BLE, 0);
    
@@ -271,10 +282,10 @@ void PWR_EnterStopMode( void )
   /* Set SLEEPDEEP bit of Cortex System Control Register */
   SET_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
   
-  /* Setup the SYS CLK DIV with the reset value */
-  if (clockContext.clkDiv == LL_RCC_RC64MPLL_DIV_1)
+  /* Workaround: do not go to sleep if we have been awake for a too short time. */
+  if(checkMinWakeUpTime() != 0)
   {
-    LL_RCC_SetRC64MPLLPrescaler(LL_RCC_RC64MPLL_DIV_4);
+    return;
   }
   
   /* Save the CPU context & Wait for Interrupt Request to enter in DEEPSTOP */
@@ -290,6 +301,14 @@ void PWR_ExitStopMode( void )
   /* USER CODE BEGIN PWR_ExitStopMode_1 */
 
   /* USER CODE END PWR_ExitStopMode_1 */
+
+  /* Workaround to avoid going to sleep too early after a wakeup.
+     We need to have a time reference. We can save current value of tick.
+   */
+  if(RAM_VR.WakeupFromSleepFlag)
+  {
+    lastTick = HAL_GetTick();
+  }
   
   /* Clear SLEEPDEEP bit of Cortex System Control Register */
   CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
@@ -302,12 +321,6 @@ void PWR_ExitStopMode( void )
   /* Disable the GPIO retention at wake DEEPSTOP configuration */
   LL_PWR_DisableGPIORET();
 #endif
-  
-  /* Restore the CLK SYS DIV */
-  if (clockContext.clkDiv == LL_RCC_RC64MPLL_DIV_1)
-  {
-    LL_RCC_SetRC64MPLLPrescaler(LL_RCC_RC64MPLL_DIV_1);
-  }
 
   /* Wait until the HSE is ready */
   while(LL_RCC_HSE_IsReady() == 0U);

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_powercontrol_central-application-description"><strong>BLE_PowerControl_Central
+        Application Description</strong></h2>
+        <p>This example shows the LE Power Control features: - Dynamic
+        adjustment of TX power level on a connection, based on RSSI - TX
+        power reporting - Path loss monitoring.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board is necessary to run
+        BLE_PowerControl_Central application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the following
+        :</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target
+        memory</li>
+        <li>Place BLE_PowerControl_Peripheral device next to a
+        BLE_PowerControl_Central device.</li>
+        <li>A connection is initiated if a BLE_PowerControl_Central
+        device is detected.</li>
+        <li>Once the BLE_PowerControl_Peripheral application is
+        connected to a BLE_PowerControl_Central:
+        <ul>
+        <li>On BLE_PowerControl_Peripheral device, LED2 is turned
+        On.</li>
+        <li>On BLE_PowerControl_Central device, LED2 is turned On.</li>
+        </ul></li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <h3 id="procedure">Procedure</h3>
+        <p>The Bluetooth stack on each device uses power control
+        procedures to adjust the power of the peer in order to have the
+        signal always in the golden range. The target RSSI and the
+        hysteresis are specified inside the <code>app_ble.c</code>
+        file.</p>
+        <div class="sourceCode" id="cb1"><pre
+        class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">/* Values for power control */</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RSSI_TARGET_1M              </span><span class="op">-</span><span class="dv">70</span><span class="pp">  </span><span class="co">// dBm</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RSSI_TARGET_2M              </span><span class="op">-</span><span class="dv">67</span><span class="pp">  </span><span class="co">// dBm</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RSSI_TARGET_CODED_S8        </span><span class="op">-</span><span class="dv">77</span><span class="pp">  </span><span class="co">// dBm</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RSSI_TARGET_CODED_S2        </span><span class="op">-</span><span class="dv">73</span><span class="pp">  </span><span class="co">// dBm</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#define RSSI_HYSTERESIS               </span><span class="dv">8</span><span class="pp">  </span><span class="co">// dB</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co">/* Values for path loss monitoring */</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="pp">#define HIGH_THRESHOLD      </span><span class="dv">74</span><span class="pp">  </span><span class="co">// dB</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#define HIGH_HYSTERESIS     </span><span class="dv">6</span><span class="pp">   </span><span class="co">// dB</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LOW_THRESHOLD       </span><span class="dv">55</span><span class="pp">  </span><span class="co">// dB</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#define LOW_HYSTERESIS      </span><span class="dv">6</span><span class="pp">   </span><span class="co">// dB</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="pp">#define MIN_TIME            </span><span class="dv">4</span><span class="pp">   </span><span class="co">// Connection events</span></span></code></pre></div>
+        <p>Each time there is a power change on the local or on the
+        remote device, an
+        <code>hci_le_transmit_power_reporting_event</code> is received
+        and it is printed on the UART interface.</p>
+        <h3 id="path-loss-monitoring">Path Loss Monitoring</h3>
+        <p>Path loss monitoring is also enabled: three path loss zones
+        are defined (low, medium, and high). The LED1 blinks at
+        different rates in each zone: - High rate in low path loss zone
+        (boards close to each other) - Medium rate in medium path loss
+        zone - Low rate in high path loss zone (boards far from each
+        other)</p>
+        <p>LED1 always ON means that no
+        <code>hci_le_transmit_power_reporting_event</code> has been
+        received. When a new zone is entered, this is also printed
+        through UART.</p>
+        <h3 id="terminal-output">Terminal Output</h3>
+        <p>The Central and the Peripheral show information for each
+        action status, whether success or fail.</p>
+        <h4
+        id="central-output-when-connected-near-the-peripheral">Central
+        Output when connected near the Peripheral</h4>
+        <pre><code>
+  hci_le_path_loss_threshold_event - PATH LOSS: 47 dB (zone 0)
+  hci_le_transmit_power_reporting_event - Local: -12 dBm (9 dB)
+  hci_le_transmit_power_reporting_event - Remote: -16 dBm (-1 dB)
+</code></pre>
+        <h4
+        id="central-output-when-it-is-connected-far-away-from-the-peripheral-about-5-meters-wait-30-seconds">Central
+        Output when it is connected far away from the Peripheral (about
+        5 meters), wait 30 Seconds</h4>
+        <pre><code>
+  hci_le_path_loss_threshold_event - PATH LOSS: 63 dB (zone 1)
+  hci_le_transmit_power_reporting_event - Local: -3 dBm (10 dB)
+  hci_le_transmit_power_reporting_event - Remote: 0 dBm (12 dB)
+</code></pre>
+        <h4
+        id="central-output-when-it-is-connected-far-away-from-the-peripheral-about-20-meters-wait-30-seconds">Central
+        Output when it is connected far away from the Peripheral (about
+        20 meters), wait 30 Seconds</h4>
+        <pre><code>
+  hci_le_path_loss_threshold_event - PATH LOSS: 82 dB (zone 2)
+  hci_le_transmit_power_reporting_event - Local: 6 dBm (9 dB)
+  hci_le_transmit_power_reporting_event - Remote: 6 dBm (7 dB)
+</code></pre>
+        <h3 id="led-and-push-button-behavior">LED and Push Button
+        Behavior</h3>
+        <table>
+        <colgroup>
+        <col style="width: 21%" />
+        <col style="width: 39%" />
+        <col style="width: 39%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th>Behavior</th>
+        <th>Central Device</th>
+        <th>Peripheral Device</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td><strong>LED1</strong></td>
+        <td>Path loss monitoring</td>
+        <td>Path loss monitoring</td>
+        </tr>
+        <tr class="even">
+        <td><strong>LED2</strong></td>
+        <td>On: connected. Blinking: initiating state</td>
+        <td>On: connected. Blinking: advertising</td>
+        </tr>
+        </tbody>
+        </table>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

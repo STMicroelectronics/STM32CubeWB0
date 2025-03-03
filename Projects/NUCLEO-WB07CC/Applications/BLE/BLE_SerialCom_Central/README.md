@@ -38,7 +38,7 @@ At reset, application initialization is done.
  
 On server side when connected:
 
-  - B2 sends slave security request
+  - B2 sends security request
 
 On server side when idle:
 

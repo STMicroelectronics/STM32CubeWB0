@@ -11,38 +11,38 @@
         <h2
         id="ble_privacy_central-application-description"><strong>BLE_Privacy_Central
         Application Description</strong></h2>
-        <p>Demonstrate STM32WB0 acting as BLE peripheral and GATT
-        server.</p>
+        <p>Demonstrate STM32WB0 acting as a BLE peripheral and GATT
+        central.</p>
         <p>This demo implements a Controller Privacy scenario using
-        Privacy 1.2 available with STM32WB0 Bluetooth LE stack v4.x. Two
-        devices Peripheral, Central, both configured with
-        aci_gap_init(privacy flag = 0x02), which should perform these
-        macro steps:</p>
-        <p>Initially, Central and Peripheral devices have no info on
-        their security database: the two devices should connect and make
-        a paring and bonding (fixed key: 123456). After the first
+        Privacy 1.2 available with the STM32WB0 Bluetooth LE stack v4.x.
+        Two devices, Peripheral and Central, both configured with
+        aci_gap_init (privacy flag = 0x02), should perform these macro
+        steps:</p>
+        <p>Initially, Central and Peripheral devices have no information
+        in their security database: the two devices should connect and
+        perform pairing and bonding (fixed key: 123456). After the first
         connection and the pairing/bonding phase is completed, pressing
-        Push1 on the Peripheral, devices disconnect and the Peripheral
-        calls the aci_gap_configure_filter_accept_and_resolving_list()
-        API to add its bonded device address to the controller’s filter
-        list and to the list of resolvable addresses. The Central device
-        enables the Peripheral characteristic notification at pairing
-        complete. The Peripheral send one notification per every
-        notification enable received, sending a counter as payload
-        data.</p>
+        Push1 on the Peripheral will cause the devices to disconnect.
+        The Peripheral then calls the
+        aci_gap_configure_filter_accept_and_resolving_list() API to add
+        its bonded device address to the controller’s filter list and to
+        the list of resolvable addresses. The Central device enables the
+        Peripheral characteristic notification at pairing complete. The
+        Peripheral sends one notification for every notification enable
+        received, sending a counter as payload data.</p>
         <p>The Peripheral enters undirected connectable mode with its
-        own address type = resolvable address and filter list = 0x03 as
-        advertising filter policy. The Central device performs a direct
-        connection to the detected Peripheral device, which accepts the
-        connection since the Central address is on its filter list: the
-        two devices reconnect and the Peripheral starts a notification
-        to the Peripheral. NOTES:</p>
+        own address type set to resolvable address and filter list set
+        to 0x03 as the advertising filter policy. The Central device
+        performs a direct connection to the detected Peripheral device,
+        which accepts the connection since the Central address is on its
+        filter list: the two devices reconnect and the Peripheral starts
+        a notification to the Central. NOTES:</p>
         <p>If the user presses the button PUSH3 on the Central device,
-        the device disconnect</p>
-        <p>Press the button Push1 on Peripheral when connected : the
-        Peripheral disconnects all devices connected and enters in
+        the device disconnects.</p>
+        <p>Press the button Push1 on the Peripheral when connected: the
+        Peripheral disconnects all connected devices and enters
         undirected connectable mode with filtering enabled. This implies
-        that Peripheral device accepts connection requests only from
+        that the Peripheral device accepts connection requests only from
         devices on its filter list.</p>
         <h3 id="keywords"><strong>Keywords</strong></h3>
         <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
@@ -65,6 +65,9 @@
         </ul>
         <p><strong>You can interact with BLE_Privacy_Peripheral
         application with another Nucleo board:</strong></p>
+        <h3
+        id="steps-to-interact-with-ble_privacy-application"><strong>Steps
+        to Interact with BLE_Privacy Application</strong></h3>
         <ul>
         <li>Power up BLE_Privacy_Peripheral device next to a
         BLE_Privacy_Central device.</li>
@@ -78,14 +81,59 @@
         and connection is established to the first
         BLE_Privacy_Peripheral device that is found.</li>
         <li>On BLE_Privacy_Peripheral press button Push1: if some bonded
-        devices are found, it will added to the filter list. The
-        BLE_Privacy_Peripheral disconnect the bonded devices and enters
+        devices are found, it will be added to the filter list. The
+        BLE_Privacy_Peripheral disconnects the bonded devices and enters
         undirected connectable mode with filter policy enabled.</li>
         <li>On BLE_Privacy_Central press button Push1: scan is initiated
         and connection is established without passing the password.</li>
         </ul>
-        <p>When not connected, a click on button Push2 allows to clear
+        <p>When not connected, a click on button Push2 allows clearing
         the security database.</p>
+        <h3 id="button-actions-summary"><strong>Button Actions
+        Summary</strong></h3>
+        <table>
+        <colgroup>
+        <col style="width: 19%" />
+        <col style="width: 6%" />
+        <col style="width: 73%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th>Device</th>
+        <th>Button</th>
+        <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td>BLE_Privacy_Peripheral</td>
+        <td>Push1</td>
+        <td>Initiates advertising, adds bonded devices to filter list,
+        disconnects bonded devices</td>
+        </tr>
+        <tr class="even">
+        <td>BLE_Privacy_Peripheral</td>
+        <td>Push2</td>
+        <td>Clears the security database</td>
+        </tr>
+        <tr class="odd">
+        <td>BLE_Privacy_Central</td>
+        <td>Push1</td>
+        <td>Initiates scan, establishes connection, reconnects to
+        Peripheral, scans without password</td>
+        </tr>
+        <tr class="even">
+        <td>BLE_Privacy_Central</td>
+        <td>Push2</td>
+        <td>Clears the security database</td>
+        </tr>
+        <tr class="odd">
+        <td>BLE_Privacy_Central</td>
+        <td>Push3</td>
+        <td>Disconnects the device</td>
+        </tr>
+        </tbody>
+        </table>
         <h3 id="notes"><strong>Notes</strong></h3>
         <ul>
         <li>On Keil framework, the following compilation setting are

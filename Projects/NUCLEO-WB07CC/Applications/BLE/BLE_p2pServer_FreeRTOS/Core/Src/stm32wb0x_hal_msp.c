@@ -96,6 +96,7 @@ void HAL_PKA_MspInit(PKA_HandleTypeDef* hpka)
   /* USER CODE BEGIN PKA_MspInit 1 */
 
   /* USER CODE END PKA_MspInit 1 */
+
   }
 
 }
@@ -173,6 +174,7 @@ void HAL_RADIO_MspInit(RADIO_HandleTypeDef* hradio)
   /* USER CODE BEGIN RADIO_MspInit 1 */
 
   /* USER CODE END RADIO_MspInit 1 */
+
   }
 
 }

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_rc_longrange_peripheral-application-description"><strong>BLE_RC_LongRange_Peripheral
+        Application Description</strong></h2>
+        <p>This demo shows how to control a remote device (e.g., to
+        drive an actuator) using the STM32WB07 on Coded PHY (Bluetooth
+        LE specifications v5.0) to reach longer distances.</p>
+        <h3 id="demo-application-workflow">Demo Application
+        Workflow</h3>
+        <h3 id="peripheral-device-initialization">Peripheral Device
+        Initialization</h3>
+        <ul>
+        <li>The Peripheral device starts by entering discoverable mode
+        with a fixed address (0x0280E10000E1).</li>
+        <li>LED2 blinks, indicating that the board is in advertising
+        mode.</li>
+        <li>LED3 is off, indicating that the board is using 1 Mbps
+        PHY.</li>
+        <li>Pressing PUSH1 starts a new advertisement process. Please
+        note that if a Coded PHY advertisement is running, it will be
+        terminated. If a connection has been successfully established
+        before, it will also be terminated. If an advertisement with 1M
+        PHY is running, no action will be performed.</li>
+        </ul>
+        <h3 id="central-device-initialization">Central Device
+        Initialization</h3>
+        <ul>
+        <li>Pressing the push button PUSH1 on the Central device
+        (address 0x0280E10000E0) starts the attempt to connect to the
+        Peripheral board.</li>
+        <li>LED2 blinks, indicating that the Central is trying to
+        connect.</li>
+        <li>LED3 is off, indicating that the board is using 1 Mbps
+        PHY.</li>
+        </ul>
+        <h3 id="advertising-and-scanning">Advertising and Scanning</h3>
+        <ul>
+        <li>The Peripheral starts BLE advertising for 60 seconds
+        initially. After this period, advertising can be restarted by
+        pressing PUSH1 on the Peripheral.</li>
+        <li>The Central starts the BLE scanning procedure by pressing
+        PUSH1.</li>
+        </ul>
+        <h3 id="connection-and-communication">Connection and
+        Communication</h3>
+        <ul>
+        <li>Once connected (LED2 remains on for both devices), the
+        Central writes to a BLE characteristic to switch LED1 on and off
+        on the Peripheral.</li>
+        <li>The state of LED1 changes every 300 ms if all packets are
+        received from the Central.</li>
+        <li>The state of LED1 also changes on the Central side when the
+        write to the characteristic is successful.</li>
+        </ul>
+        <h3 id="measuring-communication-range">Measuring Communication
+        Range</h3>
+        <ul>
+        <li>To measure the communication range, move the boards away
+        from each other until LED1 on the Peripheral blinks at a
+        constant rate. When the blinking rate of LED1 decreases, it
+        indicates that several packets are being retransmitted by the
+        Central, suggesting the boards are at the limit of a stable
+        communication range.</li>
+        </ul>
+        <h3 id="switching-phy">Switching PHY</h3>
+        <ul>
+        <li>While connected, press button PUSH2 on one of the boards to
+        start the procedure to change the PHY to Coded PHY.</li>
+        <li>When the procedure completes (i.e., Coded PHY activated), a
+        message is visible on the terminal.</li>
+        <li>Pressing the PUSH2 button again on the same device switches
+        the PHY back to 1 Mbps.</li>
+        <li>LED3 is on, indicating that the board is using the Coded
+        PHY.</li>
+        <li>LED3 is off, indicating that the board is using 1 Mbps
+        PHY.</li>
+        <li><strong>Note</strong>: When the PHY is switched by one
+        device, the other device will not be able to switch the PHY.
+        Once the first device sets the preferred PHY (either 1 Mbps or
+        Coded), only that device will be able to continue switching
+        between 1 Mbps and Coded PHY.</li>
+        </ul>
+        <h3 id="measuring-range-with-coded-phy">Measuring Range with
+        Coded PHY</h3>
+        <ul>
+        <li>Users can measure the stable communication range using Coded
+        PHY by repeating the test described above: move the boards away
+        from each other until LED1 on the Peripheral blinks at a
+        constant rate.</li>
+        <li>An increased stable communication range compared to 1 Mbps
+        PHY should be visible.</li>
+        </ul>
+        <h3 id="switching-advertising-or-scanning-phy">Switching
+        Advertising or Scanning PHY</h3>
+        <ul>
+        <li>The PUSH3 button can also be used to start BLE advertising
+        on the Peripheral device or BLE scanning on the Central device
+        using the Coded PHY. If a connection or an advertisement process
+        is ongoing, these will terminate before starting the new
+        procedures.</li>
+        </ul>
+        <h3 id="additional-information">Additional Information</h3>
+        <ul>
+        <li>On the Central device, some statistics on the link quality
+        are printed.</li>
+        </ul>
+        <h3 id="terminal-output">Terminal Output</h3>
+        <ul>
+        <li>The Central and the Peripheral show information for each
+        action status, whether success or fail.</li>
+        <li>During the connection, the Central device shows the
+        statistics of the radio activity every 10 seconds and will print
+        one symbol * to the terminal for each packet transmitted.</li>
+        </ul>
+        <h4
+        id="central-output-when-connected-near-the-peripheral">Central
+        Output when connected near the Peripheral</h4>
+        <pre><code>* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets   1%
+        PER              1%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets   0%
+        PER              0%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *</code></pre>
+        <h4
+        id="central-output-when-it-is-connected-far-away-from-the-peripheral-about-20-meters-wait-30-seconds">Central
+        Output when it is connected far away from the Peripheral (about
+        20 meters), wait 30 Seconds</h4>
+        <pre><code>* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets  15%
+        PER             15%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         1%
+        Missed packets  14%
+        PER             14%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         1%
+        Missed packets  13%
+        PER             14%</code></pre>
+        <h4
+        id="central-output-when-the-push-button-phus2-on-the-peripheral-is-pressed-while-it-is-away-from-the-central-wait-30-seconds">Central
+        Output When the push button PHUS2 on the Peripheral is pressed
+        while it is away from the Central, Wait 30 Seconds</h4>
+        <pre><code>* * * * * * * * * * * HCI_LE_META_EVT: 0x07
+ gap_cmd_resp_release() HCI_LE_PHY_UPDATE_COMPLETE_SUBEVT_CODE
+  PHY changed, tx:3 rx:3 Coded Phy Led3 On
+hci_le_phy_update_complete_event - HAL_RADIO_TIMER_StartVirtualTimer(&amp;bleAppContext.Statistics_timer_Id, STATS_INTERVAL_MS);
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets  13%
+        PER             13%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets   8%
+        PER              8%
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        CRC errs         0%
+        Missed packets   7%
+        PER              7%</code></pre>
+        <h3 id="led-and-push-button-behavior">LED and Push Button
+        Behavior</h3>
+        <table>
+        <colgroup>
+        <col style="width: 25%" />
+        <col style="width: 34%" />
+        <col style="width: 40%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th>Behavior</th>
+        <th>Central Device</th>
+        <th>Peripheral Device</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td><strong>LED1</strong></td>
+        <td>Indicates a successful write to the BLE characteristic on
+        the Peripheral.</td>
+        <td>Indicates successful packets are received from the
+        Central.</td>
+        </tr>
+        <tr class="even">
+        <td><strong>LED2</strong></td>
+        <td>Blinks: BLE scanning ongoing. On: device connected. Off:
+        device disconnected.</td>
+        <td>Blinks: BLE advertising ongoing. On: device connected. Off:
+        device disconnected.</td>
+        </tr>
+        <tr class="odd">
+        <td><strong>LED3</strong></td>
+        <td>On: Coded PHY. Off: 1M PHY</td>
+        <td>On: Coded PHY. Off: 1M PHY</td>
+        </tr>
+        <tr class="even">
+        <td><strong>PUSH1</strong></td>
+        <td>Starts the BLE scanning procedure 1M PHY.</td>
+        <td>If connected, disconnects and starts BLE advertising in 1M
+        PHY.</td>
+        </tr>
+        <tr class="odd">
+        <td><strong>PUSH2</strong></td>
+        <td>Switches PHY to Coded PHY when connected.</td>
+        <td>Switches PHY to Coded PHY when connected.</td>
+        </tr>
+        <tr class="even">
+        <td><strong>PUSH3</strong></td>
+        <td>Starts the BLE scanning procedure Coded PHY.</td>
+        <td>Starts BLE advertising in Coded PHY.</td>
+        </tr>
+        </tbody>
+        </table>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
+        BLE Controller Privacy</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board may be necessary to run
+        BLE_RC_LongRange_Peripheral application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>The demo requires two boards configured with the Central and
+        Peripheral project configurations, respectively.</p>
+        <ul>
+        <li>Power Supply: Boards can be powered from a USB cable.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

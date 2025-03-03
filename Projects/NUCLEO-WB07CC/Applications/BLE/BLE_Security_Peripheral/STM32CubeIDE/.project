@@ -242,7 +242,7 @@
 			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Startup/device_context_switch.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/BSP/NUCLEO-WB05KZ/stm32wb0x_nucleo.c</name>
+			<name>Drivers/BSP/NUCLEO-WB07CC/stm32wb0x_nucleo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</locationURI>
 		</link>

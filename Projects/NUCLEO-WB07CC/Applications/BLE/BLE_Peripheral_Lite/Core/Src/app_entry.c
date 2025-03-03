@@ -277,10 +277,8 @@ static void deepstopTimer(void)
    }
 
    /* Low Power sequence */
-   ATOMIC_SECTION_BEGIN();
    PWR_EnterStopMode();
    PWR_ExitStopMode();
-   ATOMIC_SECTION_END();
 }
 
 /**
@@ -304,15 +302,15 @@ static void deepstop(void)
    }
 
   /* Low Power sequence */
-   ATOMIC_SECTION_BEGIN();
    PWR_EnterOffMode();
    PWR_ExitOffMode();
-   ATOMIC_SECTION_END();
 }
 
 static void Enter_LowPowerMode(void)
 {
   PowerSaveLevels app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
+
+  ATOMIC_SECTION_BEGIN();
 
   if ((BLE_STACK_SleepCheck() != POWER_SAVE_LEVEL_RUNNING) &&
       ((app_powerSave_level = App_PowerSaveLevel_Check()) != POWER_SAVE_LEVEL_RUNNING))
@@ -326,7 +324,7 @@ static void Enter_LowPowerMode(void)
     {
     case POWER_SAVE_LEVEL_RUNNING:
       /* Not Power Save device is busy */
-      return;
+
       break;
     case POWER_SAVE_LEVEL_CPU_HALT:
       sleep();
@@ -339,6 +337,8 @@ static void Enter_LowPowerMode(void)
       break;
     }
   }
+
+  ATOMIC_SECTION_END();
 }
 #endif /* CFG_LPM_SUPPORTED */
 

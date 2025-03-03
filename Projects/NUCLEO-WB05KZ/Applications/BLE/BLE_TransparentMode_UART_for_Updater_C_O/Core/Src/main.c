@@ -58,8 +58,8 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_RADIO_Init(void);
 static void MX_RADIO_TIMER_Init(void);
-static void MX_PKA_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_PKA_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -135,8 +135,8 @@ int main(void)
   MX_DMA_Init();
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
-  MX_PKA_Init();
   MX_USART1_UART_Init();
+  MX_PKA_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -344,7 +344,7 @@ static void MX_USART1_UART_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)
+  if (HAL_UARTEx_EnableFifoMode(&huart1) != HAL_OK)
   {
     Error_Handler();
   }
@@ -381,8 +381,8 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*RT DEBUG GPIO_Init */
   RT_DEBUG_GPIO_Init();
@@ -423,7 +423,6 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  Error_Handler();
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

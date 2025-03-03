@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_staticstack_ota-application-description"><strong>BLE_StaticStack_ota
+        Application Description</strong></h2>
+        <p>Demonstrate how to build a Bluetooth stack for a STM32WB0
+        device that can be used by an application programmed in a
+        separated area of Flash memory. This gives the possibility to
+        update only the application, without the need to update the area
+        containing the Bluetooth stack. This example supports also
+        Firmware Upgrade Over-The-Air (FUOTA) of the application: a new
+        application can be downloaded over Bluetooth and temporarily
+        stored in a dedicated area of Flash memory. BLE_StaticStack_ota
+        will then copy the downloaded application from the download area
+        to the application area.</p>
+        <p>Binary folder contains the firmware binary and the symbol
+        table required for an application using the BLE Static Stack.
+        The BLE stack is built using the following BLE stack
+        configuration.</p>
+        <table>
+        <thead>
+        <tr class="header">
+        <th>BLE feature option</th>
+        <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td>CFG_BLE_CONTROLLER_SCAN_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_PRIVACY_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_SECURE_CONNECTIONS_ENABLED</td>
+        <td>1</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED</td>
+        <td>1</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED</td>
+        <td>1</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_L2CAP_COS_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_PERIODIC_ADV_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_CTE_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONNECTION_ENABLED</td>
+        <td>1</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_CONTROLLER_CHAN_CLASS_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_BIS_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="odd">
+        <td>CFG_BLE_CONNECTION_SUBRATING_ENABLED</td>
+        <td>0</td>
+        </tr>
+        <tr class="even">
+        <td>CFG_BLE_CONTROLLER_CIS_ENABLED</td>
+        <td>0</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>Moreover, this is the radio configuration.</p>
+        <table>
+        <thead>
+        <tr class="header">
+        <th>BLE radio configuration</th>
+        <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td>CFG_NUM_RADIO_TASKS</td>
+        <td>2</td>
+        </tr>
+        </tbody>
+        </table>
+        <p>An application using the BLE Static Stack must enable the
+        same BLE features that have been enabled when the BLE Static
+        Stack has been built and it must configure the same number of
+        radio tasks (CFG_NUM_RADIO_TASKS). If a different set of
+        features or a different number of radio tasks is required, the
+        BLE Static Stack must be rebuilt with the new configuration.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
+        Static Stack</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <p>This application runs on STM32WB0 Nucleo board.</p>
+        <p>To create the library file containing the symbol table used
+        by the application, create_sym_lib.exe utility (inside Utilities
+        folder) is used as a post-build step. This utility requires GNU
+        ARM Embedded Toolchain to be installed and its binary folder to
+        be added to the PATH environment variable.</p>
+        <p>These are the applications referenced by create_sym_lib.exe:
+        - arm-none-eabi-readelf - arm-none-eabi-gcc -
+        arm-none-eabi-ar</p>
+        <p>Open a Windows Command Prompt and try to invoke those
+        commands to check if they are correctly installed.</p>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>The set of feature supported by the STM32WB0 BLE stack can be
+        customized by changing the BLE Stack modularity options in
+        app_conf.h. To reduce the footprint, commands can also be
+        removed by removing their references from cmd_call_table array
+        (in ble_cmd_if.c).</p>
+        <p>These are the steps needed to correctly generate the required
+        files:</p>
+        <ul>
+        <li>Change MEMORY_FLASH_APP_SIZE in linker options to increase
+        (or possibly reduce) the Flash memory area reserved for the BLE
+        Static Stack.</li>
+        <li>If MEMORY_FLASH_APP_SIZE has been changed, change
+        accordingly also RESET_MANAGER_SIZE for C preprocessor (their
+        values must be the same).</li>
+        <li>Build.
+        <ul>
+        <li>create_sym_lib.exe utility is called as post build step to
+        generate the required library with symbols to be referenced by
+        the application.</li>
+        </ul></li>
+        <li>Take a note of the first available address in RAM (excluding
+        CSTACK or HEAP) from map file. (e.g. 0x20000270). It has to be
+        taken into account when defining MEMORY_RAM_APP_OFFSET inside
+        application project.</li>
+        </ul>
+        <p>The output files of the projects are: -
+        BLE_StaticStack_ota.hex: binary image to be loaded in Flash
+        memory - ble_static_stack_sym.a: library with symbol table to be
+        referenced by application.</p>
+        <p><em>Important</em>: BLE_p2pServer_StaticStack_ota project by
+        default uses ble_static_stack_sym.a from
+        BLE_StaticStack_otadirectory. After generating the new binary,
+        make sure that its symbol table (generated in
+        BLE_StaticStack_ota folder) is referenced by the
+        application.</p>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <p>Refer to BLE_p2pServer_StaticStack_ota example for the steps
+        to follow to run the application.</p>
+    </section>
+</div>
+</body>
+</html>

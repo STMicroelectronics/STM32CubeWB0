@@ -132,7 +132,7 @@ ble_gatt_descr_def_t inputrep_descrs[] =
   },
   {
     .uuid = BLE_UUID_INIT_16(REPORT_REFERENCE_DESCRIPTOR_UUID),
-    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ | BLE_GATT_SRV_PERM_AUTHEN_READ,
+    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ,
     .properties = BLE_GATT_SRV_DESCR_PROP_READ,
     .min_key_size = BLE_GATT_SRV_MAX_ENCRY_KEY_SIZE,
     .val_buffer_p = &inreportRef_val_buffer_def[0],
@@ -157,7 +157,7 @@ ble_gatt_descr_def_t outputrep_descrs[] =
 {
   {
     .uuid = BLE_UUID_INIT_16(REPORT_REFERENCE_DESCRIPTOR_UUID),
-    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ | BLE_GATT_SRV_PERM_AUTHEN_READ,
+    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ,
     .properties = BLE_GATT_SRV_DESCR_PROP_READ,
     .min_key_size = BLE_GATT_SRV_MAX_ENCRY_KEY_SIZE,
     .val_buffer_p = &outreportRef_val_buffer_def[0],
@@ -656,14 +656,14 @@ tBleStatus HIDS_UpdateValue(HIDS_CharOpcode_t CharOpcode, HIDS_Data_t *pData)
     case HIDS_REM:
       memcpy(rem_val_buffer, pData->p_Payload, MIN(pData->Length, sizeof(rem_val_buffer)));
       /* USER CODE BEGIN Service1_Char_Value_3*/
-
+      rem_val_buffer_def.val_len = MIN(pData->Length, sizeof(rem_val_buffer));
       /* USER CODE END Service1_Char_Value_3*/
       break;
 
     case HIDS_OUTPUTREP:
       memcpy(outputrep_val_buffer, pData->p_Payload, MIN(pData->Length, sizeof(outputrep_val_buffer)));
       /* USER CODE BEGIN Service1_Char_Value_5*/
-
+      outputrep_val_buffer_def.val_len = MIN(pData->Length, sizeof(outputrep_val_buffer));
       /* USER CODE END Service1_Char_Value_5*/
       break;
 
@@ -689,7 +689,7 @@ tBleStatus HIDS_NotifyValue(HIDS_CharOpcode_t CharOpcode, HIDS_Data_t *pData, ui
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   /* USER CODE BEGIN Service1_App_Notify_Char_1 */
-
+  inputrep_val_buffer_def.val_len = MIN(pData->Length, sizeof(inputrep_val_buffer));
   /* USER CODE END Service1_App_Notify_Char_1 */
 
   switch(CharOpcode)

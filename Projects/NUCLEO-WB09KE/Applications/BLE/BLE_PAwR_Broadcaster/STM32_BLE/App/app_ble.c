@@ -82,7 +82,7 @@ typedef struct
    * the security, wait for pairing or does not have any security
    * requirements.
    * 0x00 : no security required
-   * 0x01 : host should initiate security by sending the slave security
+   * 0x01 : host should initiate security by sending the security
    *        request command
    * 0x02 : host need not send the clave security request but it
    * has to wait for paiirng to complete before doing any other
@@ -556,11 +556,9 @@ void APP_BLE_Init(void)
   /* USER CODE BEGIN APP_BLE_Init_1 */
 
   /* USER CODE END APP_BLE_Init_1 */  
-
   UTIL_SEQ_RegTask(1U << CFG_TASK_BLE_STACK, UTIL_SEQ_RFU, BLEStack_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_VTIMER, UTIL_SEQ_RFU, VTimer_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_NVM, UTIL_SEQ_RFU, NVM_Process);
-  
   ModulesInit();
   
   /* Initialization of HCI & GATT & GAP layer */
@@ -639,9 +637,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
-      
       gap_cmd_resp_release();
-      
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE_1 */
       
       /* USER CODE END EVT_DISCONN_COMPLETE_1 */
@@ -949,9 +945,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           
           APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
           
-          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
           
-          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_BEGIN */
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
           
           aci_gatt_srv_resp(p_read->Connection_Handle,
                             p_read->CID,
@@ -960,9 +956,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
                             0,
                             NULL);
           
-          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
           
-          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_END */
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
           break;
         }
         /* USER CODE BEGIN EVT_VENDOR_1 */

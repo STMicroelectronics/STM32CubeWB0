@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_serialport_centralperipheral-application-description"><strong>BLE_SerialPort_CentralPeripheral
+        Application Description</strong></h2>
+        <p>Demonstrating Point-to-Point Communication with Bluetooth Low
+        Energy (BLE) GATT.</p>
+        <p>The Nucleo board, when flashed with the
+        BLE_SerialPort_CentralPeripheral application, operates as a GAP
+        central and peripheral. This setup allows for the demonstration
+        of simple, two-way Bluetooth LE communication between two
+        STM32WB0 Nucleo boards, emulating serial communication. The
+        application showcases the use of the BLE GATT component to
+        establish and manage the connection, enabling data exchange
+        between the devices. The BLE_SerialPort_CentralPeripheral
+        application acts as a router, meaning it can function as both a
+        central and a peripheral. To connect to each other, two devices
+        with the same firmware are loaded onto STM32WB0 devices. The
+        application starts in discovery mode, scanning for peripherals.
+        Since the same application can also be a peripheral, at the end
+        of the GAP discovery procedure, the application decides to
+        enable advertising to be found by a central that is scanning.
+        The devices connect each other automatically.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 devices. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>To make the program work, you must do the following:</p>
+        <ol type="1">
+        <li>Open the project with your preferred toolchain.</li>
+        <li>Rebuild all files and flash the board with the executable
+        file.</li>
+        </ol>
+        <p>This demo shows how to implement simple 2-way Bluetooth LE
+        communication between two STM32WB0 Nucleo boards emulating
+        serial communication.</p>
+        <p>Two boards must be configured as Central and Peripheral with
+        BLE_SerialCom_CentralPeripheral.</p>
+        <p>Open a serial terminal on both devices (ST Link Com Port,
+        <span class="citation" data-cites="115200">@115200</span>
+        bauds).</p>
+        <h3 id="data-entry-and-transmission"><strong>Data Entry and
+        Transmission</strong></h3>
+        <p>Enter data using the keyboard (on either Central or
+        Peripheral): when LF or CR is encountered, or the data buffer is
+        full (20 bytes), the data is sent to the peer device.</p>
+        <h3 id="led-states-and-descriptions"><strong>LED States and
+        Descriptions</strong></h3>
+        <table>
+        <thead>
+        <tr class="header">
+        <th><strong>LED</strong></th>
+        <th><strong>State</strong></th>
+        <th><strong>Description</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td>LED1</td>
+        <td>On</td>
+        <td>Device is connected as a Central.</td>
+        </tr>
+        <tr class="even">
+        <td>LED2</td>
+        <td>On</td>
+        <td>Device is connected as a Peripheral.</td>
+        </tr>
+        </tbody>
+        </table>
+        <h3 id="device-roles-and-button-actions"><strong>Device Roles
+        and Button Actions</strong></h3>
+        <table>
+        <colgroup>
+        <col style="width: 22%" />
+        <col style="width: 16%" />
+        <col style="width: 25%" />
+        <col style="width: 35%" />
+        </colgroup>
+        <thead>
+        <tr class="header">
+        <th><strong>Device Role</strong></th>
+        <th><strong>Button</strong></th>
+        <th><strong>State</strong></th>
+        <th><strong>Action</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="odd">
+        <td><strong>Peripheral</strong></td>
+        <td>B1</td>
+        <td>Idle</td>
+        <td>Start advertising.</td>
+        </tr>
+        <tr class="even">
+        <td><strong>Peripheral</strong></td>
+        <td>B2</td>
+        <td>Not connected</td>
+        <td>Clear bonding database.</td>
+        </tr>
+        <tr class="odd">
+        <td><strong>Peripheral</strong></td>
+        <td>B2</td>
+        <td>Connected</td>
+        <td>Send security request.</td>
+        </tr>
+        <tr class="even">
+        <td><strong>Central</strong></td>
+        <td>B2</td>
+        <td>Not connected</td>
+        <td>Clear bonding database.</td>
+        </tr>
+        <tr class="odd">
+        <td><strong>Central</strong></td>
+        <td>B2</td>
+        <td>Connected</td>
+        <td>Send security request.</td>
+        </tr>
+        <tr class="even">
+        <td><strong>Central</strong></td>
+        <td>B3</td>
+        <td>Idle</td>
+        <td>Start scanning.</td>
+        </tr>
+        </tbody>
+        </table>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

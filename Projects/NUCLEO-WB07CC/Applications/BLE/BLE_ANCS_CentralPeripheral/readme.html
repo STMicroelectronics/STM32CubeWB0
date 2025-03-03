@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_ancs_centralperipheral-application-description"><strong>BLE_ANCS_CentralPeripheral
+        Application Description</strong></h2>
+        <p>The ANCS (Apple Notification Center Service) demo configures
+        a STM32WB0x device as a Notification Consumer. The purpose of
+        the ANCS profile, Bluetooth LE Notification Consumer role is to
+        give Bluetooth accessories a simple and convenient way to access
+        many kinds of notifications that are generated on a Notification
+        Provider.</p>
+        <p>The BLE_ANCS demo, after the reset, puts the Bluetooth LE
+        device in advertising with device name “ANCS_Demo”, and it sets
+        the Bluetooth LE authentication requirements for enabling
+        bonding. When the device is connected and bonded with a
+        Notification Provider, the demo configures the Bluetooth LE
+        Notification Consumer device to discover the service and the
+        characteristics of the Notification Provider. When the setup
+        phase is completed, the Bluetooth LE device is configured as a
+        Notification Consumer and is able to receive every notification
+        sent from the Notification Provider.</p>
+        <p>The Apple Notification Center Service (ANCS) is a Bluetooth
+        Low Energy (BLE) profile that allows Bluetooth accessories to
+        access notifications generated on an iOS device. The ANCS
+        profile defines the roles of Notification Provider (NP) and
+        Notification Consumer (NC).</p>
+        <p>Roles: - Notification Provider (NP): Typically an iOS device
+        (iPhone, iPad, etc.). Generates and sends notifications to the
+        Notification Consumer. - Notification Consumer (NC): STM32WB0x
+        emulate a Bluetooth accessory (e.g., smartwatch, fitness
+        tracker). Receives and processes notifications from the
+        Notification Provider.</p>
+        <h3 id="demo-application-workflow">Demo Application
+        Workflow</h3>
+        <h4 id="advertising-and-connection">Advertising and
+        Connection</h4>
+        <p>The NC starts advertising with a specific device name
+        (“ANCS_Demo”). The NP scans for advertising devices and
+        initiates a connection.</p>
+        <h4 id="bonding-and-authentication">Bonding and
+        Authentication</h4>
+        <p>The NC sets authentication requirements to enable bonding.
+        The NP and NC complete the bonding process.</p>
+        <h4 id="service-discovery">Service Discovery</h4>
+        <p>The NC discovers the ANCS service and its characteristics on
+        the NP.</p>
+        <h4 id="notification-handling">Notification Handling</h4>
+        <p>The NP sends notifications to the NC via the Notification
+        Source characteristic. The NC can request detailed information
+        about notifications using the Control Point characteristic. The
+        NC receives detailed notification data via the Data Source
+        characteristic. The NC can perform actions on notifications
+        (e.g., dismiss, respond) using the Control Point
+        characteristic.</p>
+        <h4 id="example-use-case">Example Use Case</h4>
+        <p>A smartwatch (NC) receives a notification about an incoming
+        call from an iPhone (NP). The smartwatch displays the caller’s
+        name and allows the user to accept or reject the call directly
+        from the watch.</p>
+        <h4 id="conclusion">Conclusion</h4>
+        <p>The ANCS profile provides a standardized way for Bluetooth
+        accessories to interact with notifications generated on iOS
+        devices. It enhances the user experience by allowing seamless
+        access to notifications and enabling actions directly from the
+        accessory.</p>
+        <h3 id="peripheral-device-initialization">Peripheral Device
+        Initialization</h3>
+        <ul>
+        <li>The Peripheral device starts by entering discoverable
+        mode.</li>
+        <li>LED2 blinks, indicating that the board is in advertising
+        mode.</li>
+        <li>LED3 is on, indicating that the NC board is connected to the
+        NP.</li>
+        <li>Every time PUSH1 is pressed, each notification stored on the
+        device is shown on the terminal one by one, and the user can
+        perform a positive or negative action on the selected
+        notification.</li>
+        </ul>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
+        BLE ANCS</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board may be necessary to run
+        BLE_RC_LongRange_Peripheral application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>The demo requires two boards configured with the Central and
+        Peripheral project configurations, respectively.</p>
+        <ul>
+        <li>Power Supply: Boards can be powered from a USB cable.</li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

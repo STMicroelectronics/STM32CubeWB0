@@ -83,10 +83,63 @@ typedef enum
 }ProcGapCentralId_t;
 
 /**
+ * Security parameters structure
+ */
+typedef struct
+{
+  /**
+   * IO capability of the device
+   */
+  uint8_t ioCapability;
+
+  /**
+   * Authentication requirement of the device
+   * Man In the Middle protection required?
+   */
+  uint8_t mitm_mode;
+
+  /**
+   * bonding mode of the device
+   */
+  uint8_t bonding_mode;
+
+  /**
+   * minimum encryption key size requirement
+   */
+  uint8_t encryptionKeySizeMin;
+
+  /**
+   * maximum encryption key size requirement
+   */
+  uint8_t encryptionKeySizeMax;
+
+  /**
+   * this flag indicates whether the host has to initiate
+   * the security, wait for pairing or does not have any security
+   * requirements.
+   * 0x00 : no security required
+   * 0x01 : host should initiate security by sending the slave security
+   *        request command
+   * 0x02 : host need not send the clave security request but it
+   * has to wait for paiirng to complete before doing any other
+   * processing
+   */
+  uint8_t initiateSecurity;
+  /* USER CODE BEGIN tSecurityParams*/
+
+  /* USER CODE END tSecurityParams */
+}SecurityParams_t;
+
+/**
  * Global context contains all BLE common variables.
  */
 typedef struct
 {
+  /**
+   * security requirements of the host
+   */
+  SecurityParams_t bleSecurityParam;
+
   /**
    * gap service handle
    */

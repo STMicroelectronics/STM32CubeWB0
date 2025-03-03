@@ -95,7 +95,7 @@ typedef void (*fct_t)(void);
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern FLASH_ProcessTypeDef pFlash;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -221,15 +221,15 @@ void PeriphCommonClock_Config(void)
   */
 static void MX_GPIO_Init(void)
 {
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
+  /* USER CODE BEGIN MX_GPIO_Init_1 */
+  /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
+  /* USER CODE BEGIN MX_GPIO_Init_2 */
+  /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
@@ -393,9 +393,6 @@ static void MoveToActiveSlot( uint8_t page_idx )
  */
 static void BootModeCheck( void )
 {
-  /* Fix: global variables are not initialized yet. pFlash is used by Flash driver. */
-  memset(&pFlash, 0, sizeof(FLASH_ProcessTypeDef));
-  
   if(RAM_VR.ResetReason & LL_RCC_CSR_SFTRSTF)
   {
     /**

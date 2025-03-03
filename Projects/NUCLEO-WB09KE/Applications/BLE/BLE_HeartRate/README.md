@@ -36,7 +36,7 @@ In order to make the program work, you must do the following:
 	 - The Heart Rate is displayed each second on the smartphone.
 	 - Pairing is supported:
 	   - Button B2 clears the security database when the device is not connected,
-	   - When connected with a client, button B2 send the slave pairing request, here a popup asks you to associate your device.
+	   - When connected with a client, button B2 send the pairing request, here a popup asks you to associate your device.
 	 - This example supports switch to 2Mbits PHY, pressing button B1 while connected allows to switch between 1Mbits PHY and 2Mbits PHY.
 	 - After 60s of advertising, the application switch from fast advertising to low power advertising, pressing button B1 while advertising allows to restart fast advertising.
 	 - Pressing button B3 while connected allows to update the connection interval. 
@@ -48,7 +48,7 @@ In order to make the program work, you must do the following:
 	 - HearRate and energy measurement are launched and displayed in graphs. You can reset the energy measurement.
 	 - Pairing is supported:   
 	   - Button B2 clears the security database when the device is not connected,
-	   - When connected with a client, button B2 send the slave pairing request, here a popup asks you to associate your device.
+	   - When connected with a client, button B2 send the pairing request, here a popup asks you to associate your device.
 	 - You can either bond from the smartphone by clicking on Bond Button.
 	 - This example supports switch to 2Mbits PHY, pressing button B1 while connected allows to switch between 1Mbits PHY and 2Mbits PHY.
 	 - After 60s of advertising, the application switch from fast advertising to low power advertising, pressing button B1 while advertising allows to restart fast advertising.

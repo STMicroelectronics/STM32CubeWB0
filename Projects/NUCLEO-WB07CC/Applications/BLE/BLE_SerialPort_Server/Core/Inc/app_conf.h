@@ -117,7 +117,8 @@
 #define CFG_BLE_NUM_RADIO_TASKS                         (CFG_NUM_RADIO_TASKS)
 
 /**
- * Maximum number of Attributes that can be stored in the GATT database.
+ * Maximum number of attributes that can be stored in the GATT database in addition to the attributes number already defined for the GATT and GAP services
+ * (BLE_STACK_NUM_GATT_MANDATORY_ATTRIBUTES value on STM32_BLE middleware, ble_stack.h header file).
  */
 #define CFG_BLE_NUM_GATT_ATTRIBUTES                     (6)
 
@@ -347,11 +348,16 @@
  *  low power mode. It means that all what can have an impact on the consumptions
  *  are powered down.(For instance LED, Access to Debugger, Etc.)
  *
+ *  When CFG_LPM_SUPPORTED and CFG_FULL_LOW_EMULATED are both set to 1, the system is configured to
+ *  emulate the Deepstop mode without losing the debugger connection and breakpoints nor watchpoints.
+ *
  ******************************************************************************/
 
 #define CFG_FULL_LOW_POWER       (0)
 
 #define CFG_LPM_SUPPORTED        (0)
+
+#define CFG_LPM_EMULATED         (0)
 
 /**
  * Low Power configuration

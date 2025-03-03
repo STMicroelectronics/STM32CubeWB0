@@ -140,6 +140,7 @@ void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
+
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 void VTimer_Process(void);
@@ -147,7 +148,6 @@ void VTimer_Process_Schedule(void);
 void NVM_Process(void);
 void NVM_Process_Schedule(void);
 void BLEEVT_App_Notification(const hci_pckt *hci_pckt);
-
 /* USER CODE END EF */
 
 #ifdef __cplusplus

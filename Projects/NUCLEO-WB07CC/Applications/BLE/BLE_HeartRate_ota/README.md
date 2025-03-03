@@ -38,7 +38,7 @@ In order to make the program work, you must do the following:
  - In the Heart Rate interface, HeartRate and energy measurement are launched and displayed in graphs,
    you can reset the energy measurement.
      - Pairing is supported: Button B2 clears the security database when the device is not connected. 
-     When connected, Button B2 send the slave pairing request, here a popup asks you to associate your device.
+     When connected, Button B2 send the pairing request, here a popup asks you to associate your device.
      You can either bond from the smartphone by clicking on Bond Button.
      - After 60s of advertising, the application switch from fast advertising to low power advertising, pressing Button B1 while advertising allows to restart fast advertising.
      - Pressing button B3 while connected allows to update the connection interval. 

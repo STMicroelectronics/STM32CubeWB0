@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2
+        id="ble_directionfinding_central_locator-application-description"><strong>BLE_DirectionFinding_Central_Locator
+        Application Description</strong></h2>
+        <p>This demo implements a basic Direction Finding scenario using
+        tag and locator roles (connection CTE mode) to demonstrate how
+        to utilize the related Bluetooth LE stack capabilities.</p>
+        <p>When connected, the locator device sends CTE (Constant Tone
+        Extension) requests to the peer device to receive packets
+        containing the CTE field. This field is used to collect IQ
+        samples necessary for direction finding.</p>
+        <p>The demo focuses on the configuration and collection of IQ
+        samples, while the actual calculation of the direction from the
+        received IQ samples is beyond the scope of this demonstration
+        application and requires specific algorithms.</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile,
+        Direct Finding, CTE</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This example runs on STM32WB0 devices. Connect the Nucleo
+        Board to your PC with a USB cable type A to USB type C to
+        ST-LINK USB connector.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain</li>
+        <li>Rebuild all files and load your image into target
+        memory</li>
+        <li>Place BLE_DirectionFinding_Peripheral_Tag device next to a
+        BLE_DirectionFinding_Central_Locator device.</li>
+        <li>A connection is initiated if a
+        BLE_DirectionFinding_Peripheral_Tag device is detected.</li>
+        <li>Once the BLE_DirectionFinding_Peripheral_Tag application is
+        connected to a BLE_DirectionFinding_Central_Locator:
+        <ul>
+        <li>On BLE_DirectionFinding_Peripheral_Tag device, LED2 is
+        turned On.</li>
+        <li>On BLE_DirectionFinding_Central_Locator device, LED2 is
+        turned On.</li>
+        </ul></li>
+        </ul>
+        <p>If you want see debug message, you can open a serial terminal
+        on Central and Peripheral side (ST Link Com Port, <span
+        class="citation" data-cites="115200">@115200</span> bauds).</p>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

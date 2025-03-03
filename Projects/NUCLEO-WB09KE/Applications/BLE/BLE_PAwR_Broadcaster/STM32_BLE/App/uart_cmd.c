@@ -207,13 +207,13 @@ static void img_resp_cb(uint8_t group_id, uint8_t esl_id, uint8_t *resp)
 
 static int parse_cmd(void)
 {
-  uint8_t group_id, esl_id;
+  uint32_t group_id, esl_id;
   
   if(strncasecmp((char *)CommandString, "ATE", 3) == 0)
   {
-    uint8_t echo = 1;
+    uint32_t echo = 1;
     
-    sscanf((char*)CommandString + 3, "%2hhx", &echo);
+    sscanf((char*)CommandString + 3, "%x", &echo);
     if(echo > 1)
     {
       return 1;
@@ -229,7 +229,7 @@ static int parse_cmd(void)
   {
     int ret;
     
-    ret = sscanf((char*)CommandString + 8, "%2hhx,%2hhx", &group_id, &esl_id);
+    ret = sscanf((char*)CommandString + 8, "%x,%x", &group_id, &esl_id);
     if(ret != 2 || group_id >= MAX_GROUPS)
     {
       return 1;
@@ -248,10 +248,10 @@ static int parse_cmd(void)
   }
   else if(strncasecmp((char *)CommandString, "AT+IMG=", 7) == 0)
   {
-    uint8_t image_index;
+    uint32_t image_index;
     int ret;
     
-    ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%2hhx", &group_id, &esl_id, &image_index);
+    ret = sscanf((char*)CommandString + 7, "%x,%x,%x", &group_id, &esl_id, &image_index);
     if(ret != 3 || group_id >= MAX_GROUPS)
     {
       return 1;
@@ -270,10 +270,10 @@ static int parse_cmd(void)
   }
   else if (strncasecmp((char *)CommandString, "AT+LED=", 7) == 0)
   {
-    uint8_t led_status;
+    uint32_t led_status;
     int ret;
     
-    ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%2hhu", &group_id, &esl_id, &led_status);
+    ret = sscanf((char*)CommandString + 7, "%x,%x,%u", &group_id, &esl_id, &led_status);
     if(ret != 3 || group_id >= MAX_GROUPS || led_status > 2)
     {
       return 1;
@@ -295,7 +295,7 @@ static int parse_cmd(void)
     char text[61];
     int ret;
     
-    ret = sscanf((char*)CommandString + 7, "%2hhx,%2hhx,%[^\t\r\n]", &group_id, &esl_id, text);
+    ret = sscanf((char*)CommandString + 7, "%x,%x,%[^\t\r\n]", &group_id, &esl_id, text);
     if(ret != 3 || group_id >= MAX_GROUPS)
     {
       return 1;
@@ -314,10 +314,10 @@ static int parse_cmd(void)
   }
   else if (strncasecmp((char *)CommandString, "AT+PRICE=", 9) == 0)
   {
-    int val_int, val_fract;
+    uint32_t val_int, val_fract;
     int ret;
     
-    ret = sscanf((char*)CommandString + 9, "%2hhx,%2hhx,%u.%u", &group_id, &esl_id, &val_int, &val_fract);
+    ret = sscanf((char*)CommandString + 9, "%x,%x,%u.%u", &group_id, &esl_id, &val_int, &val_fract);
     if(ret != 4 || group_id >= MAX_GROUPS || val_int > 999 || val_fract > 99)
     {
       return 1;
@@ -338,7 +338,7 @@ static int parse_cmd(void)
   {
     int ret;
     
-    ret = sscanf((char*)CommandString + 8, "%2hhx,%2hhx", &group_id, &esl_id);
+    ret = sscanf((char*)CommandString + 8, "%x,%x", &group_id, &esl_id);
     if(ret != 2 || group_id >= MAX_GROUPS || esl_id == 0xFF)
     {
       return 1;

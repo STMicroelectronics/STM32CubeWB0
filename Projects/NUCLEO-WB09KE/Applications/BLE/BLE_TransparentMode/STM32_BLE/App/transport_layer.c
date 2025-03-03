@@ -302,6 +302,7 @@ void transport_layer_tick(void)
     else
     {
       fifo_roll_back(&command_fifo, size);
+      TL_ProcessReqCallback();
     }
 #else
     DEBUG_NOTES(COMMAND_PROCESSED);
