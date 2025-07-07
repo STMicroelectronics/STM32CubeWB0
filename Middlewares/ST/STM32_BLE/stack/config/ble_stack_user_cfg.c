@@ -557,22 +557,6 @@ uint32_t log_csr_ucfg(void)
 }
 #endif /* (DTM_DEBUG_ENABLED == 1) */
 
-#if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-uint32_t chc_csr_ucfg(void)
-{
-    return chc_csr();
-}
-#endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if (CONNECTION_ENABLED == 1)
-void Controller_Process_Q_ucfg(uint16_t task_idx)
-{
-    Controller_Process_Q(task_idx);
-}
-#endif /* (CONNECTION_ENABLED == 1) */
-
 #if (CONNECTION_ENABLED == 1)
 void LLC_offline_control_procedures_processing_ucfg(uint16_t task_idx)
 {
@@ -1001,6 +985,34 @@ void llc_conn_check_subrate_and_set_params_ucfg(void* cntxt_p,
 #endif /* ((CONNECTION_SUBRATING_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
 
+#if (CONNECTION_ENABLED == 1)
+void llc_conn_mem_allocate_ucfg(uint8_t phy_upd_en,
+                                uint8_t cte_en,
+                                uint8_t pcl_en,
+                                uint8_t cns_en,
+                                uint8_t chc_en,
+                                uint8_t padv_en)
+{
+    llc_conn_mem_allocate(phy_upd_en,
+                          cte_en,
+                          pcl_en,
+                          cns_en,
+                          chc_en,
+                          padv_en);
+}
+#endif /* (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_PRIVACY_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
+void llc_conn_list_replace_rpa_addresses_ucfg(void* peer_id_addr_p,
+                                              uint32_t peer_irk[4])
+{
+    llc_conn_list_replace_rpa_addresses(peer_id_addr_p,
+                                        peer_irk);
+}
+#endif /* (CONTROLLER_PRIVACY_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
+
 #if ((CONNECTION_SUBRATING_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
 uint32_t llc_conn_calc_skip_ucfg(void* cntxt_p,
@@ -1025,6 +1037,13 @@ tBleStatus llc_conn_multi_link_connection_ucfg(uint8_t enable)
 void llc_conn_peripheral_roll_back_params_tsk_ucfg(uint16_t task_idx)
 {
     llc_conn_peripheral_roll_back_params_tsk(task_idx);
+}
+#endif /* (CONNECTION_ENABLED == 1) */
+
+#if (CONNECTION_ENABLED == 1)
+void llc_cpe_tsk_ucfg(uint16_t task_idx)
+{
+    llc_cpe_tsk(task_idx);
 }
 #endif /* (CONNECTION_ENABLED == 1) */
 
@@ -1901,12 +1920,64 @@ void llc_past_peer_init_ucfg(uint8_t* pdu_p,
           (CONTROLLER_SCAN_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
 
+#if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
+    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
+    (CONNECTION_ENABLED == 1)
+void llc_past_register_cpf_ucfg(void)
+{
+    llc_past_register_cpf();
+}
+#endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
+          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
+          (CONNECTION_ENABLED == 1) */
+
 #if (CONTROLLER_PRIVACY_ENABLED == 1)
 void llc_priv_generate_peer_rpa_from_peer_id_ucfg(void* peer_p,
                                                   uint8_t in_isr)
 {
     llc_priv_generate_peer_rpa_from_peer_id(peer_p,
                                             in_isr);
+}
+#endif /* (CONTROLLER_PRIVACY_ENABLED == 1) */
+
+#if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
+    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) &&\
+    (CONTROLLER_PERIODIC_ADV_WR_ENABLED == 1)) &&\
+    (CONTROLLER_SCAN_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
+uint8_t llc_check_creq_rx_addr_ucfg(uint8_t* rx_addr7_p,
+                                    uint8_t* tx_addr7_p,
+                                    uint8_t* local_addr7_p,
+                                    uint8_t* rl_index_p)
+{
+    return llc_check_creq_rx_addr(rx_addr7_p,
+                                  tx_addr7_p,
+                                  local_addr7_p,
+                                  rl_index_p);
+}
+#endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
+          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) &&\
+          (CONTROLLER_PERIODIC_ADV_WR_ENABLED == 1)) &&\
+          (CONTROLLER_SCAN_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_PRIVACY_ENABLED == 1)
+uint8_t llc_priv_generate_rpa_from_rl_index_ucfg(uint8_t rl_index,
+                                                 uint8_t local_rpa,
+                                                 uint8_t in_isr,
+                                                 void* addr8_rpa_p)
+{
+    return llc_priv_generate_rpa_from_rl_index(rl_index,
+                                               local_rpa,
+                                               in_isr,
+                                               addr8_rpa_p);
+}
+#endif /* (CONTROLLER_PRIVACY_ENABLED == 1) */
+
+#if (CONTROLLER_PRIVACY_ENABLED == 1)
+void llc_priv_get_id_addr_from_rpa_ucfg(void* addr_p)
+{
+    llc_priv_get_id_addr_from_rpa(addr_p);
 }
 #endif /* (CONTROLLER_PRIVACY_ENABLED == 1) */
 
@@ -2315,6 +2386,15 @@ void llc_pscan_wr_set_scheduler_params_ucfg(void* params_p)
           (CONTROLLER_SCAN_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
 
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+void llc_sca_upd_register_cpf_ucfg(void)
+{
+    llc_sca_upd_register_cpf();
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
 #if (CONTROLLER_SCAN_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1)
 void llc_scan_conn_ind_sent_ucfg(void* ptr,
@@ -2507,6 +2587,15 @@ uint8_t llc_subrate_offline_processing_ucfg(void* cntxt_p)
 #endif /* ((CONNECTION_SUBRATING_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
 
+#if ((CONNECTION_SUBRATING_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+void llc_subrate_register_cpf_ucfg(void)
+{
+    llc_subrate_register_cpf();
+}
+#endif /* ((CONNECTION_SUBRATING_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
 #if (\
      (\
       (CONNECTION_ENABLED == 1) &&\
@@ -2538,119 +2627,6 @@ void llc_mngm_csa2_select_subevent_channel_ucfg(uint8_t subevent_counter,
                                           channel_index_p);
 }
 #endif
-
-#if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1)
-void LL_cpe_init_length_update_ucfg(void)
-{
-    LL_cpe_init_length_update();
-}
-#endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1) */
-
-#if (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1)
-void LL_cpe_init_phy_update_ucfg(void)
-{
-    LL_cpe_init_phy_update();
-}
-#endif /* (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1) */
-
-#if (CONTROLLER_CTE_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1)
-void LL_cpe_init_cte_ucfg(void)
-{
-    LL_cpe_init_cte();
-}
-#endif /* (CONTROLLER_CTE_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1) */
-
-#if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-    (CONNECTION_ENABLED == 1)
-void LL_cpe_init_past_ucfg(void)
-{
-    LL_cpe_init_past();
-}
-#endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-          (CONNECTION_ENABLED == 1) */
-
-#if ((CONTROLLER_POWER_CONTROL_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_pcl_ucfg(void)
-{
-    LL_cpe_init_pcl();
-}
-#endif /* ((CONTROLLER_POWER_CONTROL_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if (CONNECTION_ENABLED == 1)
-void LL_cpe_init_conn_update_ucfg(void)
-{
-    LL_cpe_init_conn_update();
-}
-#endif /* (CONNECTION_ENABLED == 1) */
-
-#if (CONNECTION_ENABLED == 1)
-void LL_cpe_init_chmap_update_ucfg(void)
-{
-    LL_cpe_init_chmap_update();
-}
-#endif /* (CONNECTION_ENABLED == 1) */
-
-#if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_chc_enable_ucfg(void)
-{
-    LL_cpe_init_chc_enable();
-}
-#endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_chc_reporting_ucfg(void)
-{
-    LL_cpe_init_chc_reporting();
-}
-#endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if ((CONNECTION_SUBRATING_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_subrate_ucfg(void)
-{
-    LL_cpe_init_subrate();
-}
-#endif /* ((CONNECTION_SUBRATING_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if ((CONTROLLER_CIS_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_sca_upd_ucfg(void)
-{
-    LL_cpe_init_sca_upd();
-}
-#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if ((CONTROLLER_CIS_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-void LL_cpe_init_cis_ucfg(void)
-{
-    LL_cpe_init_cis();
-}
-#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
-
-#if (CONNECTION_ENABLED == 1)
-void LL_cpe_init_ucfg(void)
-{
-    LL_cpe_init();
-}
-#endif /* (CONNECTION_ENABLED == 1) */
 
 #if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
@@ -2710,11 +2686,47 @@ uint8_t LLC_chc_reporting_offline_processing_ucfg(uint8_t conn_idx)
 #endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
 
+#if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+uint32_t chc_csr_ucfg(void)
+{
+    return chc_csr();
+}
+#endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+void llc_chan_class_register_cpf_ucfg(void)
+{
+    llc_chan_class_register_cpf();
+}
+#endif /* ((CONTROLLER_CHAN_CLASS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if (CONNECTION_ENABLED == 1)
+void llc_chc_notify_all_conn_links_ucfg(uint8_t* chmap_p,
+                                        uint8_t* local_chclass_p)
+{
+    llc_chc_notify_all_conn_links(chmap_p,
+                                  local_chclass_p);
+}
+#endif /* (CONNECTION_ENABLED == 1) */
+
 #if ((CONTROLLER_CIS_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
 void LL_cpf_cis_processing_ucfg(uint16_t task_idx)
 {
     LL_cpf_cis_processing(task_idx);
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+void llc_cis_register_cpf_ucfg(void)
+{
+    llc_cis_register_cpf();
 }
 #endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
@@ -2735,6 +2747,15 @@ void LL_conn_upd_data_length_change_event_ucfg(void* params)
     LL_conn_upd_data_length_change_event(params);
 }
 #endif /* (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_CTE_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
+void llc_cte_register_cpf_ucfg(void)
+{
+    llc_cte_register_cpf();
+}
+#endif /* (CONTROLLER_CTE_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
 
 #if (CONTROLLER_CTE_ENABLED == 1) &&\
@@ -2785,6 +2806,15 @@ void llc_cte_process_rx_cte_ucfg(void* params,
                            cte_type);
 }
 #endif /* (CONTROLLER_CTE_ENABLED == 1) */
+
+#if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
+void llc_len_upd_register_cpf_ucfg(void)
+{
+    llc_len_upd_register_cpf();
+}
+#endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
 
 #if (CONNECTION_ENABLED == 1)
 void LLC_authenticated_payload_timeout_processing_ucfg(uint16_t task_idx)
@@ -2875,6 +2905,15 @@ uint8_t LLC_pcl_offline_processing_ucfg(uint8_t conn_idx)
 
 #if ((CONTROLLER_POWER_CONTROL_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
+void llc_pcl_register_cpf_ucfg(void)
+{
+    llc_pcl_register_cpf();
+}
+#endif /* ((CONTROLLER_POWER_CONTROL_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_POWER_CONTROL_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
 tBleStatus LL_Read_RSSI_ucfg(int8_t* rssiVal,
                              uint16_t connHandle)
 {
@@ -2910,6 +2949,15 @@ uint8_t LL_phy_upd_pending_ucfg(uint8_t conn_idx)
     return LL_phy_upd_pending(conn_idx);
 }
 #endif /* (CONTROLLER_2M_CODED_PHY_ENABLED == 1) */
+
+#if (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
+void llc_phy_upd_register_cpf_ucfg(void)
+{
+    llc_phy_upd_register_cpf();
+}
+#endif /* (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
 
 #if (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1)
@@ -3139,16 +3187,15 @@ tBleStatus LL_Remove_Advertising_Set_ucfg(uint16_t Advertising_Handle)
 
 #if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1)
-uint8_t Data_Len_Update_Offline_Processing_ucfg(void* params,
-                                                uint32_t ctrl_flds)
+uint8_t Data_Len_Update_Offline_Processing_ucfg(void* params)
 {
-    return Data_Len_Update_Offline_Processing(params,
-                                              ctrl_flds);
+    return Data_Len_Update_Offline_Processing(params);
 }
 #endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
 
-#if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1)
+#if (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
 tBleStatus ll_write_supported_data_ucfg(uint16_t Supported_Max_Tx_Octets,
                                         uint16_t Supported_Max_Tx_Time,
                                         uint16_t Supported_Max_Rx_Octets,
@@ -3159,7 +3206,8 @@ tBleStatus ll_write_supported_data_ucfg(uint16_t Supported_Max_Tx_Octets,
                                    Supported_Max_Rx_Octets,
                                    Supported_Max_Rx_Time);
 }
-#endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) */
+#endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
 
 #if (CONNECTION_ENABLED == 1)
 void LL_init_ucfg(uint8_t dataLenExt,

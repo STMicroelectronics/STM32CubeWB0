@@ -11,24 +11,23 @@
         <h2
         id="ble_multipleconnections_peripheral-application-description"><strong>BLE_MultipleConnections_Peripheral
         Application Description</strong></h2>
-        <p>Demonstrate STM32WB0 acting as BLE GATT client.</p>
-        <p>The BLE_MultipleConnections_Peripheral application scans for
-        advertising and waits for a connection from either: - The
-        BLE_MultipleConnections_Peripheral application running on an
-        STM32WB0 device.</p>
-        <p>Pairing with pass key entry method (with fixed pin) and
-        bonding are used in this example.</p>
-        <p>Once connected, BLE_MultipleConnections_Peripheral can
-        receive write messages from the Central and it will send
-        notifications periodically to it.</p>
+        <p>This demo allows targeting a multiple connection scenario
+        with a CentralPeripheral device (the Collector) which can
+        connect to a given number of peer devices as a central and to a
+        given number of peer devices as a peripheral.</p>
+        <p>The CentralPeripheral device automatically tries to connect
+        to a set of known peer devices (the Nodes) to which it is
+        bonded.</p>
         <h3 id="keywords"><strong>Keywords</strong></h3>
         <p>Connectivity, BLE, BLE protocol, BLE pairing, BLE profile</p>
         <h3 id="hardware-and-software-environment"><strong>Hardware and
         Software environment</strong></h3>
         <ul>
         <li>This application runs on STM32WB0 Nucleo board.</li>
-        <li>Another STM32WB0 Nucleo board may be necessary to run
-        BLE_MultipleConnections_Peripheral application.</li>
+        <li>To test this scenario completely, at least three STM32WB0
+        Nucleo boards may be necessary to run the
+        BLE_MultipleConnections_CP, BLE_MultipleConnections_Central, and
+        BLE_MultipleConnections_Peripheral applications.</li>
         </ul>
         <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
         <p>In order to make the program work, you must do the
@@ -42,13 +41,6 @@
         <p><strong>You can interact with the
         BLE_MultipleConnections_Peripheral application with another
         Nucleo board:</strong></p>
-        <p>This demo allows targeting a multiple connection scenario
-        with a CentralPeripheral device (the Collector) which can
-        connect to a given number of peer devices as a central and to a
-        given number of peer devices as a peripheral.</p>
-        <p>The CentralPeripheral device automatically tries to connect
-        to a set of known peer devices (the Nodes) to which it is
-        bonded.</p>
         <p>A serial terminal can be opened on the associated COM port to
         show logs from the application.</p>
         <h3 id="scenario">Scenario:</h3>
@@ -106,14 +98,14 @@
         <ul>
         <li>On device startup and after each disconnection complete
         event, if bonded devices are found in the list, start
-        advertising in auto connection establishment mode (with filter
-        list active).</li>
+        advertising in non discoverable mode (with filter list
+        active).</li>
         <li><strong>Push1:</strong>
         <ul>
-        <li>If advertising has been started in auto connection
-        establishment mode, stop this type of advertising.</li>
-        <li>Start advertising in general mode without a filter list to
-        accept new central devices.</li>
+        <li>If advertising has been started in non discoverable mode,
+        stop this type of advertising.</li>
+        <li>Start advertising in general discovery mode without a filter
+        list to accept new central devices.</li>
         </ul></li>
         <li><strong>Push2:</strong>
         <ul>
@@ -132,12 +124,12 @@
         <ul>
         <li>On device startup and after each disconnection complete
         event, if bonded devices are found in the list, start
-        advertising in auto connection establishment mode (with filter
-        list active).</li>
+        advertising in non discoverable mode (with filter list
+        active).</li>
         <li>The peripheral component can accept a maximum of
         <strong>MAX_PERIPHERAL_HANDLES</strong> number of centrals.</li>
-        <li>The advertising in auto connection with filter active is
-        started at every disconnection complete event to allow all
+        <li>The advertising in general discovery mode with filter active
+        is started at every disconnection complete event to allow all
         previously bonded centrals to re-connect.</li>
         <li>The central component can accept a maximum of
         <strong>MAX_CENTRAL_HANDLES</strong> number of peripherals.</li>
@@ -149,10 +141,10 @@
         the central.</li>
         <li><strong>Push1:</strong>
         <ul>
-        <li>If advertising has been started in auto connection
-        establishment mode, stop this type of advertising.</li>
-        <li>Start advertising in general mode without a filter list to
-        accept new central devices.</li>
+        <li>If advertising has been started in non discoverable mode,
+        stop this type of advertising.</li>
+        <li>Start advertising in general discovery mode without a filter
+        list to accept new central devices.</li>
         </ul></li>
         <li><strong>Push2:</strong>
         <ul>
@@ -223,8 +215,7 @@
         <tr class="even">
         <td><strong>Peripheral</strong></td>
         <td>PUSH1</td>
-        <td>Stop auto connection advertising / Start general
-        advertising</td>
+        <td>Stop non disc. adv / Start general disc. adv</td>
         <td>N/A</td>
         </tr>
         <tr class="odd">
@@ -242,8 +233,7 @@
         <tr class="odd">
         <td><strong>CentralPeripheral</strong></td>
         <td>PUSH1</td>
-        <td>Stop auto connection advertising / Start general
-        advertising</td>
+        <td>Stop non disc. adv / Start general disc. adv</td>
         <td>Start the normal scan in general discovery mode</td>
         </tr>
         <tr class="even">

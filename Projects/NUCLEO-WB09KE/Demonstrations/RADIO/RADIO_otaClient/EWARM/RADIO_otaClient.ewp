@@ -23,6 +23,14 @@
                     <state>RADIO_otaClient\</state>
                 </option>
                 <option>
+                    <name>PointerAuthentication</name>
+                    <state>0</state>
+                </option>
+                <option>
+                    <name>FPU64</name>
+                    <state>1</state>
+                </option>
+                <option>
                     <name>ExePath</name>
                     <state>RADIO_otaClient/Exe</state>
                 </option>
@@ -203,14 +211,6 @@
                     <name>OG_32_64Device</name>
                     <state>0</state>
                 </option>
-                <option>
-                    <name>PointerAuthentication</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>FPU64</name>
-                    <state>1</state>
-                </option>
             </data>
         </settings>
         <settings>
@@ -353,9 +353,11 @@
                     <state>$PROJ_DIR$/../../../../../../Drivers/CMSIS/Include</state>
                     <state>$PROJ_DIR$/../../../../../../Drivers/BSP/STM32WB0x-nucleo</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/lpm/tiny_lpm</state>
-                    <state>$PROJ_DIR$/../System/Modules</state>
-                    <state>$PROJ_DIR$/../System/Startup</state>
-                    <state>$PROJ_DIR$/../System/Interfaces</state>
+                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules</state>
+                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/RTDebug</state>
+                    <state>$PROJ_DIR$/../System/Config/Debug_GPIO</state>
+                    <state>$PROJ_DIR$/../../../../../Common/BLE/Startup</state>
+                    <state>$PROJ_DIR$/../../../../../Common/BLE/Interfaces</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -675,7 +677,7 @@
             <data>
                 <extensions></extensions>
                 <cmdline></cmdline>
-                <hasPrio>1</hasPrio>
+                <hasPrio>48</hasPrio>
                 <buildSequence>inputOutputBased</buildSequence>
             </data>
         </settings>
@@ -1122,26 +1124,47 @@
             <group>
                 <name>System</name>
                 <group>
-                    <name>Interfaces</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\System\Interfaces\stm32_lpm_if.c</name>
-                    </file>
+                    <name>Config</name>
+                    <group>
+                        <name>Debug_GPIO</name>
+                        <file>
+                            <name>$PROJ_DIR$\..\System\Config\Debug_GPIO\app_debug.c</name>
+                        </file>
+                    </group>
                 </group>
+            </group>
+        </group>
+    </group>
+    <group>
+        <name>Common</name>
+        <group>
+            <name>BLE</name>
+            <group>
+                <name>Interfaces</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Interfaces\stm32_lpm_if.c</name>
+                </file>
+            </group>
+            <group>
+                <name>Modules</name>
                 <group>
-                    <name>Modules</name>
+                    <name>RTDebug</name>
                     <file>
-                        <name>$PROJ_DIR$\..\System\Modules\osal.c</name>
+                        <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Modules\RTDebug\RTDebug.c</name>
                     </file>
                 </group>
-                <group>
-                    <name>Startup</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\System\Startup\cpu_context_switch.s</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\System\Startup\device_context_switch.c</name>
-                    </file>
-                </group>
+                <file>
+                    <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Modules\osal.c</name>
+                </file>
+            </group>
+            <group>
+                <name>Startup</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Startup\cpu_context_switch.s</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Startup\device_context_switch.c</name>
+                </file>
             </group>
         </group>
     </group>
@@ -1205,12 +1228,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\..\Drivers\STM32WB0x_HAL_Driver\Src\stm32wb0x_hal_rcc_ex.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\Drivers\STM32WB0x_HAL_Driver\Src\stm32wb0x_hal_tim.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\..\..\..\..\..\Drivers\STM32WB0x_HAL_Driver\Src\stm32wb0x_hal_tim_ex.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\..\Drivers\STM32WB0x_HAL_Driver\Src\stm32wb0x_hal_uart.c</name>

@@ -1,16 +1,8 @@
-## Overview
-
-This software component is provided to you as part of a software package and
-applicable license terms are in the Package_license file. If you received this
-software component outside of a package or without applicable license terms,
-the terms of the SLA0044 license shall apply and are fully reproduced below:
-
 SLA0044 Rev5/February 2018
 
 ## Software license agreement
 
 ### __ULTIMATE LIBERTY SOFTWARE LICENSE AGREEMENT__
-
 
 BY INSTALLING, COPYING, DOWNLOADING, ACCESSING OR OTHERWISE USING THIS SOFTWARE
 OR ANY PART THEREOF (AND THE RELATED DOCUMENTATION) FROM STMICROELECTRONICS
@@ -86,4 +78,3 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 11. EXCEPT AS EXPRESSLY PERMITTED HEREUNDER, NO LICENSE OR OTHER RIGHTS, WHETHER
 EXPRESS OR IMPLIED, ARE GRANTED UNDER ANY PATENT OR OTHER INTELLECTUAL PROPERTY
 RIGHTS OF STMICROELECTRONICS OR ANY THIRD PARTY.
-

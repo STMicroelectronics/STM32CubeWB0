@@ -137,6 +137,10 @@ typedef struct
   uint8_t deviceServerFound;
   uint8_t deviceServerBdAddrType;
   uint8_t a_deviceServerBdAddr[BD_ADDR_SIZE];
+  
+  /* Notification */
+  VTIMER_HandleType write_char_timer_Id;
+  
   /* USER CODE END PTD_1 */
 }BleApplicationContext_t;
 
@@ -158,7 +162,7 @@ GATT_CLIENT_APP_ConnHandle_Notif_evt_t clientHandleNotification;
 static const char a_GapDeviceName[] = {  'm', 'c', 'C', 'e', 'n', 't', 'r', 'a', 'l' }; /* Gap Device Name */
 
 /* USER CODE BEGIN PV */
-static uint16_t new_ConnHdl;
+
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
@@ -182,10 +186,10 @@ static void gap_cmd_resp_release(void);
 /* USER CODE BEGIN PFP */
 static uint8_t Analyse_Adv_Report(uint8_t adv_data_size, uint8_t *p_adv_data, uint8_t address_type, uint8_t *p_address);
 static void Connect_Request(void);
-static void Terminate_Connection(void);
 static void Start_Auto_Connection(void);
 void Print_Bonded_Devices(void);
 uint8_t Get_Num_Bonded_Devices(void);
+static void Write_Char(void *arg);
 /* USER CODE END PFP */
 
 /* External variables --------------------------------------------------------*/
@@ -435,6 +439,7 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
+
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
@@ -508,13 +513,14 @@ void APP_BLE_Init(void)
   GATT_CLIENT_APP_Init();
 
   /* USER CODE BEGIN APP_BLE_Init_2 */
-  UTIL_SEQ_RegTask(1u << CFG_TASK_CONNECTION_REQUEST, UTIL_SEQ_RFU, Connect_Request);
-  UTIL_SEQ_RegTask(1U << CFG_TASK_TERMINATE_CONNECTION, UTIL_SEQ_RFU, Terminate_Connection);
   
-  if (Get_Num_Bonded_Devices() == 0)
-  {
-    APP_DBG_MSG("No bonded device found.\n");
-  }
+  bleAppContext.write_char_timer_Id.callback = Write_Char; 
+  
+  HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.write_char_timer_Id, WRITE_CHAR_TIMEOUT_MS);
+     
+  UTIL_SEQ_RegTask(1u << CFG_TASK_CONNECTION_REQUEST, UTIL_SEQ_RFU, Connect_Request);
+  
+  Start_Auto_Connection();
   
   /* USER CODE END APP_BLE_Init_2 */
 
@@ -563,17 +569,19 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       {
         bleAppContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;
         bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
-        APP_DBG_MSG(">>== HCI_DISCONNECTION_COMPLETE_EVT_CODE\n");
+        APP_DBG_MSG("\n\n>>== HCI_DISCONNECTION_COMPLETE_EVT_CODE\n");
         APP_DBG_MSG("     - Connection Handle:   0x%02X\n     - Reason:    0x%02X\n",
                     p_disconnection_complete_event->Connection_Handle,
                     p_disconnection_complete_event->Reason);
         /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */
-        
+        GATT_CLIENT_APP_Clear_Conn_Handle(0, p_disconnection_complete_event->Connection_Handle);
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
       gap_cmd_resp_release();
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE_1 */
-      
+  
+      Start_Auto_Connection();
+        
       /* USER CODE END EVT_DISCONN_COMPLETE_1 */
     }
     break;
@@ -590,7 +598,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         {
           hci_le_connection_update_complete_event_rp0 *p_conn_update_complete;
           p_conn_update_complete = (hci_le_connection_update_complete_event_rp0 *) p_meta_evt->data;
-          APP_DBG_MSG(">>== HCI_LE_CONNECTION_UPDATE_COMPLETE_SUBEVT_CODE\n");
+          APP_DBG_MSG("\n\n>>== HCI_LE_CONNECTION_UPDATE_COMPLETE_SUBEVT_CODE\n");
           APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout:   %d ms\n",
                       INT(p_conn_update_complete->Connection_Interval*1.25),
                       FRACTIONAL_2DIGITS(p_conn_update_complete->Connection_Interval*1.25),
@@ -650,8 +658,10 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           hci_le_advertising_report_event_rp0 *p_adv_report;
           p_adv_report = (hci_le_advertising_report_event_rp0 *) p_meta_evt->data;
           /* USER CODE BEGIN EVT_LE_ADVERTISING_REPORT */
-          uint8_t found_status = Analyse_Adv_Report(p_adv_report->Advertising_Report.Data_Length, p_adv_report->Advertising_Report.Data_RSSI,
-                                                    p_adv_report->Advertising_Report.Address_Type, p_adv_report->Advertising_Report.Address);
+          uint8_t found_status = Analyse_Adv_Report(p_adv_report->Advertising_Report.Data_Length, 
+                                                    p_adv_report->Advertising_Report.Data_RSSI,
+                                                    p_adv_report->Advertising_Report.Address_Type,
+                                                    p_adv_report->Advertising_Report.Address);
           if (found_status != 0)
           {
             APP_BLE_Procedure_Gap_Central(PROC_GAP_CENTRAL_SCAN_TERMINATE);
@@ -666,8 +676,10 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           hci_le_extended_advertising_report_event_rp0 *p_ext_adv_report;
           p_ext_adv_report = (hci_le_extended_advertising_report_event_rp0 *) p_meta_evt->data;
           /* USER CODE BEGIN EVT_LE_EXT_ADVERTISING_REPORT */
-          uint8_t found_status = Analyse_Adv_Report(p_ext_adv_report->Extended_Advertising_Report.Data_Length, p_ext_adv_report->Extended_Advertising_Report.Data,
-                                                    p_ext_adv_report->Extended_Advertising_Report.Address_Type, p_ext_adv_report->Extended_Advertising_Report.Address);
+          uint8_t found_status = Analyse_Adv_Report(p_ext_adv_report->Extended_Advertising_Report.Data_Length, 
+                                                    p_ext_adv_report->Extended_Advertising_Report.Data,
+                                                    p_ext_adv_report->Extended_Advertising_Report.Address_Type, 
+                                                    p_ext_adv_report->Extended_Advertising_Report.Address);
           if (found_status != 0)
           {
             APP_BLE_Procedure_Gap_Central(PROC_GAP_CENTRAL_SCAN_TERMINATE);
@@ -823,6 +835,8 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           else
           {
             APP_DBG_MSG("     - Pairing Success\n");
+            /* Discovers all services, characteristics, and descriptors, and enables all notifications for a given GATT client. */
+            UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
           }
           APP_DBG_MSG("\n");
 
@@ -888,7 +902,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
             else
             {
               APP_DBG_MSG("  Success: [ConnectionHandle: 0x%04X] Pairing request after 0x03 (Encryption failed, LTK missing on local device)\n", p_pairing_complete->Connection_Handle);
-              BLEStack_Process_Schedule();
+              //BLEStack_Process_Schedule();
             }
             
           } /* END p_pairing_complete->Status == 0x03 */
@@ -967,12 +981,14 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
-  /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
-  uint8_t new_device_Connection_Status = 0;
-  if(bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING_AUTO_CONNECTION)
+  if(Status != 0)
   {
-    new_device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
   }
+  /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
+
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
   APP_DBG_MSG(">>== hci_le_connection_complete_event - Connection handle: 0x%04X\n", Connection_Handle);
   APP_DBG_MSG("     - Connection established with @:%02X:%02X:%02X:%02X:%02X:%02X\n",
@@ -989,7 +1005,7 @@ static void connection_complete_event(uint8_t Status,
                Supervision_Timeout * 10
                  );
 
-   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
+   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING || bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING_AUTO_CONNECTION)
    {
      /* Connection as client */
      bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
@@ -1001,24 +1017,14 @@ static void connection_complete_event(uint8_t Status,
    }
    bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
 
+   GATT_CLIENT_APP_Clear_Conn_Handle(0, Connection_Handle);
    GATT_CLIENT_APP_Set_Conn_Handle(0, Connection_Handle);
 
    /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
-   if(new_device_Connection_Status != 0)
-   {
-     /* Connection as client */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
-   }
    
-   if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
-   {
-     /* Discovers all services, characteristics, and descriptors, and enables all notifications for a given GATT client. */
-     UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
-   }
    if (Role == HCI_ROLE_CENTRAL)
    {
      /* Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function. */
-     new_ConnHdl = Connection_Handle;
      UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_CONNECTION_COMPLETE);
    }
    /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
@@ -1271,11 +1277,17 @@ static uint8_t Analyse_Adv_Report(uint8_t adv_data_size, uint8_t *p_adv_data,
             (p_adv_data[i + 2] == ST_MANUF_ID_LSB)                  &&
               (p_adv_data[i + 3] == ST_MANUF_ID_MSB)                &&
                 (p_adv_data[i + 4] == BLUESTSDK_V2)                 &&
-                  (p_adv_data[i + 6] == FW_ID_MC_PERIPHERAL)        &&
-                    (p_adv_data[i + 7] == FW_ID_MC_PERIPHERAL_D1)   &&
-                      (p_adv_data[i + 8] == FW_ID_MC_PERIPHERAL_D2) &&
-                        (p_adv_data[i + 9] == FW_ID_MC_PERIPHERAL_D3))
+                  (p_adv_data[i + 6] == FW_ID_MC_CENTRALPERIPHERAL)        &&
+                    (p_adv_data[i + 7] == FW_ID_MC_CENTRALPERIPHERAL_D1)   &&
+                      (p_adv_data[i + 8] == FW_ID_MC_CENTRALPERIPHERAL_D2) &&
+                        (p_adv_data[i + 9] == FW_ID_MC_CENTRALPERIPHERAL_D3))
         {
+          /* 
+            BLE_MultipleConnections_
+            Note: The BLE_MultipleConnections_Central device can connect with a BLE_MultipleConnections_CP device. 
+            Similarly, a BLE_MultipleConnections_Peripheral device can connect with a BLE_MultipleConnections_CP device. 
+            However, a BLE_MultipleConnections_Central device is not designed in this example to connect with a BLE_MultipleConnections_Peripheral device. */
+
           /* Peripheral BlueST v2 detected */
           bleAppContext.deviceServerBdAddrType = address_type;
           memcpy(bleAppContext.a_deviceServerBdAddr, p_address, BD_ADDR_SIZE);
@@ -1307,6 +1319,18 @@ static uint8_t Analyse_Adv_Report(uint8_t adv_data_size, uint8_t *p_adv_data,
   
   return found_status;
 }
+
+static void Write_Char(void *arg)
+{ 
+  /* Check if the device is connected as a BLE client */
+  if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
+  {
+    /* Set the task to start the procedure for writing the peripheral characteristic */
+    UTIL_SEQ_SetTask( 1u << CFG_TASK_WRITE_CHAR_ID, CFG_SEQ_PRIO_0);
+  }
+  HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.write_char_timer_Id, WRITE_CHAR_TIMEOUT_MS);
+}
+
 
 /**
 * @brief Initiate a connection request to a discovered BLE peripheral.
@@ -1363,11 +1387,6 @@ static void Connect_Request(void)
         BLEStack_Process_Schedule();
       }
       
-      if(new_ConnHdl != 0u)
-      {
-        GATT_CLIENT_APP_Set_Conn_Handle(0, new_ConnHdl);
-        new_ConnHdl = 0u;
-      }
     }
     else
     {
@@ -1386,33 +1405,6 @@ static void Connect_Request(void)
 }
 
 
-/**
-* @brief Terminates the connection.
-* 
-* This function is the specific implementation for CFG_TASK_TERMINATE_CONNECTION.
-* It terminates the current BLE connection with the error message BLE_ERROR_TERMINATED_REMOTE_USER.
-*
-* @return void
-*/
-static void Terminate_Connection(void)
-{
-  uint32_t status = aci_gap_terminate(bleAppContext.BleApplicationContext_legacy.connectionHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
-  
-  /* Check if the termination command was successful */
-  if (status != BLE_STATUS_SUCCESS)
-  {
-    APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
-  }
-  else
-  {
-    APP_DBG_MSG("==>> aci_gap_terminate : Success\n");
-    
-    /* Wait for the HCI_DISCONNECTION_COMPLETE_EVT_CODE event */
-    gap_cmd_resp_wait();
-    APP_DBG_MSG("==>> aci_gap_terminate HCI_DISCONNECTION_COMPLETE_EVT_CODE event : Success\n");
-  }
-  return;
-}
 
 /**
 * @brief  Prints the list of bonded devices.
@@ -1474,40 +1466,38 @@ uint8_t Get_Num_Bonded_Devices(void)
   return num_bonded_devices;
 }
 
-/**
-* @brief  Initiates the auto connection establishment procedure if bonded devices are found.
-* 
-* This function checks immediately if there are any bonded devices (in this scenario, peripheral bonded devices could be found).
-* If the check is true, it means that a connection with a peripheral was previously established, and the auto connection establishment
-* procedure can be started correctly.
-* 
-* @retval None
-*/
+
 static void Start_Auto_Connection(void)
 {  
-  uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(500);
+  if(Get_Num_Bonded_Devices() == 0)
+  {
+    APP_DBG_MSG("No bonded device found - No Auto Connection started.\n");
+    return;
+  }
+
+uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
   
   if (bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode)
   {
     status = aci_gap_configure_filter_accept_and_resolving_list(0x01);
     if (status != BLE_STATUS_SUCCESS)
     {
-      APP_DBG_MSG("  Fail   : (FILTER) aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", status);
+      APP_DBG_MSG("  Fail   : aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", status);
     }
     else
     {
-      APP_DBG_MSG("  Success: (FILTER) aci_gap_configure_filter_accept_and_resolving_list command\n");
+      APP_DBG_MSG("  Success: aci_gap_configure_filter_accept_and_resolving_list command\n");
     }
   }
   
   status = aci_gap_set_scan_configuration(DUPLICATE_FILTER_ENABLED, 0x00, LE_1M_PHY_BIT, HCI_SCAN_TYPE_ACTIVE, paramA, paramB);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("(FILTER) aci_gap_set_scan_configuration - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_scan_configuration - fail, result: 0x%02X\n", status);
   }
   else
   {
-    APP_DBG_MSG("==>> (FILTER) aci_gap_set_scan_configuration - Success\n");
+    APP_DBG_MSG("==>> aci_gap_set_scan_configuration - Success\n");
   }
   
   status = aci_gap_set_connection_configuration(LE_1M_PHY_BIT,
@@ -1520,11 +1510,11 @@ static void Start_Auto_Connection(void)
   
   if (status == BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Success , result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02X\n", status);
   }
   else
   {
-    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Failed , result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , result: 0x%02X\n", status);
   }  
   
   /* Start the auto connection establishment procedure */
@@ -1532,12 +1522,19 @@ static void Start_Auto_Connection(void)
   
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("(FILTER) aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - fail, result: 0x%02X\n", status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    APP_DBG_MSG("==>> aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - fail, result: 0x%02X\n", status);
   }
   else
   {
     bleAppContext.Device_Connection_Status = APP_BLE_LP_CONNECTING_AUTO_CONNECTION;
-    APP_DBG_MSG("==>> (FILTER) aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - Success\n");
+    APP_DBG_MSG("==>> aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - Success\n");
+  }
+  
+  if(bleAppContext.Device_Connection_Status == APP_BLE_IDLE)
+  {
+    APP_DBG_MSG("==>> Start_Auto_Connection - Loop restart\n");
+    Start_Auto_Connection();
   }
   
   return;
@@ -1553,36 +1550,27 @@ static void Start_Auto_Connection(void)
 
 void APPE_Button1Action(void)
 {
-  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action. Please use the long push button. \n");
+  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action.\n");
   return;
 }
 
 void APPE_Button2Action(void)
 {
-  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action. Please use the long push button. \n");
+  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action.\n");
   return;
 }
 
 void APPE_Button3Action(void)
 {
-  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action. Please use the long push button. \n");
+  APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action.\n");
   return;
 }
 
-/**
-* @brief  Handles the action for TASK_BUTTON_1_LONG_PRESS press event.
-* 
-* This function is called when Button 1 (B1) is long pressed. If the device is not connected as a client,
-* it prints the list of bonded devices. If no bonded devices are found, it starts the scan procedure.
-* Otherwise, it starts the auto connection procedure.
-* 
-* @retval None
-*/
+
 void APPE_Button1LongPressAction(void)
 {
   if(bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING_AUTO_CONNECTION)
   {
-    
     APP_DBG_MSG("APP_BLE_LP_CONNECTING_AUTO_CONNECTION is running\n");
     
     uint8_t status = aci_gap_terminate_proc(GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC);
@@ -1599,95 +1587,57 @@ void APPE_Button1LongPressAction(void)
   
   /* Check if the device is not connected as a BLE client */
   if (bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_CLIENT)
-  {
-    /* Print the list of bonded devices */
-    Print_Bonded_Devices();
-    
-    /* Check if there are no bonded devices */
-    if(Get_Num_Bonded_Devices() == 0)
-    {
-      APP_BLE_Procedure_Gap_Central(PROC_GAP_CENTRAL_SCAN_START);
-    }
-    else
-    {     
-      Start_Auto_Connection();
-    }  
+  {  
+    APP_BLE_Procedure_Gap_Central(PROC_GAP_CENTRAL_SCAN_START);
   }
   
   return;
 }
 
-/**
-* @brief  Handles the action for TASK_BUTTON_2_LONG_PRESS press event.
-* 
-* This function is called when Button 2 (B2) is long pressed. If the device is connected as a BLE client,
-* it sets a new task to start the procedure for writing the peripheral characteristic. Otherwise, it
-* calls the function to clear the security database.
-* 
-* @retval None
-*/
+
 void APPE_Button2LongPressAction(void)
 {
-  /* Check if the device is connected as a BLE client */
-  if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
+  /* Clear the security database if not connected as a BLE client */
+  tBleStatus ret = aci_gap_clear_security_db();
+  if (ret != BLE_STATUS_SUCCESS)
   {
-    /* Set the task to start the procedure for writing the peripheral characteristic */
-    UTIL_SEQ_SetTask( 1u << CFG_TASK_WRITE_CHAR_ID, CFG_SEQ_PRIO_0);
+    APP_DBG_MSG("==>> aci_gap_clear_security_db - Fail, result: 0x%02X\n", ret);
   }
   else
   {
-    /* Clear the security database if not connected as a BLE client */
-    tBleStatus ret = aci_gap_clear_security_db();
-    if (ret != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG("==>> aci_gap_clear_security_db - Fail, result: 0x%02X\n", ret);
-    }
-    else
-    {
-      APP_DBG_MSG("==>> aci_gap_clear_security_db - Success\n");
-    }
+    APP_DBG_MSG("==>> aci_gap_clear_security_db - Success\n");
   }
+
   return;
 }
 
 
-/**
-* @brief  Handles the action for TASK_BUTTON_3_LONG_PRESS press event.
-* 
-* This function is called when B3 is long pressed. It terminates the current BLE connection
-* if the device is connected as a client. 
-* 
-* @return void
-*/
+
 void APPE_Button3LongPressAction(void)
 {
-  /* Check if the device is connected as a BLE client */
-  if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
-  {
-    /* Use this task to terminate the connection. This ensures that the disconnection reason is set 
-    to BLE_ERROR_TERMINATED_REMOTE_USER */
-    APP_DBG_MSG("APPE_Button3Action - CFG_TASK_TERMINATE_CONNECTION\n");
-    UTIL_SEQ_SetTask(1U << CFG_TASK_TERMINATE_CONNECTION, CFG_SEQ_PRIO_0);
-    return;
-  }
-  
-  if(bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING_AUTO_CONNECTION)
-  {
-    APP_DBG_MSG("APPE_Button3Action - bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING_AUTO_CONNECTION \n");
-    uint8_t status = aci_gap_terminate_proc(GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC);
-    if (status != BLE_STATUS_SUCCESS)
+    /* Check if the device is connected as a BLE client */
+    if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
     {
-      APP_DBG_MSG("aci_gap_terminate_gap_proc GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - fail, result: 0x%02X\n",status);
-    }
-    else
-    {
-      bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
-      APP_DBG_MSG("==>> aci_gap_terminate_gap_proc GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - Success\n");
+      uint32_t status = aci_gap_terminate(bleAppContext.BleApplicationContext_legacy.connectionHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
+      
+      /* Check if the termination command was successful */
+      if (status != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
+      }
+      else
+      {
+        APP_DBG_MSG("==>> aci_gap_terminate : Success\n");
+        
+        /* Wait for the HCI_DISCONNECTION_COMPLETE_EVT_CODE event */
+        gap_cmd_resp_wait();
+        APP_DBG_MSG("==>> aci_gap_terminate HCI_DISCONNECTION_COMPLETE_EVT_CODE event : Success\n");
+      }
     }
     return;
-  }
-  return;
 }
+  
+
 #endif /* (CFG_BUTTON_SUPPORTED == 1) */
 /* USER CODE END FD_WRAP_FUNCTIONS */
 

@@ -73,6 +73,8 @@ void HAL_MspInit(void)
   LL_RCC_EnableIT_RC64MPLLRDY();
   /* USER CODE END MspInit 0 */
 
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
   /* System interrupt init*/
 
   /* Peripheral interrupt init */

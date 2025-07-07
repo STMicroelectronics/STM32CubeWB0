@@ -42,31 +42,6 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Utilities/lpm/tiny_lpm/stm32_lpm.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/app_entry.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/app_entry.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/blue_unit_conversion.s</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/blue_unit_conversion.s</locationURI>
-		</link>
-		<link>
-			<name>Application/User/main.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/main.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/stm32wb0x_hal_msp.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wb0x_hal_msp.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/stm32wb0x_it.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wb0x_it.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/CMSIS/system_stm32wb0x.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/system_stm32wb0x.c</locationURI>
@@ -132,16 +107,6 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_rcc_ex.c</locationURI>
 		</link>
 		<link>
-			<name>Drivers/STM32WB0x_HAL_Driver/stm32wb0x_hal_tim.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</locationURI>
-		</link>
-		<link>
-			<name>Drivers/STM32WB0x_HAL_Driver/stm32wb0x_hal_tim_ex.c</name>
-			<type>1</type>
-			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</locationURI>
-		</link>
-		<link>
 			<name>Drivers/STM32WB0x_HAL_Driver/stm32wb0x_hal_uart.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart.c</locationURI>
@@ -152,29 +117,64 @@
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart_ex.c</locationURI>
 		</link>
 		<link>
+			<name>Application/User/Core/app_entry.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/app_entry.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/blue_unit_conversion.s</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/blue_unit_conversion.s</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/main.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/main.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/stm32wb0x_hal_msp.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wb0x_hal_msp.c</locationURI>
+		</link>
+		<link>
+			<name>Application/User/Core/stm32wb0x_it.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/Core/Src/stm32wb0x_it.c</locationURI>
+		</link>
+		<link>
+			<name>Common/BLE/Interfaces/stm32_lpm_if.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Interfaces/stm32_lpm_if.c</locationURI>
+		</link>
+		<link>
+			<name>Common/BLE/Modules/osal.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Modules/osal.c</locationURI>
+		</link>
+		<link>
+			<name>Common/BLE/Startup/cpu_context_switch.s</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Startup/cpu_context_switch.s</locationURI>
+		</link>
+		<link>
+			<name>Common/BLE/Startup/device_context_switch.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Startup/device_context_switch.c</locationURI>
+		</link>
+		<link>
 			<name>Drivers/BSP/NUCLEO-WB05KZ/stm32wb0x_nucleo.c</name>
 			<type>1</type>
 			<locationURI>PARENT-6-PROJECT_LOC/Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/System/Interfaces/stm32_lpm_if.c</name>
+			<name>Common/BLE/Modules/RTDebug/RTDebug.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/System/Interfaces/stm32_lpm_if.c</locationURI>
+			<locationURI>PARENT-5-PROJECT_LOC/Common/BLE/Modules/RTDebug/RTDebug.c</locationURI>
 		</link>
 		<link>
-			<name>Application/User/System/Modules/osal.c</name>
+			<name>Application/User/System/Config/Debug_GPIO/app_debug.c</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/System/Modules/osal.c</locationURI>
-		</link>
-		<link>
-			<name>Application/User/System/Startup/cpu_context_switch.s</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/System/Startup/cpu_context_switch.s</locationURI>
-		</link>
-		<link>
-			<name>Application/User/System/Startup/device_context_switch.c</name>
-			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/System/Startup/device_context_switch.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/System/Config/Debug_GPIO/app_debug.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

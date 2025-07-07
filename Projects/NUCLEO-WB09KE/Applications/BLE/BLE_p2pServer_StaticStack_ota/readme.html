@@ -56,11 +56,18 @@
         arm-none-eabi-objcopy (e.g. arm-none-eabi-objcopy -I ihex -O
         binary BLE_p2pServer_StaticStack_ota.hex
         BLE_p2pServer_StaticStack_ota.bin).</p>
-        <h3 id="notes"><strong>Notes</strong></h3>
-        <h2
-        id="converting-existing-application-with-fuota-support-to-use-ble-static-stack">Converting
+        <p><em>Important</em>: BLE_p2pServer_StaticStack_ota project by
+        default uses ble_static_stack_sym.a from
+        BLE_StaticStack_ota\Binary directory, which contains the symbol
+        table needed to correctly link the application to the
+        BLE_StaticStack_ota.hex firmware present in Binary folder. If
+        application does not use the precompiled BLE_StaticStack_ota.hex
+        in Binary folder, make sure to use the correct
+        ble_static_stack_sym.a file.</p>
+        <h3
+        id="converting-existing-application-with-fuota-support-to-use-ble-static-stack"><strong>Converting
         existing application with FUOTA support to use BLE Static
-        Stack</h2>
+        Stack</strong></h3>
         <p>This section describes the changes that are needed to convert
         an existing application embedding the traditional STM32WB0
         Bluetooth stack library into one using a STM32WB0 Bluetooth

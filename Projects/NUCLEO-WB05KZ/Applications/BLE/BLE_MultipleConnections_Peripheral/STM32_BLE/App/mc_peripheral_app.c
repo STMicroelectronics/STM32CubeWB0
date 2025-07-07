@@ -262,7 +262,7 @@ __USED void MC_PERIPHERAL_Switch_c_SendNotification(void) /* Property Notificati
   
   if(MC_PERIPHERAL_APP_Context.Switch_c_Notification_Status == Switch_c_NOTIFICATION_ON)
   { 
-    APP_DBG_MSG("-- APPLICATION SERVER : INFORM CLIENT BUTTON 1 PUSHED\n");
+    APP_DBG_MSG("-- APPLICATION SERVER : INFORM CLIENT - NOTIFICATION ENABLED\n");
     notification_on_off = Switch_c_NOTIFICATION_ON;
   } 
   else

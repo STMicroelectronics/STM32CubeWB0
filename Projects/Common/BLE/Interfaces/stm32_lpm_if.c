@@ -71,8 +71,6 @@ typedef struct clockContextS
   uint8_t  LSIenabled;
 } clockContextT;
 
-#define MIN_ACTIVE_TIME_US          200
-
 /* USER CODE BEGIN Private_Define */
 
 /* USER CODE END Private_Define */
@@ -88,29 +86,11 @@ static ahb0PeriphT ahb0={0};
 static cpuPeriphT  cpuPeriph={0};
 static uint32_t    cStackPreamble[CSTACK_PREAMBLE_NUMBER];
 static clockContextT clockContext;
-static uint32_t lastTick;
 
 /* USER CODE BEGIN Private_Variables */
 extern void CPUcontextSave(void);
 
 /* USER CODE END Private_Variables */
-
-static uint8_t checkMinWakeUpTime(void)
-{
-  if(lastTick == HAL_GetTick())
-  {
-    uint32_t systick_reload_val = SysTick->LOAD;
-      
-    /* In this case it is likely that we are going to sleep too early.
-       Check current value of systick counter.  */
-    if(SysTick->VAL > systick_reload_val - MIN_ACTIVE_TIME_US * (HAL_RCC_GetSysClockFreq() / 1000000))
-    {
-      return 1;
-    }
-  }
-  
-  return 0;
-}
 
 /** @addtogroup TINY_LPM_IF_Exported_functions
  * @{
@@ -168,12 +148,6 @@ void PWR_EnterOffMode( void )
   SET_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
 
   SYSTEM_DEBUG_SIGNAL_SET(LOW_POWER_STANDBY_MODE_ACTIVE);
-  
-  /* Workaround: do not go to sleep if we have been awake for a too short time. */
-  if(checkMinWakeUpTime() != 0)
-  {
-    return;
-  }
 
   /* Save the CPU context & Wait for Interrupt Request to enter in DEEPSTOP */
   CPUcontextSave();
@@ -188,14 +162,6 @@ void PWR_ExitOffMode( void )
   /* USER CODE BEGIN PWR_ExitOffMode_1 */
 
   /* USER CODE END PWR_ExitOffMode_1 */
-
-  /* Workaround to avoid going to sleep too early after a wakeup.
-     We need to have a time reference. We can save current value of tick.
-   */
-  if(RAM_VR.WakeupFromSleepFlag)
-  {
-    lastTick = HAL_GetTick();
-  }
 
   /* Restore low speed clock configuration */
   if (clockContext.LSEenabled == TRUE)
@@ -252,6 +218,9 @@ void PWR_ExitOffMode( void )
     /* Handler to manage the IOs IRQ if needed */
     HAL_PWR_WKUP_IRQHandler();
   }
+  
+  /* Wait until the Low Power regulator is ready */
+  while(LL_PWR_IsActiveFlag_REGLPS() == 0);
 
   /* USER CODE BEGIN PWR_ExitOffMode_2 */
 
@@ -303,12 +272,6 @@ void PWR_EnterStopMode( void )
   /* Set SLEEPDEEP bit of Cortex System Control Register */
   SET_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
   
-  /* Workaround: do not go to sleep if we have been awake for a too short time. */
-  if(checkMinWakeUpTime() != 0)
-  {
-    return;
-  }
-
   SYSTEM_DEBUG_SIGNAL_SET(LOW_POWER_STOP_MODE_ACTIVE);
   
 #if (CFG_LPM_EMULATED == 1)
@@ -333,14 +296,6 @@ void PWR_ExitStopMode( void )
   /* USER CODE BEGIN PWR_ExitStopMode_1 */
 
   /* USER CODE END PWR_ExitStopMode_1 */
-
-  /* Workaround to avoid going to sleep too early after a wakeup.
-     We need to have a time reference. We can save current value of tick.
-   */
-  if(RAM_VR.WakeupFromSleepFlag)
-  {
-    lastTick = HAL_GetTick();
-  }
   
   /* Clear SLEEPDEEP bit of Cortex System Control Register */
   CLEAR_BIT(SCB->SCR, SCB_SCR_SLEEPDEEP_Msk);
@@ -370,6 +325,9 @@ void PWR_ExitStopMode( void )
     /* Handler to manage the IOs IRQ if needed */
     HAL_PWR_WKUP_IRQHandler();
   }
+  
+  /* Wait until the Low Power regulator is ready */
+  while(LL_PWR_IsActiveFlag_REGLPS() == 0);
 
   /* USER CODE BEGIN PWR_ExitStopMode_2 */
 

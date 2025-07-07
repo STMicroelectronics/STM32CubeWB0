@@ -110,9 +110,9 @@ typedef enum
   * FIRMWARE ID / Data 
   */
 #define  FW_ID_RC_PERIPHERAL    0x23
-#define  FW_ID_RC_PERIPHERAL_D1 0x20
-#define  FW_ID_RC_PERIPHERAL_D2 0x21
-#define  FW_ID_RC_PERIPHERAL_D3 0x21
+#define  FW_ID_RC_PERIPHERAL_D1 0x00
+#define  FW_ID_RC_PERIPHERAL_D2 0x00
+#define  FW_ID_RC_PERIPHERAL_D3 0x00
 
 /* USER CODE END EC */
 

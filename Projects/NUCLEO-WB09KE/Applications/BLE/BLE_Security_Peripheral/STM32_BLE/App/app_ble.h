@@ -109,10 +109,10 @@ typedef enum
   * FIRMWARE ID / Data 
   */
 
-#define FW_ID_SECURITY_PERIPHERAL          0x13 /* FW ID */
-#define FW_DATA_SECURITY_PERIPHERAL_1      0x01 /* Data1 */ 
-#define FW_DATA_SECURITY_PERIPHERAL_2      0x02 /* Data2 */ 
-#define FW_DATA_SECURITY_PERIPHERAL_3      0x03 /* Data3 */ 
+#define FW_ID_SECURITY_PERIPHERAL          0xB3 /* FW ID */
+#define FW_DATA_SECURITY_PERIPHERAL_1      0x00 /* Data1 */ 
+#define FW_DATA_SECURITY_PERIPHERAL_2      0x00 /* Data2 */ 
+#define FW_DATA_SECURITY_PERIPHERAL_3      0x00 /* Data3 */ 
 
 
 /* USER CODE END EC */

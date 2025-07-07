@@ -189,14 +189,14 @@
  * - a part, that may be considered "fixed", i.e., independent from the above
  *   mentioned parameters.
 */
-#   define BLE_STACK_FIXED_BUFFER_SIZE_BYTES (978U)
+#   define BLE_STACK_FIXED_BUFFER_SIZE_BYTES (970U)
 
 /**
  * Amount of memory needed by each radio link
  */
-#   define COEFF_CONN_SUPP_EN   (848U + BLE_STACK_GATT_ATTRIBUTE_SIZE * BLE_STACK_NUM_GATT_MANDATORY_ATTRIBUTES)
+#   define COEFF_CONN_SUPP_EN   (832U + BLE_STACK_GATT_ATTRIBUTE_SIZE * BLE_STACK_NUM_GATT_MANDATORY_ATTRIBUTES)
 #   define COEFF_NUM_OF_LINKS_0 (48U)
-#   define COEFF_NUM_OF_LINKS_1 (656U)
+#   define COEFF_NUM_OF_LINKS_1 (644U)
 #   define BLE_STACK_LINKS_SIZE(CONN_SUPP_EN, NUM_OF_LINKS) \
         (((CONN_SUPP_EN) == 1U) || ((NUM_OF_LINKS) > 0U) ? COEFF_CONN_SUPP_EN * (CONN_SUPP_EN) + COEFF_NUM_OF_LINKS_0 * (NUM_OF_LINKS) + COEFF_NUM_OF_LINKS_1 * (CONN_SUPP_EN) * (NUM_OF_LINKS) : 0U)
 
@@ -327,14 +327,14 @@
 
 #else // (BLESTACK_CONTROLLER_ONLY == 1)
 
-#   define BLE_STACK_FIXED_BUFFER_SIZE_BYTES (828U)
+#   define BLE_STACK_FIXED_BUFFER_SIZE_BYTES (820U)
 
 /**
  * Amount of memory needed by each radio link
  */
-#   define COEFF_CONN_SUPP_EN   (180U)
+#   define COEFF_CONN_SUPP_EN   (164U)
 #   define COEFF_NUM_OF_LINKS_0 (48U)  // [DB] NOTE: scheduler's tasks
-#   define COEFF_NUM_OF_LINKS_1 (484U)
+#   define COEFF_NUM_OF_LINKS_1 (472U)
 #   define BLE_STACK_LINKS_SIZE(CONN_SUPP_EN, NUM_OF_LINKS) \
         (((CONN_SUPP_EN) == 1U) || ((NUM_OF_LINKS) > 0U) ? COEFF_CONN_SUPP_EN * (CONN_SUPP_EN) + COEFF_NUM_OF_LINKS_0 * (NUM_OF_LINKS) + COEFF_NUM_OF_LINKS_1 * (CONN_SUPP_EN) * (NUM_OF_LINKS) : 0U)
 
@@ -728,6 +728,17 @@ typedef struct {
  * @note Do not call BLE_STACK_Tick() directly from BLE_STACK_ProcessRequest().
  */
 void BLE_STACK_Tick(void);
+
+/**
+ * @brief This function executes the processing of all Host Stack layers without calling BLE_STACK_Event() .
+ *
+ * This version of the BLE Stack Tick function is useful in case the classic BLE_STACK_Tick() cannot be called for long time.
+ * In fact it is possible to call this BLE_STACK_TickNoEvents() from an interrupt context (e.g. from the Systick ISR) while being sure
+ * that BLE_STACK_Event() will not be called by this function.
+ *
+ * @note Do not call BLE_STACK_TickNoEvents() while other BLE Stack functions are being executed.
+ */
+void BLE_STACK_TickNoEvents(void);
 
 /**
  * @brief The BLE Stack initialization routine

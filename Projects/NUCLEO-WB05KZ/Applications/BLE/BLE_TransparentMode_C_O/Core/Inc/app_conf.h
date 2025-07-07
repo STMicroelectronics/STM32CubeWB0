@@ -155,7 +155,7 @@
  * Maximum number of Antenna IDs in the antenna pattern used in CTE connection
  * oriented mode.
  */
-#define CFG_BLE_NUM_CTE_ANTENNA_IDS_MAX                 (8)
+#define CFG_BLE_NUM_CTE_ANTENNA_IDS_MAX                 (11)
 
 /**
  * Maximum number of IQ samples in the buffer used in CTE connection oriented mode.

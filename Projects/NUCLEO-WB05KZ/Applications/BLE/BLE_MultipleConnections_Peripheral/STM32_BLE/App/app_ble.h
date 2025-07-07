@@ -88,6 +88,7 @@ typedef enum
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
+
 /** 
   * ST Manufacturer ID (2 bytes: least significant and most significant bytes).
   */
@@ -110,8 +111,17 @@ typedef enum
   */
 #define  FW_ID_MC_PERIPHERAL    0x13
 #define  FW_ID_MC_PERIPHERAL_D1 0x00
-#define  FW_ID_MC_PERIPHERAL_D2 0x01
-#define  FW_ID_MC_PERIPHERAL_D3 0x11
+#define  FW_ID_MC_PERIPHERAL_D2 0x00
+#define  FW_ID_MC_PERIPHERAL_D3 0x00
+
+#define  FW_ID_MC_CENTRALPERIPHERAL    0x14
+#define  FW_ID_MC_CENTRALPERIPHERAL_D1 0x00
+#define  FW_ID_MC_CENTRALPERIPHERAL_D2 0x00
+#define  FW_ID_MC_CENTRALPERIPHERAL_D3 0x00
+    
+
+#define  SEND_NOTIFY_TIMEOUT_MS       10000
+    
 
 /* USER CODE END EC */
 

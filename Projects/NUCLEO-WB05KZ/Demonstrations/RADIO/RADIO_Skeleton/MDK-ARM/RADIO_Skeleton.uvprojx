@@ -18,12 +18,12 @@
           <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32WB0x_DFP.1.0.0</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000,0x00006000) IROM(0x10040000,0x00030000) CPUTYPE("Cortex-M0+") CLOCK(12000000) ELITTLE</Cpu>
+          <Cpu>IRAM(0x20000000-0x20005FFF) IROM(0x10040000-0x1006FFFF) IROM2(0x10000000-0x100017FF) CLOCK(8000000) CPUTYPE("Cortex-M0+") TZ</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile></StartupFile>
-          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC6000 -FN1 -FF0STM32WB0x_192K -FS010040000 -FL040000 -FP0($$Device:STM32WB05KZVxT$CMSIS\Flash\STM32WB0x_192K.FLM))</FlashDriverDll>
+          <FlashDriverDll></FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile>$$Device:STM32WB05KZVxT$Drivers\CMSIS\Device\ST\STM32WB0x\Include\stm32wb0x.h</RegisterFile>
+          <RegisterFile></RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -110,11 +110,11 @@
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
-          <SimDllArguments> -REMAP </SimDllArguments>
+          <SimDllArguments>-REMAP</SimDllArguments>
           <SimDlgDll>DARMCM1.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCM0+</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
-          <TargetDllArguments> </TargetDllArguments>
+          <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TARMCM1.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCM0+</TargetDlgDllArguments>
         </DllOption>
@@ -137,7 +137,7 @@
             <DriverSelection>4101</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
+          <Flash2>BIN\UL2V8M.DLL</Flash2>
           <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -188,14 +188,14 @@
             <RvdsCdeCp>0</RvdsCdeCp>
             <nBranchProt>0</nBranchProt>
             <hadIRAM2>0</hadIRAM2>
-            <hadIROM2>0</hadIROM2>
+            <hadIROM2>1</hadIROM2>
             <StupSel>8</StupSel>
             <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
             <RoSelD>3</RoSelD>
-            <RwSelD>3</RwSelD>
+            <RwSelD>4</RwSelD>
             <CodeSel>0</CodeSel>
             <OptFeed>0</OptFeed>
             <NoZi1>0</NoZi1>
@@ -207,7 +207,7 @@
             <Ro2Chk>0</Ro2Chk>
             <Ro3Chk>0</Ro3Chk>
             <Ir1Chk>1</Ir1Chk>
-            <Ir2Chk>0</Ir2Chk>
+            <Ir2Chk>1</Ir2Chk>
             <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
@@ -281,8 +281,8 @@
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x10000000</StartAddress>
+                <Size>0x1800</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
@@ -340,7 +340,7 @@
               <MiscControls>-fshort-enums</MiscControls>
               <Define>NUCLEO_WB05KZ,USE_HAL_DRIVER,STM32WB05</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;../../../../../../Utilities/lpm/tiny_lpm;../System/Modules;../System/Startup;../System/Interfaces</IncludePath>
+              <IncludePath>../Core/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;../../../../../../Utilities/lpm/tiny_lpm;../../../../../Common/BLE/Modules;../../../../../Common/BLE/Modules/RTDebug;../System/Config/Debug_GPIO;../../../../../Common/BLE/Startup;../../../../../Common/BLE/Interfaces</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -394,41 +394,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Application/User/System/Interfaces</GroupName>
-          <Files>
-            <File>
-              <FileName>stm32_lpm_if.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Interfaces/stm32_lpm_if.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/User/System/Modules</GroupName>
-          <Files>
-            <File>
-              <FileName>osal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Modules/osal.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Application/User/System/Startup</GroupName>
-          <Files>
-            <File>
-              <FileName>device_context_switch.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../System/Startup/device_context_switch.c</FilePath>
-            </File>
-            <File>
-              <FileName>cpu_context_switch.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>../System/Startup/cpu_context_switch.s</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Application/User/Core</GroupName>
           <Files>
             <File>
@@ -455,6 +420,61 @@
               <FileName>stm32wb0x_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32wb0x_hal_msp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Application/User/System/Config/Debug_GPIO</GroupName>
+          <Files>
+            <File>
+              <FileName>app_debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../System/Config/Debug_GPIO/app_debug.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common/BLE/Interfaces</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32_lpm_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Common/BLE/Interfaces/stm32_lpm_if.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common/BLE/Modules</GroupName>
+          <Files>
+            <File>
+              <FileName>osal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Common/BLE/Modules/osal.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common/BLE/Modules/RTDebug</GroupName>
+          <Files>
+            <File>
+              <FileName>RTDebug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Common/BLE/Modules/RTDebug/RTDebug.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Common/BLE/Startup</GroupName>
+          <Files>
+            <File>
+              <FileName>device_context_switch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../../../../../Common/BLE/Startup/device_context_switch.c</FilePath>
+            </File>
+            <File>
+              <FileName>cpu_context_switch.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>../../../../../Common/BLE/Startup/cpu_context_switch.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -542,16 +562,6 @@
               <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_radio_timer.c</FilePath>
             </File>
             <File>
-              <FileName>stm32wb0x_hal_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32wb0x_hal_tim_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_tim_ex.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32wb0x_hal_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>../../../../../../Drivers/STM32WB0x_HAL_Driver/Src/stm32wb0x_hal_uart.c</FilePath>
@@ -593,7 +603,7 @@
   <RTE>
     <apis/>
     <components>
-      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.6.0" condition="ARMv6_7_8-M Device">
+      <component Cclass="CMSIS" Cgroup="CORE" Cvendor="ARM" Cversion="5.6.0" condition="CMSIS Core">
         <package name="CMSIS" schemaVersion="1.7.7" url="http://www.keil.com/pack/" vendor="ARM" version="5.9.0"/>
         <targetInfos>
           <targetInfo name="RADIO_Skeleton"/>

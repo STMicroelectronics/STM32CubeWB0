@@ -30,11 +30,7 @@
 /******************************************************************************
  * CONSTANT SYMBOLS
  *****************************************************************************/
-#if defined(CONFIG_NUM_MAX_LINKS)
-#define GATT_SRV_MAX_CONN                                   (CONFIG_NUM_MAX_LINKS)
-#else
-#define GATT_SRV_MAX_CONN                                   (8U)
-#endif
+#define GATT_SRV_MAX_CONN                                   (CFG_BLE_NUM_RADIO_TASKS)
 
 #define GATT_CHR_SERVICE_CHANGED_VALUE_LEN                  (4U)
 

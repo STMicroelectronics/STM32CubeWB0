@@ -24,9 +24,6 @@
   </style>
   <link rel="stylesheet" href="../../../_htmresc/mini-st_2020.css" />
   <link rel="icon" type="image/x-icon" href="../../../_htmresc/favicon.png"/>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
 </head>
 <body>
 <div class="row">
@@ -82,7 +79,7 @@ supported:</p>
 Bluetooth LE stack memory footprints based on user application
 scenario</li>
 <li>Single Bluetooth LE stack v4.x binary image (stm32wb0x_ble_stack.a)
-which can be used for all the supported supported toolchains</li>
+which can be used for all the supported toolchains</li>
 <li>Dedicated Bluetooth LE stack v4.x binary image
 (stm32wb0x_ble_stack_controller_only.a) for the HCI controller only
 configuration</li>
@@ -94,11 +91,103 @@ folder.</p>
 <section id="update-history" class="col-sm-12 col-lg-8">
 <h1>Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section4" checked aria-hidden="true">
-<label for="collapse-section4" aria-hidden="true"><strong>V1.2.0 /
-05-February-2025</strong></label>
+<input type="checkbox" id="collapse-section130" checked aria-hidden="true">
+<label for="collapse-section130" aria-hidden="true"><strong>V1.3.0 /
+04-June-2025</strong></label>
 <div>
 <h2 id="main-changes">Main Changes</h2>
+<p>ST Bluetooth LE stack v4.0d release:</p>
+<ul>
+<li>New features/updates (compared to Bluetooth LE stack v4.0c):
+<ul>
+<li>ID 1333960: Added new API (BLE_STACK_TickNoEvents()) to be used from
+interrupt context.</li>
+</ul></li>
+<li>Solved issues (compared to Bluetooth LE stack v4.0c):
+<ul>
+<li>ID 1397260: Connection from PAwR cannot be stablished when privacy
+is used.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
+<li>ID 1357406: Multiple ACL connections allowed with same peer devices
+when privacy is used.</li>
+<li>ID 1358692: CIS creation is not performed if LE Power Control
+procedures are ongoing.</li>
+<li>ID 1382562: Fixed unexpected disconnections of ISO and ACL
+links.</li>
+<li>ID 1400292: Issue with code modularity feature and Data Length
+Extension.</li>
+<li>ID 1412508: Wrong SCA reported in LL_PERIODIC_SYNC_IND PDU.</li>
+<li>ID 1414710: Wrong ACL DATA reported to the Host when CTE header is
+present.</li>
+<li>ID 1417967: PADV wrong timings on Broadcaster for Coded PHY.</li>
+<li>ID 1419420: Timing accuracy of 50 ppm not respected when sending
+AUX_SYNC_SUBEVENT_RSP on a response slot with an high index.</li>
+<li>ID 1419451: Request to create a connection from PAwR fails if there
+are pending data for the specified subevent.</li>
+<li>ID 1420542: Unresponsive synchronizer device after PAST procedure
+failure.</li>
+<li>ID 1426217: Null pointer dereferencing when using CIS.</li>
+</ul></li>
+<li>Known limitations:
+<ul>
+<li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
+command shall be avoided during intense radio activities.</li>
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+than the correct value.</li>
+<li>ID 1074817: Different advertising filter policies are allowed among
+different adverting sets. It should be forbidden according to GAP
+specifications.</li>
+<li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
+a GATT characteristic.</li>
+<li>ID 1197644: Non-optimal pre-scheduler allocation under 10 ms of
+connection interval.</li>
+<li>ID 1213293: The Advertiser_Address shall be checked in according to
+Advertiser_Address_Type value for some HCI commands</li>
+<li>ID 1221480: The Path loss estimated with and without Power Control
+may be very different.</li>
+<li>ID 1247513: PAwR limitations: last response slot of a subevent must
+end 150 us before the start of the next subevent (this affects both
+synchronizer and advertiser); controller privacy is not supported on the
+synchronizer side.</li>
+<li>ID 1258605: HCI commands starting LL procedures may return “LL busy”
+error when LE Power Control is active.</li>
+<li>ID 1277942: Pairing may fail when a device is not in the bonding
+table but it is present in the resolving list.</li>
+<li>ID 1282732: Interpacket spacing in transmitter test mode is not
+compliant with spec.</li>
+<li>ID 1311731: Non-compliant T_IFS (less than 150 microseconds) value
+measured in different PDUs.</li>
+<li>ID 1313986: LE Set Random Address may return Invalid HCI Command
+Parameters (0x12) when used together with extended advertising
+commands.</li>
+<li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
+Sync Ind PDU.</li>
+<li>ID 1338337: High packet loss rate for BIS when using LE Coded
+PHY.</li>
+<li>ID 1353736: PADV may fail to start if disable advertising command is
+given immediately after ext adv start command.</li>
+<li>ID 1357243: Possible not compliance on CIS anchor spacing in
+interleaved mode.</li>
+<li>ID 1381769: CIS disconnection may not be performed if LL control
+procedures are ongoing.</li>
+<li>ID 1384820: CIS Central wrong subevent timings.</li>
+<li>ID 1427399: High packet loss rate when using response slot 0 in
+PAwR.</li>
+<li>ID 1435606: Wrong time calculation when specifying long advertising
+intervals.</li>
+<li>ID 1447834: Sync Lost event may happen with some specific PAwR
+configuration.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section120" aria-hidden="true">
+<label for="collapse-section120" aria-hidden="true"><strong>V1.2.0 /
+05-February-2025</strong></label>
+<div>
+<h2 id="main-changes-1">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0c release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0b):
@@ -145,7 +234,7 @@ establish a connection with PAwR</li>
 <li>ID 1384821: Peripheral CIS skips RX subevents</li>
 <li>ID 1365599: Failure of PAST procedure by scanner when PAWR is on
 going</li>
-<li>ID 1369495: Error returned when enabling more than one ADVertising
+<li>ID 1369495: Error returned when enabling more than one Advertising
 set</li>
 </ul></li>
 <li>Known limitations:
@@ -188,34 +277,28 @@ PAVD train is given immediately after the command to start extended
 advertising, the PADV may not start.</li>
 <li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
 Sync Ind PDU</li>
-<li>ID 1318861: Concurrent procedures working not correctly (reported
-against iPhone 11)</li>
 <li>ID 1338337: Higher packet lost rate for BIS when using LE Coded
 PHY</li>
 <li>ID 1353736: PADV may fail to start if disable advertising command is
 given immediately after ext adv start command</li>
-<li>ID 1357243: Possible not compliancy on CISes anchor spacing in
-inteleaved mode</li>
+<li>ID 1357243: Possible not compliance on CIS anchor spacing in
+interleaved mode</li>
 <li>ID 1358692: CIS creation is not performed if Power Control and Path
 Loss procedure keep the CPE busy</li>
 <li>ID 1381769: CIS disconnection is not performed if Power Control and
 Path Loss procedure keep the CPE busy</li>
 <li>ID 1357406: Multiple ACL connections, whether or not established,
 are allowed between two LE device addresses when privacy is used.</li>
-<li>ID 1385818: ACI_HAL_GET_LINK_STATUS command response changes for
-different configurations (e.g. Full vs Minimal)</li>
 </ul></li>
 </ul>
-<p><br />
-</p>
 </div>
 </div>
 <div class="collapse">
-<input type="checkbox" id="collapse-section6" aria-hidden="true">
-<label for="collapse-section6" aria-hidden="true"><strong>V1.1.0 /
+<input type="checkbox" id="collapse-section110" aria-hidden="true">
+<label for="collapse-section110" aria-hidden="true"><strong>V1.1.0 /
 30-October-2024</strong></label>
 <div>
-<h2 id="main-changes-1">Main Changes</h2>
+<h2 id="main-changes-2">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0b release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0):
@@ -255,7 +338,7 @@ specific configurations.</li>
 <li>ID 1335400: Fixed issue with HCI LE Extended Create Connection v2
 command, returning an “invalid command parameter” error the second time
 it was called.</li>
-<li>ID 1288139: Fixed sequence number disalignment on CIG.</li>
+<li>ID 1288139: Fixed sequence number misalignment on CIG.</li>
 <li>ID 1309634: Fixed time conversion for long intervals used in
 ISOAL/BIG procedures, which was causing wrong timestamps.</li>
 <li>ID 1327059: Fixed wrong error code returned if an unexpected
@@ -316,16 +399,14 @@ PAVD train is given immediately after the command to start extended
 advertising, the PADV may not start.</li>
 </ul></li>
 </ul>
-<p><br />
-</p>
 </div>
 </div>
 <div class="collapse">
-<input type="checkbox" id="collapse-section5" aria-hidden="true">
-<label for="collapse-section5" aria-hidden="true"><strong>V1.0.0 /
+<input type="checkbox" id="collapse-section100" aria-hidden="true">
+<label for="collapse-section100" aria-hidden="true"><strong>V1.0.0 /
 05-June-2024</strong></label>
 <div>
-<h2 id="main-changes-2">Main Changes</h2>
+<h2 id="main-changes-3">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0 release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v3.x)
@@ -401,7 +482,7 @@ corresponding GATT commands modified by adding the CID parameter.</li>
 </ul></li>
 <li>Solved issues (compared to Bluetooth LE stack v3.x):
 <ul>
-<li>ID 1055406: Periodic advertising sync ends abnormally.Sometimes the
+<li>ID 1055406: Periodic advertising sync ends abnormally. Sometimes the
 scanner, synchronized with a periodic advertiser, ends sending
 advertising reports to the application.</li>
 <li>ID 1127696: Missed SDU in BIG Synchronize</li>

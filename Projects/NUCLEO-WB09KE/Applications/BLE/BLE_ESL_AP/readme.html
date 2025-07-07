@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../../../../../_htmresc/mini-st_2020.css">
+</head>
+<body>
+<div class="row">
+    <section id="markdown-content">
+        <h2 id="ble_esl_ap-application-description"><strong>BLE_ESL_AP
+        Application Description</strong></h2>
+        <p>This example demonstrates how to use an STM32WB0 to
+        communicate with Electronic Shelf Label devices using Periodic
+        Advertising with Responses (PAwR) feature. In particular, it
+        implements the Access Point role of the standard profile
+        (Electronic Shelf Label, aka ESL).</p>
+        <p>Each ESL is addressed by a Group ID and an ESL ID. Once
+        connected to the Peripheral, the AP configures the ESL by
+        writing its ESL ID and assigning it to a group. Then the
+        Periodic Advertising Synchronization Transfer (PAST) procedure
+        is started to let the Peripheral synchronize with the PAwR
+        train, without the need to do an energy-intensive scan. Once the
+        procedure is completed, the link can be disconnected.</p>
+        <p>To control the AP, an AT-like command interface is used. Each
+        command ends with &lt;CR&gt;. An “OK” or “ERROR” is given after
+        a command is received. When a response is received from the
+        peer, this is notified on the terminal with a string like
+        <em>+&lt;RESP&gt;:&lt;group_id&gt;,&lt;esl_id&gt;,&lt;status&gt;[,&lt;return_params&gt;]</em>.
+        Commands can be sent in broadcast with all the ESLs in the
+        group, by specifying 0xFF as ESL ID. Broadcast commands are
+        automatically retransmitted to increase reliability.</p>
+        <p><em>ATE</em> can be typed to enable local echo.</p>
+        <p>The number of groups is equal to the number of PAwR
+        subevents, which can be configured with PAWR_NUM_SUBEVENTS macro
+        in <em>app_conf.h</em> (default is 4). The value that can be
+        specified for &lt;group_id&gt; must be a value between 0 and
+        (PAWR_NUM_SUBEVENTS - 1). Only for &lt;esl_id&gt; there is the
+        possibility to use the value FF for broadcast messages.</p>
+        <p>The following AT commands can be used to send standard ESL
+        commands (see Electronic Shelf Label Service specification):</p>
+        <ul>
+        <li><em>AT+PING=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Ping</li>
+        <li><em>AT+UNASSOC=&lt;group_id&gt;,&lt;esl_id&gt;</em>:
+        Unassociate from AP</li>
+        <li><em>AT+SRVRST=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Service
+        Reset</li>
+        <li><em>AT+FRST=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Factory
+        Reset</li>
+        <li><em>AT+UPDCMP=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Update
+        Complete</li>
+        <li><em>AT+SENS=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;sensor_index&gt;</em>:
+        Read Sensor Data</li>
+        <li><em>AT+REFRESH=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;display_index&gt;</em>:
+        Refresh Display</li>
+        <li><em>AT+IMG=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;display_index&gt;,&lt;image_index&gt;</em>:
+        Display Image</li>
+        <li><em>AT+IMGTIM=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;display_index&gt;,&lt;image_index&gt;,&lt;absolute_time&gt;</em>:
+        Display Timed Image</li>
+        <li><em>AT+LED=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;led_index&gt;,&lt;led_component&gt;,&lt;pattern&gt;,&lt;off_period&gt;,&lt;on_period&gt;,&lt;repeat&gt;</em>:
+        LED Control</li>
+        <li><em>AT+LEDTIM=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;led_index&gt;,&lt;led_component&gt;,&lt;pattern&gt;,&lt;off_period&gt;,&lt;on_period&gt;,&lt;repeat&gt;,&lt;absolute_time&gt;</em>:
+        LED Timed Control</li>
+        </ul>
+        <p>In addition to the previous list of AT commands, the
+        following AT commands can be used to send proprietary ESL
+        commands:</p>
+        <ul>
+        <li><em>AT+TXT=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;text&gt;</em>:
+        Set text
+        <ul>
+        <li>&lt;text&gt; can be a string with maximum 15 characters</li>
+        </ul></li>
+        <li><em>AT+PRICE=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;price&gt;</em>:
+        Set price</li>
+        </ul>
+        <p>The following AT commands can be used to perform other
+        special operations and for tests:</p>
+        <ul>
+        <li><em>AT+RECONF=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;new_group_id&gt;,&lt;new_esl_id&gt;</em>:
+        Reconfigure an ESL with a new address</li>
+        <li><em>AT+CONN=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Connect to
+        an ESL (ESL enters <em>updating state</em>)</li>
+        <li><em>AT+INFO</em>: Read all the Information Characteristics
+        from the connected ESL</li>
+        <li><em>AT+DISPLAYINFO</em>: Read the Display Information
+        Characteristic from the connected ESL</li>
+        <li><em>AT+SENSORINFO</em>: Read the Sensor Information
+        Characteristic from the connected ESL</li>
+        <li><em>AT+LEDINFO</em>: Read the LED Information Characteristic
+        from the connected ESL</li>
+        <li><em>AT+CLRSCDB</em>: Delete all bonding information</li>
+        <li><em>AT+ABSTIME?</em>: Read current absolute time</li>
+        <li><em>AT+SCAN</em>: Scan for ESLs</li>
+        <li><em>AT+PROVISION=&lt;addr_type&gt;,&lt;address&gt;,&lt;group_id&gt;,&lt;esl_id&gt;</em>:
+        Perform ESL device provisioning</li>
+        <li><em>AT+OTPSEARCH</em>: Discover images on the connected
+        server on the ESL</li>
+        <li><em>AT+OTPSEARCH=&lt;name&gt;</em>: Search and select the
+        specified image on the connected ESL</li>
+        <li><em>AT+OTPMETA</em>: Read metadata for current object</li>
+        <li><em>AT+OTPSTART=&lt;truncate&gt;</em>: Open an L2CAP channel
+        to transfer an image to the connected ESL. Set &lt;truncate&gt;
+        to 1 to truncate image, otherwise set it to 0.</li>
+        <li><em>AT+OTPWRITE=&lt;size&gt;</em>: Send image data, up to
+        the given size in bytes (maximum is 5000). Data to be sent is
+        stored inside <strong>obj.c</strong> file.</li>
+        <li><em>AT+OTPCLOSE</em>: Close L2CAP channel to transfer image
+        data. It should be issued when there are not other images to be
+        sent.</li>
+        <li><em>AT+HELP</em>: List of AT commands</li>
+        </ul>
+        <p>For each AT command, an ESL command is queued and sent as
+        soon as possible with PAwR. The AP can also write commands to
+        the ESL Control Point (ECP) characteristic of a connected ESL
+        (while in <em>Updating state</em>).</p>
+        <h3 id="keywords"><strong>Keywords</strong></h3>
+        <p>Connectivity, BLE, BLE protocol, BLE PAwR, ESL</p>
+        <h3 id="hardware-and-software-environment"><strong>Hardware and
+        Software environment</strong></h3>
+        <ul>
+        <li>This application runs on STM32WB0 Nucleo board.</li>
+        <li>Another STM32WB0 Nucleo board is necessary to run BLE_ESL
+        application.</li>
+        </ul>
+        <h3 id="how-to-use-it"><strong>How to use it?</strong></h3>
+        <p>In order to make the program work, you must do the
+        following:</p>
+        <ul>
+        <li>Open the project with your preferred toolchain.</li>
+        <li>Rebuild all files and load your image into target
+        memory.</li>
+        <li>Open a serial terminal (with settings 115200-8-N-1 and
+        &lt;CR&gt; transmission at end of line).</li>
+        <li>Reset the board to run the example.</li>
+        <li>Run BLE_ESL on another Nucleo board.</li>
+        <li>Launch <em>ATE</em> to enable echo.</li>
+        <li>Launch <em>AT+SCAN</em> to discover the ESL: <em>+SCAN:
+        0,0280E1AA0001</em> should be printed on the terminal.</li>
+        <li>Start ESL provisioning, e.g. with
+        <em>AT+PROVISION=0,0280e1aa0001,1,2</em>, where 1 is the group
+        ID and 2 is the ESL ID.</li>
+        <li>Once provisioning is completed, ESL disconnects. Commands
+        can be sent on the terminal by specifying the assigned GROUP_ID
+        and ESL_ID to:
+        <ul>
+        <li>ping the board</li>
+        <li>control an LED</li>
+        <li>read some sensor data</li>
+        <li>set an image (only for testing purpose: images cannot be
+        displayed on Nucleo boards)</li>
+        </ul></li>
+        <li>Data can be sent with Object Transfer Profile to provide an
+        image:
+        <ul>
+        <li>Connect to an associated ESL, e.g. with
+        <em>AT+CONN=1,2</em>.</li>
+        <li>Select an image to be written by providing an image name,
+        e.g. <em>AT+OTPSEARCH=Image 1</em>.</li>
+        <li>Open channel to write data with <em>AT+OTPSTART=0</em>.</li>
+        <li>Send data with <em>AT+OTPWRITE=5000</em>.</li>
+        <li>Close channel with AT+OTPCLOSE.</li>
+        <li>Close connection and put ESL back to synchronized state with
+        <em>AT+UPDCMP</em> (e.g. <em>AT+UPDCMP=1,2</em>).</li>
+        </ul></li>
+        </ul>
+        <h3 id="notes"><strong>Notes</strong></h3>
+        <ul>
+        <li>On Keil framework, the following compilation setting are
+        applied:
+        <ul>
+        <li>diag_suppress L6312W (Hide “Empty &lt; type&gt; region
+        description for region &lt; region&gt;” warning)</li>
+        <li>diag_suppress L6314W (Hide “No section matches pattern &lt;
+        module&gt;(&lt; section&gt;” warning)</li>
+        <li>diag_suppress L6329W (Hide “Pattern &lt; module&gt;(&lt;
+        section&gt;) only matches removed unused sections” warning)</li>
+        </ul></li>
+        </ul>
+    </section>
+</div>
+</body>
+</html>

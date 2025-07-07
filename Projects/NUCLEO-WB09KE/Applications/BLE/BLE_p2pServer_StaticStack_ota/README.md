@@ -24,9 +24,9 @@ Connectivity, BLE, BLE protocol, BLE pairing, BLE profile, Static Stack
 Refer to BLE_p2pServer_ota application for more info.
 A raw binary file of the application is needed to test Firmware upgrade with the smartphone app. If the used toolchain does not generate a raw binary file, it can be obtained by converting an Intel HEX file with the help of an external tool, like the arm-none-eabi-objcopy (e.g. arm-none-eabi-objcopy -I ihex -O binary BLE_p2pServer_StaticStack_ota.hex BLE_p2pServer_StaticStack_ota.bin).
 
-### __Notes__
+_Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_stack_sym.a from BLE_StaticStack_ota\\Binary directory, which contains the symbol table needed to correctly link the application to the BLE_StaticStack_ota.hex firmware present in Binary folder. If application does not use the precompiled BLE_StaticStack_ota.hex in Binary folder, make sure to use the correct ble_static_stack_sym.a file.
 
-## Converting existing application with FUOTA support to use BLE Static Stack
+### __Converting existing application with FUOTA support to use BLE Static Stack__
 
  This section describes the changes that are needed to convert an existing application embedding the traditional STM32WB0 Bluetooth stack library into one using a STM32WB0 Bluetooth stack located in a separated area of Flash memory. This steps are valid if application is already using FUOTA. If not, refer to documentation related to BLE_p2pServer_StaticStack.  
  BLE Static Stack and application must share the same stack modularity configuration and the same number of radio tasks. See BLE_StaticStack_ota to know the configuration used by BLE Static Stack with FUOTA support. If the application needs a different BLE configuration (e.g. a different set of features or a greater number or radio tasks), the BLE Static Stack must be rebuilt with the new configuration. See README inside BLE_StaticStack_ota for the steps to follow to correctly build a BLE_StaticStack_ota project.

@@ -27,6 +27,7 @@ In order to make the program work, you must do the following:
   -	You can connect and pair the board with the BLE of a computer or a phone (android or IOS) that acts as GAP central. 
   - Now you can see the mouse pointer move in the display of your paired computer or phone. 
     This is a simulation of mouse movement: every 1 second the pointer move on a fixed coordinate.
+  - When the device is not connected, a click on button B2 allows to clear the security database.	
  		
  When central device disconnects, the BLE_HID_Mouse device restart advertising and a reconnection is made.
  

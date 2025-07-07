@@ -108,6 +108,7 @@ void GATT_CLIENT_APP_Init(void);
 uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId);
 void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Notif);
 tBleStatus GATT_CLIENT_APP_Set_Conn_Handle(uint8_t index, uint16_t connHdle);
+tBleStatus GATT_CLIENT_APP_Clear_Conn_Handle(uint8_t index);
 uint8_t GATT_CLIENT_APP_Get_State(uint8_t index);
 void GATT_CLIENT_APP_Discover_services(uint8_t index);
 /* USER CODE BEGIN EFP */

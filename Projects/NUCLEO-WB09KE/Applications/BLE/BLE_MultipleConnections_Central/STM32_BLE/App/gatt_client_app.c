@@ -537,12 +537,12 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
       if (sLedLevel == 0x00)
       {
         BSP_LED_Off(LED_BLUE);
-        APP_DBG_MSG("  APPLICATION CLIENT : NOTIFICATION RECEIVED - LED OFF \n");
+        APP_DBG_MSG("--  APPLICATION CLIENT : NOTIFICATION RECEIVED - LED OFF \n");
       }
       else
       {
         BSP_LED_On(LED_BLUE);
-        APP_DBG_MSG("  APPLICATION CLIENT : NOTIFICATION RECEIVED - LED ON\n");
+        APP_DBG_MSG("--  APPLICATION CLIENT : NOTIFICATION RECEIVED - LED ON\n");
       }
       break;
     }
@@ -950,9 +950,9 @@ static void gatt_parse_descs(aci_att_clt_find_info_resp_event_rp0 *p_evt)
 
 static void gatt_parse_notification(aci_gatt_clt_notification_event_rp0 *p_evt)
 {
-  APP_DBG_MSG("ACI_GATT_NOTIFICATION_VSEVT_CODE - ConnHdl=0x%04X, Attribute_Handle=0x%04X\n",
-              p_evt->Connection_Handle,
-              p_evt->Attribute_Handle);
+//APP_DBG_MSG("ACI_GATT_NOTIFICATION_VSEVT_CODE - ConnHdl=0x%04X, Attribute_Handle=0x%04X\n",
+//              p_evt->Connection_Handle,
+//              p_evt->Attribute_Handle);
 /* USER CODE BEGIN gatt_parse_notification_1 */
   GATT_CLIENT_APP_Notification_evt_t notification;
   uint8_t index;
@@ -969,7 +969,7 @@ static void gatt_parse_notification(aci_gatt_clt_notification_event_rp0 *p_evt)
   {
     if (p_evt->Attribute_Handle == a_ClientContext[index].Switch_CValueHdle)
     {
-      APP_DBG_MSG("  Incoming Nofification received Peripheral information [p_evt->Connection_Handle:0x%04X]\n", p_evt->Connection_Handle);
+      //APP_DBG_MSG("  Incoming Nofification received Peripheral information [p_evt->Connection_Handle:0x%04X]\n", p_evt->Connection_Handle);
       notification.Client_Evt_Opcode = P2P_NOTIFICATION_INFO_RECEIVED_EVT;
       notification.DataTransfered.length = p_evt->Attribute_Value_Length;
       notification.DataTransfered.p_Payload = &p_evt->Attribute_Value[0];
@@ -1044,12 +1044,7 @@ static void central_write_char(void)
                     a_ClientContext[index].connHdl,
                     a_ClientContext[index].Led_CValueHdle);
       }
-      else
-      {
-        APP_DBG_MSG("aci_gatt_clt_write_without_resp success, connHdl=0x%04X, ValueHdl=0x%04X\n",
-                    a_ClientContext[index].connHdl,
-                    a_ClientContext[index].Led_CValueHdle);
-      }
+
       
     }
   }

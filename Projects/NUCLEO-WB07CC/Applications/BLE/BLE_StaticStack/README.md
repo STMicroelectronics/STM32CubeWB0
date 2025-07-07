@@ -51,7 +51,7 @@ These are the applications referenced by create_sym_lib.exe:
 
 Open a Windows Command Prompt and try to invoke those commands to check if they are correctly installed.
     
-### __How to use it?__
+### __How to customize and build__
 
 The set of feature supported by the STM32WB0 BLE stack can be customized by changing the BLE Stack modularity options in app_conf.h.
 To reduce the footprint, commands can also be removed by removing their references from cmd_call_table array (in ble_cmd_if.c).
@@ -71,6 +71,6 @@ The output files of the projects are:
 
 _Important_: BLE_p2pServer_StaticStack project by default uses ble_static_stack_sym.a from BLE_StaticStack\\Binary directory. After generating the new binary, make sure that its symbol table (generated in BLE_StaticStack folder) is referenced by the application.
 
-### __Notes__
+### __How to use it?__
 
 Refer to BLE_p2pServer_StaticStack example for the steps to follow to run the application.

@@ -1357,7 +1357,59 @@ static void APP_BLE_AdvLowPower(void)
 /* USER CODE END FD_LOCAL_FUNCTION */
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
+#if (CFG_BUTTON_SUPPORTED == 1)
+void APPE_Button1Action(void)
+{    
+  if (bleAppContext.Device_Connection_Status == APP_BLE_IDLE)
+  {
+    
+  }
+  else if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_SERVER)
+  {
+    
+  }
+  
+  return;
+}
 
+void APPE_Button2Action(void)
+{
+  tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
+  
+  if (bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_SERVER)
+  {
+    ret = aci_gap_clear_security_db();
+    if (ret != BLE_STATUS_SUCCESS)
+    {
+      APP_DBG_MSG("==>> aci_gap_clear_security_db - Fail, result: 0x%02X\n", ret);
+    }
+    else
+    {
+      APP_DBG_MSG("==>> aci_gap_clear_security_db - Success\n");
+    }
+  }
+  else
+  {
+ 
+  }
+
+  return;
+}
+
+void APPE_Button3Action(void)
+{
+  if (bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_SERVER)
+  {
+
+  }
+  else
+  {
+
+  }
+
+  return;
+}
+#endif /* (CFG_BUTTON_SUPPORTED == 1) */
 /* USER CODE END FD_WRAP_FUNCTIONS */
 
 /** \endcond

@@ -1131,6 +1131,29 @@ This demo implements a basic Direction Finding scenario using tag and locator ro
         <td><font size="5" color=green>CubeMx</font></td>
       </tr>
       <tr align=center>
+        <td align=left><p id="BLE_ESL">BLE_ESL</p></td>
+        <td align=left>
+This example demonstrates how to use an STM32WB0 as Electronic Shelf Label device using Periodic Advertising with Responses (PAwR) feature. In particular, 
+it implements the ESL role of the standard profile (Electronic Shelf Label, aka ESL).
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+      <tr align=center>
+        <td align=left><p id="BLE_ESL_AP">BLE_ESL_AP</p></td>
+        <td align=left>
+This example demonstrates how to use an STM32WB0 to communicate with Electronic Shelf Label devices using Periodic Advertising with Responses (PAwR) feature. 
+</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
+        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
+        <td><font size="5" color=green>X</font></td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+      <tr align=center>
         <td align=left><p id="BLE_HID_Keyboard">BLE_HID_Keyboard</p></td>
         <td align=left>
 How to use Human Interface Device over GATT profile for a keyboard as specified by the Bluetooth LE SIG.
@@ -1186,9 +1209,9 @@ How to use the Heart Rate and OTA profile as specified by the Bluetooth LE SIG.
         <td>-</td>
       </tr>
       <tr align=center>
-        <td align=left><p id="BLE_MultipleConnections_Central">BLE_MultipleConnections_Central</p></td>
+        <td align=left><p id="BLE_MultipleConnections_CP">BLE_MultipleConnections_CP</p></td>
         <td align=left>
-Demonstrate STM32WB0 acting as GATT client.
+This demo allows targeting a multiple connection scenario with a CentralPeripheral device (the Collector) which can connect to a given number of peer devices as a central and to a given number of peer devices as a peripheral.
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
@@ -1197,9 +1220,9 @@ Demonstrate STM32WB0 acting as GATT client.
         <td><font size="5" color=green>X</font></td>
       </tr>
       <tr align=center>
-        <td align=left><p id="BLE_MultipleConnections_CentralPeripheral">BLE_MultipleConnections_CentralPeripheral</p></td>
+        <td align=left><p id="BLE_MultipleConnections_Central">BLE_MultipleConnections_Central</p></td>
         <td align=left>
-Demonstrate STM32WB0 acting as BLE central and GATT client.
+This demo allows targeting a multiple connection scenario with a CentralPeripheral device (the Collector) which can connect to a given number of peer devices as a central and to a given number of peer devices as a peripheral.
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
@@ -1210,35 +1233,13 @@ Demonstrate STM32WB0 acting as BLE central and GATT client.
       <tr align=center>
         <td align=left><p id="BLE_MultipleConnections_Peripheral">BLE_MultipleConnections_Peripheral</p></td>
         <td align=left>
-Demonstrate STM32WB0 acting as BLE GATT client.
+This demo allows targeting a multiple connection scenario with a CentralPeripheral device (the Collector) which can connect to a given number of peer devices as a central and to a given number of peer devices as a peripheral.
 </td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>3</td>
         <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
         <td><font size="5" color=green>X</font></td>
         <td><font size="5" color=green>X</font></td>
         <td><font size="5" color=green>X</font></td>
-      </tr>
-      <tr align=center>
-        <td align=left><p id="BLE_PAwR_Broadcaster">BLE_PAwR_Broadcaster</p></td>
-        <td align=left>
-Demonstrate STM32WB0 acting as a Broadcaster of a Periodic Advertising with Response (PAwR) train.
-</td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
-        <td><font size="5" color=green>X</font></td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr align=center>
-        <td align=left><p id="BLE_PAwR_Observer">BLE_PAwR_Observer</p></td>
-        <td align=left>
-Demonstrate STM32WB0 acting as an Observer of a Periodic Advertising with Response (PAwR) train.
-</td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center>1</td>
-        <td style="background-repeat: no-repeat;background-position: right center;background-color: #39A9DC;color: #FFF;" align=center></td>
-        <td><font size="5" color=green>X</font></td>
-        <td>-</td>
-        <td>-</td>
       </tr>
       <tr align=center>
         <td align=left><p id="BLE_Peripheral_Lite">BLE_Peripheral_Lite</p></td>

@@ -281,7 +281,7 @@
 /**
  * Amount of RAM used to store advertising data (bytes)
  */
- #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (100)
+ #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (800)
 
 /**
  * Size of buffer shared between GATT_NWK library (used for GATT database and client
@@ -298,7 +298,7 @@
  * BLE Stack modularity options
  ******************************************************************************/
 #define CFG_BLE_CONTROLLER_SCAN_ENABLED                   (1U)
-#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (1U)
+#define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U)
 #define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (1U)
 #define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (1U)
 #define CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED           (0U)

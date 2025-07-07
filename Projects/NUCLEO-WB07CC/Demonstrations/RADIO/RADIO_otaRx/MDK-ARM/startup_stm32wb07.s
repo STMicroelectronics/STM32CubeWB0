@@ -50,7 +50,7 @@ __initial_sp
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Heap_Size      EQU     0x0000
+Heap_Size      EQU     0x000
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base
@@ -71,7 +71,7 @@ __vector_table  DCD     __initial_sp               ; Top of Stack
 				DCD     Reset_Handler             ; Reset Handler
 				DCD     NMI_Handler               ; NMI Handler
 				DCD     HardFault_Handler         ; Hard Fault Handler
-				DCD     0                         ; Reserved
+				DCD     (0xAA5555AA)              ; Reserved
 				DCD     0                         ; Reserved
 				DCD     0                         ; Reserved
 				DCD     0                         ; Reserved

@@ -1,13 +1,8 @@
 ## __BLE_MultipleConnections_Peripheral Application Description__
 
-Demonstrate STM32WB0 acting as BLE GATT client.
+This demo allows targeting a multiple connection scenario with a CentralPeripheral device (the Collector) which can connect to a given number of peer devices as a central and to a given number of peer devices as a peripheral.
 
-The BLE_MultipleConnections_Peripheral application scans for advertising and waits for a connection from either:
-- The BLE_MultipleConnections_Peripheral application running on an STM32WB0 device.
-
-Pairing with pass key entry method (with fixed pin) and bonding are used in this example.
-
-Once connected, BLE_MultipleConnections_Peripheral can receive write messages from the Central and it will send notifications periodically to it.
+The CentralPeripheral device automatically tries to connect to a set of known peer devices (the Nodes) to which it is bonded.
 
 ### __Keywords__
 
@@ -16,7 +11,7 @@ Connectivity, BLE, BLE protocol, BLE pairing, BLE profile
 ### __Hardware and Software environment__
 
   - This application runs on STM32WB0 Nucleo board.
-  - Another STM32WB0 Nucleo board may be necessary to run BLE_MultipleConnections_Peripheral application.
+  - To test this scenario completely, at least three STM32WB0 Nucleo boards may be necessary to run the BLE_MultipleConnections_CP, BLE_MultipleConnections_Central, and BLE_MultipleConnections_Peripheral applications.
     
 ### __How to use it?__
 
@@ -28,10 +23,6 @@ In order to make the program work, you must do the following:
  
 
  __You can interact with the BLE_MultipleConnections_Peripheral application with another Nucleo board:__
-
-This demo allows targeting a multiple connection scenario with a CentralPeripheral device (the Collector) which can connect to a given number of peer devices as a central and to a given number of peer devices as a peripheral.
-
-The CentralPeripheral device automatically tries to connect to a set of known peer devices (the Nodes) to which it is bonded.
 
 A serial terminal can be opened on the associated COM port to show logs from the application.
 
@@ -55,10 +46,10 @@ A serial terminal can be opened on the associated COM port to show logs from the
   - Call the function to perform disconnection.
 
 ### Peripheral Device Actions/Commands:
-- On device startup and after each disconnection complete event, if bonded devices are found in the list, start advertising in auto connection establishment mode (with filter list active).
+- On device startup and after each disconnection complete event, if bonded devices are found in the list, start advertising in non discoverable mode (with filter list active).
 - **Push1:**
-  - If advertising has been started in auto connection establishment mode, stop this type of advertising.
-  - Start advertising in general mode without a filter list to accept new central devices.
+  - If advertising has been started in non discoverable mode, stop this type of advertising.
+  - Start advertising in general discovery mode without a filter list to accept new central devices.
 - **Push2:**
   - If connected to a central, start the procedure to send a notification to the central.
   - If not connected, call the function to clear the security database.
@@ -66,15 +57,15 @@ A serial terminal can be opened on the associated COM port to show logs from the
   - Call the function to perform disconnection.
 
 ### CentralPeripheral Actions/Commands:
-- On device startup and after each disconnection complete event, if bonded devices are found in the list, start advertising in auto connection establishment mode (with filter list active).
+- On device startup and after each disconnection complete event, if bonded devices are found in the list, start advertising in non discoverable mode (with filter list active).
 - The peripheral component can accept a maximum of **MAX_PERIPHERAL_HANDLES** number of centrals.
-- The advertising in auto connection with filter active is started at every disconnection complete event to allow all previously bonded centrals to re-connect.
+- The advertising in general discovery mode with filter active is started at every disconnection complete event to allow all previously bonded centrals to re-connect.
 - The central component can accept a maximum of **MAX_CENTRAL_HANDLES** number of peripherals.
 - At every disconnection complete event of some central instance, an auto connection scan will be activated to re-connect automatically to the previously bonded peripheral.
 - Normal Push is used for the peripheral side, Long Push for the central.
 - **Push1:**
-  - If advertising has been started in auto connection establishment mode, stop this type of advertising.
-  - Start advertising in general mode without a filter list to accept new central devices.
+  - If advertising has been started in non discoverable mode, stop this type of advertising.
+  - Start advertising in general discovery mode without a filter list to accept new central devices.
 - **Push2:**
   - If connected to one or more centrals, start the procedure to send a notification to all the connected centrals.
   - If not connected to any central, call the function to clear the security database.
@@ -94,10 +85,10 @@ A serial terminal can be opened on the associated COM port to show logs from the
 | **Central**         | PUSH1      | N/A                                                         | Start the normal scan in general discovery mode            |
 | **Central**         | PUSH2      | N/A                                                         | Write to the peripheral's characteristic / Clear security DB |
 | **Central**         | PUSH3      | N/A                                                         | Perform disconnection                                       |
-| **Peripheral**      | PUSH1      | Stop auto connection advertising / Start general advertising | N/A                                                        |
+| **Peripheral**      | PUSH1      | Stop non disc. adv / Start general disc. adv                | N/A                                                        |
 | **Peripheral**      | PUSH2      | Send notification to the central                            | N/A                                                        |
 | **Peripheral**      | PUSH3      | Perform disconnection                                       | N/A                                                        |
-| **CentralPeripheral** | PUSH1    | Stop auto connection advertising / Start general advertising | Start the normal scan in general discovery mode            |
+| **CentralPeripheral** | PUSH1    | Stop non disc. adv / Start general disc. adv                | Start the normal scan in general discovery mode            |
 | **CentralPeripheral** | PUSH2    | Send notification to all connected centrals                 | Write to all connected peripherals' characteristics / Clear security DB |
 | **CentralPeripheral** | PUSH3    | Perform disconnection of all connected centrals             | Perform disconnection of all connected peripherals         |
 
@@ -158,6 +149,7 @@ Participants:3 Central devices, 2 Peripheral devices, and 1 CentralPeripheral de
 |  28  | LongPush1          |           |          |           |             |              |
 |  29  |                    |           |          |           |             | Push2        |
 |  30  | LongPush2          |           |          |           |             |              |
+
 
 
 ### __Notes__

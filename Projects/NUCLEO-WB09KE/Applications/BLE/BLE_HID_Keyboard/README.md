@@ -25,6 +25,7 @@ In order to make the program work, you must do the following:
   - The peripheral device starts advertising.
   -	You can connect and pair the board with the BLE of a computer or a phone (android or IOS) that acts as GAP central. 
   - Enter data using keyboard on serial terminal: every chars are sent to peer device
+  - When the device is not connected, a click on button B2 allows to clear the security database.
 		
  When central device disconnects, the BLE_HID_Keyboard device restart advertising and a reconnection is made.
  

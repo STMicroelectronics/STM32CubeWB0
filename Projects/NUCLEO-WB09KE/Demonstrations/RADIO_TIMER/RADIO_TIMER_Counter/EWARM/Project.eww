@@ -3,5 +3,5 @@
   <project>
     <path>$WS_DIR$\RADIO_TIMER_Counter.ewp</path>
   </project>
-<batchBuild />
+  <batchBuild />
 </workspace>

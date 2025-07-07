@@ -462,6 +462,23 @@ uint8_t GATT_CLIENT_APP_Set_Conn_Handle(uint8_t index, uint16_t connHdl)
   return ret;
 }
 
+uint8_t GATT_CLIENT_APP_Clear_Conn_Handle(uint8_t index)
+{
+  uint8_t ret;
+
+  if (index < GATT_CLT_MAX_NUM_SERVERS)
+  {
+    a_ClientContext[index].connHdl = 0xFFFF;
+    a_ClientContext[index].state = GATT_CLIENT_APP_IDLE;
+    ret = 0;
+  }
+  else
+  {
+    ret = 1;
+  }
+  return ret;
+}
+
 uint8_t GATT_CLIENT_APP_Get_State(uint8_t index)
 {
   return a_ClientContext[index].state;
@@ -653,20 +670,8 @@ static BLEEVT_EvtAckStatus_t P2P_ROUTER_EventHandler(aci_blecore_event *p_evt)
     case ACI_GATT_CLT_PROC_COMPLETE_VSEVT_CODE:
     {
       aci_gatt_clt_proc_complete_event_rp0 *p_evt_rsp = (void*)p_evt->data;
-
-      uint8_t index;
-      for (index = 0 ; index < GATT_CLT_MAX_NUM_SERVERS ; index++)
-      {
-        if (a_ClientContext[index].connHdl == p_evt_rsp->Connection_Handle)
-        {
-          break;
-        }
-      }
-
-      if (a_ClientContext[index].connHdl == p_evt_rsp->Connection_Handle)
-      {
-        gatt_cmd_resp_release();
-      }
+      UNUSED(p_evt_rsp);
+      gatt_cmd_resp_release();
     }
     break;/* ACI_GATT_PROC_COMPLETE_VSEVT_CODE */
     case ACI_GATT_TX_POOL_AVAILABLE_VSEVT_CODE:

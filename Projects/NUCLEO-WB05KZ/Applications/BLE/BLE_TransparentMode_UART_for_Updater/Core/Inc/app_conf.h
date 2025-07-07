@@ -281,7 +281,7 @@
 /**
  * Amount of RAM used to store advertising data (bytes)
  */
- #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (100)
+ #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (800)
 
 /**
  * Size of buffer shared between GATT_NWK library (used for GATT database and client
@@ -460,7 +460,7 @@ typedef enum
  * When CFG_BUTTON_SUPPORTED is set, the push button are activated if requested
  */
 
-#define CFG_LED_SUPPORTED                       (1)
+#define CFG_LED_SUPPORTED                       (0)
 #define CFG_BUTTON_SUPPORTED                    (0)
 
 /**
