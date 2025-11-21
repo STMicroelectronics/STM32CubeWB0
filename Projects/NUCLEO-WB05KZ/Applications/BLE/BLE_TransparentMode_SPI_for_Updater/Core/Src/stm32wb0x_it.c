@@ -167,7 +167,6 @@ void DMA_IRQHandler(void)
   /* USER CODE BEGIN DMA_IRQn 0 */
 
   /* USER CODE END DMA_IRQn 0 */
-
   /* USER CODE BEGIN DMA_IRQn 1 */
 
   /* USER CODE END DMA_IRQn 1 */
@@ -227,6 +226,20 @@ void RADIO_TXRX_SEQ_IRQHandler(void)
   /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 1 */
 
   /* USER CODE END RADIO_TXRX_SEQ_IRQn 1 */
+}
+
+/**
+  * @brief This function handles RADIO_RRM global interrupt.
+  */
+void RADIO_RRM_IRQHandler(void)
+{
+  /* USER CODE BEGIN RADIO_RRM_IRQn 0 */
+
+  /* USER CODE END RADIO_RRM_IRQn 0 */
+  HAL_RADIO_RRM_IRQHandler();
+  /* USER CODE BEGIN RADIO_RRM_IRQn 1 */
+
+  /* USER CODE END RADIO_RRM_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

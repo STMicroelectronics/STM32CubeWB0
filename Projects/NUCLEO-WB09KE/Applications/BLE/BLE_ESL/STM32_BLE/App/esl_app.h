@@ -101,19 +101,15 @@ uint8_t ESL_APP_SetESLAddress(uint16_t address);
 void ESL_APP_SetAPSyncKeyMaterial(uint8_t key_material[24]);
 void ESL_APP_SetESLResponseKeyMaterial(uint8_t key_material[24]);
 void ESL_APP_SetCurrentAbsoluteTime(uint32_t curr_absolute_time);
-void ESL_ControlPoint_received(uint8_t *p_cmd, uint8_t size);
-
+void ESL_APP_ControlPointReceived(uint8_t *p_cmd, uint8_t size);
 uint8_t ESL_APP_ConfiguringOrUpdatingState(void);
-void ESL_APP_pairing_request(uint16_t connHandle);
+void ESL_APP_PairingRequest(uint16_t connHandle);
 int ESL_APP_GetAddress(uint8_t *group_id_p, uint8_t *esl_id_p);
-uint16_t ESL_APP_Get_Basic_State_Bitmap(void);
-uint8_t ESL_APP_Set_Basic_State_Bitmap(uint8_t basic_resp_bit);
-void ESL_APP_Reset_Basic_State_Bitmap(uint8_t basic_resp_bit);
-void ESL_APP_UnassociatedFromAPCmd(void);
+uint8_t ESL_APP_SetBasicStateBitmap(uint8_t basic_resp_bit);
+void ESL_APP_ResetBasicStateBitmap(uint8_t basic_resp_bit);
 void ESL_APP_SetLEDState(uint8_t index, ESL_APP_LEDState_t led_state);
-
-void ESL_APP_CMD_ProcessRequestCB(void);
-void ESL_APP_cmd_process(void);
+void ESL_APP_CmdProcessRequestCB(void);
+void ESL_APP_CmdProcess(void);
 
 /* USER CODE END EF */
 

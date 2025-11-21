@@ -107,7 +107,7 @@ __vector_table  DCD     __initial_sp               ; Top of Stack
 				DCD 0x00000000                    ; IRQ19: Reserved
 				DCD RADIO_TIMER_ERROR_IRQHandler  ; IRQ20: RADIO TIMER Error interrupt
 				DCD 0x00000000                    ; IRQ21: Reserved
-				DCD 0x00000000                    ; IRQ22: Reserved
+				DCD RADIO_RRM_IRQHandler          ; IRQ22: Radio RRM interrupt
 				DCD RADIO_TIMER_CPU_WKUP_IRQHandler  ; IRQ23: RADIO TIMER CPU Wakeup interrupt
 				DCD RADIO_TIMER_TXRX_WKUP_IRQHandler ; IRQ24: RADIO TIMER Wakeup interrupt
 				DCD RADIO_TXRX_SEQ_IRQHandler     ; IRQ25: RADIO Tx/Rx Sequence interrupt
@@ -184,6 +184,7 @@ Default_Handler PROC
 				EXPORT  DMA_IRQHandler             [WEAK]
 				EXPORT  RADIO_TXRX_IRQHandler      [WEAK]
 				EXPORT  RADIO_TIMER_ERROR_IRQHandler     [WEAK]
+				EXPORT  RADIO_RRM_IRQHandler             [WEAK]
 				EXPORT  RADIO_TIMER_CPU_WKUP_IRQHandler  [WEAK]
 				EXPORT  RADIO_TIMER_TXRX_WKUP_IRQHandler [WEAK]
 				EXPORT 	RADIO_TXRX_SEQ_IRQHandler  [WEAK]
@@ -206,6 +207,7 @@ GPIOB_IRQHandler
 DMA_IRQHandler
 RADIO_TXRX_IRQHandler
 RADIO_TIMER_ERROR_IRQHandler
+RADIO_RRM_IRQHandler
 RADIO_TIMER_CPU_WKUP_IRQHandler
 RADIO_TIMER_TXRX_WKUP_IRQHandler
 RADIO_TXRX_SEQ_IRQHandler

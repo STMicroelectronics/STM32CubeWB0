@@ -130,9 +130,7 @@ typedef struct
 typedef struct
 {
   BleGlobalContext_t BleApplicationContext_legacy;
-
   APP_BLE_ConnStatus_t Device_Connection_Status;
-
   /* USER CODE BEGIN PTD_1*/
   uint8_t deviceServerFound;
   uint8_t deviceServerBdAddrType;
@@ -254,6 +252,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -394,6 +393,7 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
@@ -439,7 +439,6 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
-
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
@@ -486,6 +485,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -561,10 +567,15 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
     {
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
+      GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
 
         /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
       
         /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+      notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;
+      GATT_CLIENT_APP_Notification(&notif);
+
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
         bleAppContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;
@@ -573,8 +584,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         APP_DBG_MSG("     - Connection Handle:   0x%02X\n     - Reason:    0x%02X\n",
                     p_disconnection_complete_event->Connection_Handle,
                     p_disconnection_complete_event->Reason);
+
         /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */
-        GATT_CLIENT_APP_Clear_Conn_Handle(0, p_disconnection_complete_event->Connection_Handle);
+
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
       gap_cmd_resp_release();
@@ -836,7 +848,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           {
             APP_DBG_MSG("     - Pairing Success\n");
             /* Discovers all services, characteristics, and descriptors, and enables all notifications for a given GATT client. */
-            UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+            GATT_CLIENT_APP_Discover_services(p_pairing_complete->Connection_Handle);
           }
           APP_DBG_MSG("\n");
 
@@ -981,6 +993,8 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
+    
   if(Status != 0)
   {
     APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
@@ -1009,6 +1023,10 @@ static void connection_complete_event(uint8_t Status,
    {
      /* Connection as client */
      bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
+     
+     notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+     notif.ConnHdl = Connection_Handle;
+     GATT_CLIENT_APP_Notification(&notif);
    }
    else
    {
@@ -1016,9 +1034,6 @@ static void connection_complete_event(uint8_t Status,
      bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
    }
    bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
-
-   GATT_CLIENT_APP_Clear_Conn_Handle(0, Connection_Handle);
-   GATT_CLIENT_APP_Set_Conn_Handle(0, Connection_Handle);
 
    /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
    
@@ -1219,9 +1234,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       }
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
-    /* USER CODE BEGIN ProcGapCentralId */
+    /* USER CODE BEGIN GAP_CENTRAL_2 */
 
-    /* USER CODE END ProcGapCentralId */
+    /* USER CODE END GAP_CENTRAL_2 */
     default:
       break;
   }
@@ -1543,11 +1558,7 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
 /* USER CODE END FD_LOCAL_FUNCTION */
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
-
-
-
 #if (CFG_BUTTON_SUPPORTED == 1)
-
 void APPE_Button1Action(void)
 {
   APP_DBG_MSG("  In Central Role, the normal push button is not assigned to any action.\n");
@@ -1634,6 +1645,7 @@ void APPE_Button3LongPressAction(void)
         APP_DBG_MSG("==>> aci_gap_terminate HCI_DISCONNECTION_COMPLETE_EVT_CODE event : Success\n");
       }
     }
+  
     return;
 }
   

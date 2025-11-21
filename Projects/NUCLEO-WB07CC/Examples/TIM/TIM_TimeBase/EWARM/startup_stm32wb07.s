@@ -96,7 +96,7 @@ __vector_table
 	DCD 0x00000000                    ; IRQ19: Reserved
 	DCD RADIO_TIMER_ERROR_IRQHandler        ; IRQ20: RADIO Error interrupt
 	DCD 0x00000000                    ; IRQ21: Reserved
-	DCD 0x00000000                    ; IRQ22: Reserved
+	DCD RADIO_RRM_IRQHandler          ; IRQ22: Radio RRM interrupt
 	DCD RADIO_TIMER_CPU_WKUP_IRQHandler     ; IRQ23: RADIO CPU Wakeup interrupt
 	DCD RADIO_TIMER_TXRX_WKUP_IRQHandler    ; IRQ24: RADIO Wakeup interrupt
 	DCD RADIO_TXRX_SEQ_IRQHandler     ; IRQ25: RADIO Tx/Rx Sequence interrupt
@@ -244,6 +244,11 @@ RADIO_TXRX_IRQHandler
         SECTION .text:CODE:NOROOT:REORDER(1)
 RADIO_TIMER_ERROR_IRQHandler
         B RADIO_TIMER_ERROR_IRQHandler
+
+	PUBWEAK RADIO_RRM_IRQHandler
+        SECTION .text:CODE:NOROOT:REORDER(1)
+RADIO_RRM_IRQHandler
+        B RADIO_RRM_IRQHandler
 
 	PUBWEAK RADIO_TIMER_CPU_WKUP_IRQHandler
         SECTION .text:CODE:NOROOT:REORDER(1)

@@ -261,6 +261,7 @@ __WEAK void APPE_Button3LongPressAction(void)
 static PowerSaveLevels App_PowerSaveLevel_Check(void)
 {
   PowerSaveLevels output_level = POWER_SAVE_LEVEL_STOP;
+
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
 
   /* USER CODE END App_PowerSaveLevel_Check_1 */

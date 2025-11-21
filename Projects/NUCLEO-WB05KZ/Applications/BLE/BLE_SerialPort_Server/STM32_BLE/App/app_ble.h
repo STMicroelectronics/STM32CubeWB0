@@ -115,7 +115,7 @@ typedef enum
 #define  FW_ID_HEART_RATE       0x89
 #define  FW_ID_HEALTH_THERMO    0x8A
 
-#define  FW_ID_SERIALPORT_SERVER       0x8b    //TBR ???
+#define  FW_ID_SERIALPORT_SERVER       0x8B
 /* USER CODE END EC */
 
 /* External variables --------------------------------------------------------*/

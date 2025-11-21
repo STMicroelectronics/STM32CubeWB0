@@ -1,8 +1,10 @@
 BLE_STACK_Init
 BLE_STACK_Tick
+BLE_STACK_TickNoEvents
 BLE_STACK_SleepCheck
 BLE_STACK_RadioHandler
 BLE_STACK_ReadNextRadioActivity
+BLE_STACK_RRMHandler
 hci_disconnect
 hci_read_remote_version_information
 hci_set_event_mask

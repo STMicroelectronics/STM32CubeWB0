@@ -28,6 +28,7 @@
 #include "app_ble.h"
 #include "ble_evt.h"
 #include "otp_client.h"
+#include "nvm_db.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -65,8 +66,6 @@ typedef struct
 {
   GATT_CLIENT_APP_State_t state;
 
-  APP_BLE_ConnStatus_t connStatus;
- 
   uint16_t connHdl;
 
   uint16_t ALLServiceStartHdl;
@@ -128,6 +127,9 @@ typedef struct
   
   OTSHandleContext_t OTSHandles;
   
+  uint16_t DISPNPIdCharHdl;
+  uint16_t DISPNPIdValueHdl;
+  
   uint8_t gatt_error_code;
   
   /* ESL Control Point (ECP) timeout timerID*/
@@ -141,6 +143,17 @@ typedef struct
 /* USER CODE END BleClientAppContext_t */
 
 }BleClientAppContext_t;
+
+typedef enum
+{
+  PROC_GATT_DISC_ALL_PRIMARY_SERVICES,
+  PROC_GATT_DISC_ALL_CHARS,
+  PROC_GATT_DISC_ALL_DESCS,
+  PROC_GATT_ENABLE_ALL_NOTIFICATIONS,
+  /* USER CODE BEGIN ProcGattId_t*/
+
+  /* USER CODE END ProcGattId_t */
+}ProcGattId_t;
 
 /* Private defines ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
@@ -156,31 +169,22 @@ typedef struct
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-static BleClientAppContext_t a_ClientContext[CFG_MAX_NUM_CONNECTED_SERVERS];
-static uint16_t gattCharValueHdl = 0;
+
+static BleClientAppContext_t a_ClientContext[CFG_BLE_NUM_CLIENT_CONTEXTS];
 
 /* USER CODE BEGIN PV */
-
-tListNode esl_bonded;
-
-uint16_t esl_address_conn;      
-
-ESL_PROFILE_KeyMaterial_t ap_sync_key_material_config_value = {
-  .Session_Key = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x10,0x11,0x12,0x13,0x14,0x15},      //16 bytes
-  .IV = {0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07},       //8 bytes
-};
 
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
 
 /* USER CODE BEGIN GV */
-extern bool bUpdatingTransition;
+extern ESL_AP_context_t ESL_AP_Context;
 /* USER CODE END GV */
 
 /* Private function prototypes -----------------------------------------------*/
 
-static BLEEVT_EvtAckStatus_t ESL_APP_EventHandler(aci_blecore_event *p_evt);
+static BLEEVT_EvtAckStatus_t EventHandler(aci_blecore_event *p_evt);
 static void gatt_parse_services(aci_att_clt_read_by_group_type_resp_event_rp0 *p_evt);
 static void gatt_parse_services_by_UUID(aci_att_clt_find_by_type_value_resp_event_rp0 *p_evt);
 static void gatt_parse_chars(aci_att_clt_read_by_type_resp_event_rp0 *p_evt);
@@ -190,15 +194,14 @@ static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif);
 static void client_discover_all(void);
 static void gatt_cmd_resp_release(void);
 static void gatt_cmd_resp_wait(void);
+static uint8_t gatt_procedure(uint8_t index, ProcGattId_t GattProcId);
 /* USER CODE BEGIN PFP */
 static void context_init(uint8_t index);
-static void ESL_AP_write_char(void);
-static void ESL_AP_configuring_char(void);
-static void ESL_AP_write_esl_address(void);
-static void ESL_AP_ECP_Timeout(void *arg);
+static void ECPTimeout(void *arg);
 static void print_Info_Char(void);
-static uint8_t ESL_APP_Read_Long_Char(uint16_t ValueHdl, uint16_t Offset);
-static ESL_PROFILE_KeyMaterial_t ESL_APP_Return_KeyMaterial_Value(void);
+static uint8_t ReadLongChar(uint16_t ValueHdl, uint16_t Offset);
+static void set_ECP_Failed(bool bValue);
+static uint8_t ReadInfoChar(uint16_t ValueHdl);
 /* USER CODE END PFP */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -209,26 +212,28 @@ static ESL_PROFILE_KeyMaterial_t ESL_APP_Return_KeyMaterial_Value(void);
  */
 void GATT_CLIENT_APP_Init(void)
 {
-  uint8_t index = 0;
+  int ret;
+
   /* USER CODE BEGIN GATT_CLIENT_APP_Init_1 */
 
   /* USER CODE END GATT_CLIENT_APP_Init_1 */
 
-  for(index = 0; index < CFG_MAX_NUM_CONNECTED_SERVERS; index++)
+  for(uint8_t index = 0; index < CFG_BLE_NUM_CLIENT_CONTEXTS; index++)
   {
-    a_ClientContext[index].connStatus = APP_BLE_IDLE;
+    a_ClientContext[index].connHdl = 0xFFFF;
+    a_ClientContext[index].state = GATT_CLIENT_APP_DISCONNECTED;
   }
 
   /**
    *  Register the event handler to the BLE controller
    */
-  BLEEVT_RegisterGattEvtHandler(ESL_APP_EventHandler);
-
+  ret = BLEEVT_RegisterGattEvtHandler(EventHandler);
+  if (ret != 0)
+  {
+    Error_Handler();
+  }
   /* Register a task allowing to discover all services and characteristics and enable all notifications */
   UTIL_SEQ_RegTask(1U << CFG_TASK_DISCOVER_SERVICES_ID, UTIL_SEQ_RFU, client_discover_all);
-
-  /* USER CODE BEGIN GATT_CLIENT_APP_Init_2 */
-  UTIL_SEQ_RegTask(1U << CFG_TASK_ESL_AP_WRITE_CHARS_ID, UTIL_SEQ_RFU, ESL_AP_write_char);
   
   context_init(0);
   
@@ -243,13 +248,13 @@ void GATT_CLIENT_APP_Init(void)
 static void context_init(uint8_t index)
 {                                   
   memset(&a_ClientContext[index], 0, sizeof(BleClientAppContext_t));
-  a_ClientContext[index].state = GATT_CLIENT_APP_IDLE;
+  a_ClientContext[index].state = GATT_CLIENT_APP_DISCONNECTED;
   a_ClientContext[index].connHdl = 0xFFFF;
   
   /* When the AP writes to the ECP, the AP shall start a timer with the value 
      set to the ESL Control Point Timeout period (30 seconds). If the timer 
      expires, then the ECP procedure shall be considered to have failed. */
-  a_ClientContext[index].ECP_timer_Id.callback = ESL_AP_ECP_Timeout;
+  a_ClientContext[index].ECP_timer_Id.callback = ECPTimeout;
 }
 
 void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Notif)
@@ -264,39 +269,63 @@ void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Noti
     /* USER CODE END ConnOpcode */
 
     case PEER_CONN_HANDLE_EVT :
-      /* USER CODE BEGIN PEER_CONN_HANDLE_EVT */
-    {  
-      uint8_t index = 0;
+      {
+        uint8_t index;
+
+        for(index = 0; index < CFG_BLE_NUM_CLIENT_CONTEXTS; index++)
+        {
+          if(a_ClientContext[index].state == GATT_CLIENT_APP_DISCONNECTED)
+          {
+            a_ClientContext[index].connHdl = p_Notif->ConnHdl;
+            a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+            /* USER CODE BEGIN PEER_CONN_HANDLE_EVT_1 */
+            context_init(index);
       
-      context_init(index);
+            set_ECP_Failed(false);
       
-      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
-      a_ClientContext[index].connHdl = p_Notif->ConnHdl;      
-      a_ClientContext[0].att_mtu = 23;      
-      OTP_CLIENT_ConnectionComplete(&a_ClientContext[0].OTSHandles, a_ClientContext[0].connHdl);  
-    }  
-      /* USER CODE END PEER_CONN_HANDLE_EVT */
+            a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+            a_ClientContext[index].connHdl = p_Notif->ConnHdl;      
+            a_ClientContext[index].att_mtu = 23;
+            OTP_CLIENT_ConnectionComplete(&a_ClientContext[index].OTSHandles, a_ClientContext[index].connHdl);
+            /* USER CODE END PEER_CONN_HANDLE_EVT_1 */
+
+            break;
+          }
+        }
+        if(index == CFG_BLE_NUM_CLIENT_CONTEXTS)
+        {
+          APP_DBG_MSG("Error: reached maximum number of connected servers!\n");
+          aci_gap_terminate(p_Notif->ConnHdl, BLE_ERROR_TERMINATED_REMOTE_USER);
+        }
+
+        /* USER CODE BEGIN PEER_CONN_HANDLE_EVT */
+        
+        /* USER CODE END PEER_CONN_HANDLE_EVT */
+      }
       break;
 
     case PEER_DISCON_HANDLE_EVT :
-      /* USER CODE BEGIN PEER_DISCON_HANDLE_EVT */
-    {
-      uint8_t index = 0;
-
-      while(index < CFG_MAX_NUM_CONNECTED_SERVERS)
       {
-        if(a_ClientContext[index].connHdl == p_Notif->ConnHdl)
+        for(uint8_t index = 0; index < CFG_BLE_NUM_CLIENT_CONTEXTS; index++)
         {
-          a_ClientContext[index].state = GATT_CLIENT_APP_IDLE;
-          a_ClientContext[index].connHdl = 0xFFFF;
-          HAL_RADIO_TIMER_StopVirtualTimer(&a_ClientContext[index].ECP_timer_Id);
-          
-          break;
+          if(a_ClientContext[index].connHdl == p_Notif->ConnHdl)
+          {
+            /* Set all handles to 0. */
+            memset(&a_ClientContext[index], 0, sizeof(BleClientAppContext_t));
+            a_ClientContext[index].connHdl = 0xFFFF;
+            a_ClientContext[index].state = GATT_CLIENT_APP_DISCONNECTED;
+
+            /* USER CODE BEGIN PEER_DISCON_HANDLE_EVT_1 */
+            HAL_RADIO_TIMER_StopVirtualTimer(&a_ClientContext[index].ECP_timer_Id);
+            /* USER CODE END PEER_DISCON_HANDLE_EVT_1 */
+
+            break;
+          }
         }
-        index++;
+        /* USER CODE BEGIN PEER_DISCON_HANDLE_EVT */
+        
+        /* USER CODE END PEER_DISCON_HANDLE_EVT */
       }
-    }
-      /* USER CODE END PEER_DISCON_HANDLE_EVT */
       break;
 
     default:
@@ -311,33 +340,33 @@ void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Noti
   return;
 }
 
-uint8_t GATT_CLIENT_APP_Get_State(uint8_t index)
+void GATT_CLIENT_APP_DiscoverServices(uint16_t connection_handle)
 {
-  return a_ClientContext[index].state;
-}
+  for(uint8_t index = 0; index < CFG_BLE_NUM_CLIENT_CONTEXTS; index++)
+  {
+    if(a_ClientContext[index].connHdl == connection_handle)
+    {
+      a_ClientContext[index].state = GATT_CLIENT_APP_DISCOVER_SERVICES;
 
-void GATT_CLIENT_APP_Discover_services(uint8_t index)
-{
-  GATT_CLIENT_APP_Procedure_Gatt(index, PROC_GATT_DISC_ALL_PRIMARY_SERVICES);
-  GATT_CLIENT_APP_Procedure_Gatt(index, PROC_GATT_DISC_ALL_CHARS);
-  GATT_CLIENT_APP_Procedure_Gatt(index, PROC_GATT_DISC_ALL_DESCS);
-  GATT_CLIENT_APP_Procedure_Gatt(index, PROC_GATT_ENABLE_ALL_NOTIFICATIONS);
-#ifndef PTS_OTP
-  if (!bUpdatingTransition)
-  {  
-    UTIL_SEQ_SetTask( 1u << CFG_TASK_ESL_AP_WRITE_CHARS_ID, CFG_SEQ_PRIO_0);
+      /* USER CODE BEGIN GATT_CLIENT_APP_Discover_services */
+
+      /* USER CODE END GATT_CLIENT_APP_Discover_services */
+
+      UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+
+      break;
+    }
   }
-#endif
-  
+
   return;
 }
 
-uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId)
+uint8_t gatt_procedure(uint8_t index, ProcGattId_t GattProcId)
 {
   tBleStatus result = BLE_STATUS_SUCCESS;
   uint8_t status;
 
-  if (index >= CFG_MAX_NUM_CONNECTED_SERVERS)
+  if (index >= CFG_BLE_NUM_CLIENT_CONTEXTS)
   {
     status = 1;
   }
@@ -348,18 +377,17 @@ uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId)
     {
       case PROC_GATT_DISC_ALL_PRIMARY_SERVICES:
       {
-        a_ClientContext[index].state = GATT_CLIENT_APP_DISCOVER_SERVICES;
-
-        APP_DBG_MSG("\nGATT services discovery\n");
+        APP_DBG_MSG("GATT services discovery\n");
         result = aci_gatt_clt_disc_all_primary_services(a_ClientContext[index].connHdl, BLE_GATT_UNENHANCED_ATT_L2CAP_CID);
 
         if (result == BLE_STATUS_SUCCESS)
         {
           gatt_cmd_resp_wait();
+          APP_DBG_MSG("PROC_GATT_CTL_DISC_ALL_PRIMARY_SERVICES services discovered Successfully\n\n");
         }
         else
         {
-          APP_DBG_MSG("aci_gatt_clt_disc_all_primary_services fail, status 0x%02X\n\n", result);
+          APP_DBG_MSG("PROC_GATT_CTL_DISC_ALL_PRIMARY_SERVICES aci_gatt_clt_disc_all_primary_services cmd NOK status =0x%02X\n\n", result);
         }
       }
 
@@ -367,9 +395,8 @@ uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId)
 
       case PROC_GATT_DISC_ALL_CHARS:
       {
-        a_ClientContext[index].state = GATT_CLIENT_APP_DISCOVER_CHARACS;
-
-        APP_DBG_MSG("\nDiscover all Characteristics (handles [0x%04X - 0x%04X])\n",
+        APP_DBG_MSG("DISCOVER_ALL_CHARS ConnHdl=0x%04X ALLServiceHandle[0x%04X - 0x%04X]\n",
+                          a_ClientContext[index].connHdl,
                           0x0001,
                           0xFFFF);
         result = aci_gatt_clt_disc_all_char_of_service(
@@ -380,39 +407,40 @@ uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId)
         if (result == BLE_STATUS_SUCCESS)
         {
           gatt_cmd_resp_wait();
+          APP_DBG_MSG("All characteristics discovered Successfully\n\n");
         }
         else
         {
-          APP_DBG_MSG("aci_gatt_clt_disc_all_char_of_service fail, status 0x%02X\n\n", result);
+          APP_DBG_MSG("All characteristics discovery Failed, status =0x%02X\n\n", result);
         }
       }
       break; /* PROC_GATT_DISC_ALL_CHARS */
 
       case PROC_GATT_DISC_ALL_DESCS:
       {
-        a_ClientContext[index].state = GATT_CLIENT_APP_DISCOVER_WRITE_DESC;
-
-        APP_DBG_MSG("\nDiscover all Characteristics Descriptors [0x%04X - 0x%04X]\n",
+        APP_DBG_MSG("DISCOVER_ALL_CHAR_DESCS [0x%04X - 0x%04X]\n",
                          0x0001,
                          0xFFFF);
         result = aci_gatt_clt_disc_all_char_desc(
                            a_ClientContext[index].connHdl,
-			   BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
+                           BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
                            0x0001,
                            0xFFFF);
         if (result == BLE_STATUS_SUCCESS)
         {
           gatt_cmd_resp_wait();
+          APP_DBG_MSG("All characteristic descriptors discovered Successfully\n\n");
         }
         else
         {
-          APP_DBG_MSG("aci_gatt_clt_disc_all_char_desc fail, status 0x%02X\n\n", result);
+          APP_DBG_MSG("All characteristic descriptors discovery Failed, status =0x%02X\n\n", result);
         }
       }
       break; /* PROC_GATT_DISC_ALL_DESCS */
       case PROC_GATT_ENABLE_ALL_NOTIFICATIONS:
       {
         uint16_t enable; /* Buffer must be kept valid for aci_gatt_clt_write until a gatt procedure complete is received. */
+
         if (a_ClientContext[index].ServiceChangedCharDescHdl != 0x0000)
         {
           enable = 0x0002;
@@ -494,7 +522,7 @@ uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId)
  * @param  Event: Address of the buffer holding the Event
  * @retval Ack: Return whether the Event has been managed or not
  */
-static BLEEVT_EvtAckStatus_t ESL_APP_EventHandler(aci_blecore_event *p_evt)
+static BLEEVT_EvtAckStatus_t EventHandler(aci_blecore_event *p_evt)
 {
   BLEEVT_EvtAckStatus_t return_value = BLEEVT_NoAck;
   GATT_CLIENT_APP_Notification_evt_t Notification;
@@ -543,7 +571,7 @@ static BLEEVT_EvtAckStatus_t ESL_APP_EventHandler(aci_blecore_event *p_evt)
       {
         APP_DBG_MSG("Service Changed Indication\n");
         
-        UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+        GATT_CLIENT_APP_DiscoverServices(p_evt_rsp->Connection_Handle);
       }      
       else if(p_evt_rsp->Attribute_Handle == a_ClientContext[0].OTSHandles.ObjListCPValueHdl)
       {
@@ -642,9 +670,8 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
     /* USER CODE BEGIN Client_Evt_Opcode */
     case ESL_NOTIFICATION_INFO_RECEIVED_EVT:
       {
-        //ECP notify: response of ESL to AT command sent writing the ECP      
-        uint8_t index = 0;
-        ECP_respCB(a_ClientContext[index].connHdl, p_Notif->DataTransfered.p_Payload); 
+        //ECP notify: response of ESL to AT command sent writing the ECP
+        ESL_AP_ECPNotificationReceived(p_Notif->DataTransfered.p_Payload); 
       }
       break;
     /* USER CODE END Client_Evt_Opcode */
@@ -679,7 +706,7 @@ static void gatt_parse_services(aci_att_clt_read_by_group_type_resp_event_rp0 *p
 //  APP_DBG_MSG("ACI_ATT_READ_BY_GROUP_TYPE_RESP_VSEVT_CODE - ConnHdl=0x%04X\n",
 //                p_evt->Connection_Handle);
 
-  for (index = 0 ; index < CFG_MAX_NUM_CONNECTED_SERVERS ; index++)
+  for (index = 0 ; index < CFG_BLE_NUM_CLIENT_CONTEXTS ; index++)
   {
     if (a_ClientContext[index].connHdl == p_evt->Connection_Handle)
     {
@@ -721,7 +748,8 @@ static void gatt_parse_services(aci_att_clt_read_by_group_type_resp_event_rp0 *p
       ServiceStartHdl =  UNPACK_2_BYTE_PARAMETER(&p_evt->Attribute_Data_List[uuid_offset - 4]);
       ServiceEndHdl = UNPACK_2_BYTE_PARAMETER(&p_evt->Attribute_Data_List[uuid_offset - 2]);
       uuid = UNPACK_2_BYTE_PARAMETER(&p_evt->Attribute_Data_List[uuid_offset + uuid_short_offset]);
-      APP_DBG_MSG("UUID=0x%04X, handle [0x%04X - 0x%04X]", uuid, ServiceStartHdl,ServiceEndHdl);
+      APP_DBG_MSG("  %d/%d short UUID=0x%04X, handle [0x%04X - 0x%04X]",
+                   i + 1, numServ, uuid, ServiceStartHdl,ServiceEndHdl);
 
       /* complete context fields */
       if ( (a_ClientContext[index].ALLServiceStartHdl == 0x0000) || (ServiceStartHdl < a_ClientContext[index].ALLServiceStartHdl) )
@@ -754,6 +782,10 @@ static void gatt_parse_services(aci_att_clt_read_by_group_type_resp_event_rp0 *p
         a_ClientContext[index].ESLServiceEndHdl = ServiceEndHdl;
 
         APP_DBG_MSG(", ESL_SERVICE_UUID found\n");
+      }
+      else if (uuid == DEVICE_INFORMATION_SERVICE_UUID)
+      {
+        APP_DBG_MSG(", Device Information Service found\n");
       }
 /* USER CODE END gatt_parse_services_1 */
       else
@@ -811,7 +843,7 @@ static void gatt_parse_chars(aci_att_clt_read_by_type_resp_event_rp0 *p_evt)
 //  APP_DBG_MSG("ACI_ATT_READ_BY_TYPE_RESP_VSEVT_CODE - ConnHdl=0x%04X\n",
 //                p_evt->Connection_Handle);
 
-  for (index = 0 ; index < CFG_MAX_NUM_CONNECTED_SERVERS ; index++)
+  for (index = 0 ; index < CFG_BLE_NUM_CLIENT_CONTEXTS ; index++)
   {
     if (a_ClientContext[index].connHdl == p_evt->Connection_Handle)
     {
@@ -861,7 +893,8 @@ static void gatt_parse_chars(aci_att_clt_read_by_type_resp_event_rp0 *p_evt)
 
       if ( (uuid != 0x0) && (CharProperties != 0x0) && (CharStartHdl != 0x0) && (CharValueHdl != 0) )
       {
-        APP_DBG_MSG("UUID=0x%04X, Properties=0x%04X, CharHandle [0x%04X - 0x%04X]", uuid, CharProperties, CharStartHdl, CharValueHdl);
+        APP_DBG_MSG("    %d/%d short UUID=0x%04X, Properties=0x%04X, CharHandle [0x%04X - 0x%04X]",
+                     i + 1, numHdlValuePair, uuid, CharProperties, CharStartHdl, CharValueHdl);
 
         if (uuid == DEVICE_NAME_UUID)
         {
@@ -992,6 +1025,12 @@ static void gatt_parse_chars(aci_att_clt_read_by_type_resp_event_rp0 *p_evt)
           }
           APP_DBG_MSG(", OBJECT_LIST_FILTER_POINT_UUID charac found\n");
         }
+        else if (uuid == PNPID_UUID)
+        {
+          a_ClientContext[index].DISPNPIdCharHdl = CharStartHdl;
+          a_ClientContext[index].DISPNPIdValueHdl = CharValueHdl;
+          APP_DBG_MSG(", PNPID_UUID charac found\n");
+        }
 /* USER CODE END gatt_parse_chars_1 */
         else
         {
@@ -1017,11 +1056,13 @@ static void gatt_parse_descs(aci_att_clt_find_info_resp_event_rp0 *p_evt)
   uint16_t uuid, handle;
   uint8_t uuid_offset, uuid_size, uuid_short_offset;
   uint8_t i, numDesc, handle_uuid_pair_size, index;
+  static uint16_t gattCharStartHdl = 0;
+  static uint16_t gattCharValueHdl = 0;
 
 //  APP_DBG_MSG("ACI_ATT_FIND_INFO_RESP_VSEVT_CODE - ConnHdl=0x%04X\n",
 //              p_evt->Connection_Handle);
 
-  for (index = 0 ; index < CFG_MAX_NUM_CONNECTED_SERVERS ; index++)
+  for (index = 0 ; index < CFG_BLE_NUM_CLIENT_CONTEXTS ; index++)
   {
     if (a_ClientContext[index].connHdl == p_evt->Connection_Handle)
     {
@@ -1066,15 +1107,21 @@ static void gatt_parse_descs(aci_att_clt_find_info_resp_event_rp0 *p_evt)
       else if (uuid == CHARACTERISTIC_UUID)
       {
         /* reset UUID & handle */
+        gattCharStartHdl = 0;
         gattCharValueHdl = 0;
+
+        gattCharStartHdl = handle;
         //APP_DBG_MSG("CHARACTERISTIC_UUID=0x%04X CharStartHandle=0x%04X\n", uuid, handle);
       }
       else if ( (uuid == CHAR_EXTENDED_PROPERTIES_DESCRIPTOR_UUID)
              || (uuid == CLIENT_CHAR_CONFIG_DESCRIPTOR_UUID) )
       {
 
-        APP_DBG_MSG("Descriptor UUID=0x%04X, handle=0x%04X",
-                      uuid, handle);
+        APP_DBG_MSG("Descriptor UUID=0x%04X, handle=0x%04X-0x%04X-0x%04X",
+                      uuid,
+                      gattCharStartHdl,
+                      gattCharValueHdl,
+                      handle);
         if (a_ClientContext[index].ServiceChangedCharValueHdl == gattCharValueHdl)
         {
           a_ClientContext[index].ServiceChangedCharDescHdl = handle;
@@ -1089,12 +1136,12 @@ static void gatt_parse_descs(aci_att_clt_find_info_resp_event_rp0 *p_evt)
         else if (a_ClientContext[index].OTSHandles.ObjActionCPValueHdl == gattCharValueHdl)
         {
           a_ClientContext[index].OTSHandles.ObjActionCPCCCDHdl = handle;
-          APP_DBG_MSG(", Oject Action Control Point CCCD found: handle=0x%04X\n", handle);
+          APP_DBG_MSG(", Object Action Control Point CCCD found: handle=0x%04X\n", handle);
         }
         else if (a_ClientContext[index].OTSHandles.ObjListCPValueHdl == gattCharValueHdl)
         {
           a_ClientContext[index].OTSHandles.ObjListCPCCCDHdl = handle;
-          APP_DBG_MSG(", Oject List Control Point CCCD found: handle=0x%04X\n", handle);
+          APP_DBG_MSG(", Object List Control Point CCCD found: handle=0x%04X\n", handle);
         }
 /* USER CODE END gatt_parse_descs_1 */
         else
@@ -1133,7 +1180,7 @@ static void gatt_parse_notification(aci_gatt_clt_notification_event_rp0 *p_evt)
   GATT_CLIENT_APP_Notification_evt_t Notification;
   uint8_t index;
 
-  for (index = 0 ; index < CFG_MAX_NUM_CONNECTED_SERVERS ; index++)
+  for (index = 0 ; index < CFG_BLE_NUM_CLIENT_CONTEXTS ; index++)
   {
     if (a_ClientContext[index].connHdl == p_evt->Connection_Handle)
     {
@@ -1149,7 +1196,7 @@ static void gatt_parse_notification(aci_gatt_clt_notification_event_rp0 *p_evt)
          characteristic is received in response to the command.*/
       HAL_RADIO_TIMER_StopVirtualTimer(&a_ClientContext[index].ECP_timer_Id);
 
-      APP_DBG_MSG("  Incoming Nofification from ECP\n");
+      APP_DBG_MSG("Incoming Nofification from ECP\n");
       Notification.Client_Evt_Opcode = ESL_NOTIFICATION_INFO_RECEIVED_EVT;
       Notification.DataTransfered.length = p_evt->Attribute_Value_Length;
       Notification.DataTransfered.p_Payload = &p_evt->Attribute_Value[0];
@@ -1167,22 +1214,47 @@ static void gatt_parse_notification(aci_gatt_clt_notification_event_rp0 *p_evt)
 }
 
 static void client_discover_all(void)
-{ 
+{
+  uint8_t index;
   tBleStatus status;
 
-  /* Exchange configuration must be done only once. If alraeady done, it will return error.  */
-  status = aci_gatt_clt_exchange_config(a_ClientContext[0].connHdl);
-  if (status != BLE_STATUS_SUCCESS)
+  for(index = 0; index < CFG_BLE_NUM_CLIENT_CONTEXTS; index++)
   {
-    APP_DBG_MSG("aci_gatt_clt_exchange_config failure: reason=0x%02X\n", status);
+    if(a_ClientContext[index].state == GATT_CLIENT_APP_DISCOVER_SERVICES)
+    {
+    	
+      /* Exchange configuration must be done only once. If alraeady done, it will return error.  */
+      status = aci_gatt_clt_exchange_config(a_ClientContext[0].connHdl);
+      if (status != BLE_STATUS_SUCCESS)
+      {
+        APP_DBG_MSG("aci_gatt_clt_exchange_config failure: reason=0x%02X\n", status);
+      }
+      else
+      {
+        APP_DBG_MSG("==>> aci_gatt_clt_exchange_config : Success\n");
+        gatt_cmd_resp_wait();
+      } 
+      gatt_procedure(index, PROC_GATT_DISC_ALL_PRIMARY_SERVICES);
+      gatt_procedure(index, PROC_GATT_DISC_ALL_CHARS);
+      gatt_procedure(index, PROC_GATT_DISC_ALL_DESCS);
+      gatt_procedure(index, PROC_GATT_ENABLE_ALL_NOTIFICATIONS);
+      
+#ifndef PTS_OTP  
+      if (ESL_AP_Context.configuring)
+      {
+        GATT_CLIENT_APP_ReadAllInfo();
+        GATT_CLIENT_APP_ConfigureESL();
+       }
+#endif
+
+      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+
+      /* Check if in the meantime another server has been connected. */
+      UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+
+      break;
+    }
   }
-  else
-  {
-    APP_DBG_MSG("==>> aci_gatt_clt_exchange_config : Success\n");
-    gatt_cmd_resp_wait();
-  } 
-  
-  GATT_CLIENT_APP_Discover_services(0);
 
   return;
 }
@@ -1201,340 +1273,169 @@ static void gatt_cmd_resp_wait(void)
 
 /* USER CODE BEGIN LF */
 
-void ESL_AP_List_Init(void)
-{  
-  LST_init_head(&esl_bonded);
-}
-
-/* insert the ESL on list if it is not already present, else update Conn_Handle */
-bool ESL_AP_Insert_ESL_In_List(uint16_t Conn_Handle, uint8_t Peer_Address[6], uint8_t Peer_Address_Type, uint16_t esl_address)
-{
-  esl_bonded_t * esl_node;
-  
-  esl_node = Search_by_Peer_address_In_List(Peer_Address, Peer_Address_Type);
-  if(esl_node == NULL)  
-  {  
-    esl_node = (esl_bonded_t *)malloc(sizeof(esl_bonded_t));
-
-    for (uint8_t i = 0; i < 6; i++)
-      esl_node->esl_info.Peer_Address[i] = Peer_Address[i];
-    esl_node->esl_info.Peer_Address_Type = Peer_Address_Type;
-    
-    esl_node->esl_info.state = ESL_STATE_CONFIGURING;
-    esl_node->esl_info.esl_address = esl_address;
-    esl_node->esl_info.esl_resp_key_material = ESL_APP_Return_KeyMaterial_Value();    
-    
-    if(esl_node != NULL) 
-    {  
-      LST_insert_tail(&esl_bonded, &esl_node->esl_queue);
-    }  
-  }
-  else
-  {     
-    APP_DBG_MSG("The ESL device is already present in bonded device list!\n");
-  }  
-  //To save the address of the connected ESL to be used to identify esl_node when writing characters
-  esl_address_conn = esl_node->esl_info.esl_address;
-  
-  esl_node->esl_info.Conn_Handle = Conn_Handle;
-  
-  display_all_ESL_bonded(&esl_bonded);
-  return true;
-}
-
-void ESL_AP_Remove_ESL_from_List(esl_bonded_t * esl_node)
-{
-  APP_DBG_MSG("!!! ESL_AP_Remove_ESL_from_List\n");
-  aci_gap_remove_bonded_device(esl_node->esl_info.Peer_Address_Type, esl_node->esl_info.Peer_Address);
-  LST_remove_node(&esl_node->esl_queue);
-  free(esl_node);
-}
-
-void display_all_ESL_bonded(tListNode *list_head_p)
-{
-  esl_bonded_t *current_node_p;
-  
-  current_node_p = (esl_bonded_t *)list_head_p->next;
-  APP_DBG_MSG("List of ESL bonded device: \n");
-
-  while (&current_node_p->esl_queue != list_head_p)
-  {
-      APP_DBG_MSG("Peer Address: ");
-      for (int i = 5; i >=0; i--) {
-          APP_DBG_MSG("%02X", current_node_p->esl_info.Peer_Address[i]);
-          if (i > 0) APP_DBG_MSG(":");
-      }
-      APP_DBG_MSG(", State: %d, ESL Address: %04X\n", current_node_p->esl_info.state, current_node_p->esl_info.esl_address);
-      LST_get_next_node(&current_node_p->esl_queue, (tListNode **)&current_node_p);
-  }
-}
-
-/* Search by Peer address and return an ESL node on the list */
-esl_bonded_t* Search_by_Peer_address_In_List(uint8_t peerAddress[6], uint8_t Peer_Address_Type)
-{  
-  tListNode *list_head_p;
-  esl_bonded_t *current_node_p;
-
-  list_head_p = &esl_bonded;
-  current_node_p = (esl_bonded_t *)list_head_p->next;
-  
-  while (&current_node_p->esl_queue != list_head_p)
-  {
-    if ((memcmp(current_node_p->esl_info.Peer_Address, peerAddress, sizeof(current_node_p->esl_info.Peer_Address)) == 0) &&
-       (Peer_Address_Type == current_node_p->esl_info.Peer_Address_Type))
-    {
-        // return the esl_node related to peerAddress
-        return current_node_p;
-    }
-    LST_get_next_node(&current_node_p->esl_queue, (tListNode **)&current_node_p);
-  }
-//  APP_DBG_MSG("Node with Peer address ");
-//  for (int i = 5; i >= 0; i--) {
-//      APP_DBG_MSG("%02X", peerAddress[i]);
-//      if (i > 0) APP_DBG_MSG(":");
-//  }
-//  APP_DBG_MSG(" not present in ESL bonded list.\n");
-  return NULL;
-}
-
-/* Search by ESL address and return an ESL node on the list */
-esl_bonded_t* Search_by_ESL_address_In_List(uint16_t esl_address)
-{  
-  tListNode *list_head_p;
-  esl_bonded_t *current_node_p;
-
-  list_head_p = &esl_bonded;
-  current_node_p = (esl_bonded_t *)list_head_p->next;
-
-  while (&current_node_p->esl_queue != list_head_p)
-  {
-    if (current_node_p->esl_info.esl_address == esl_address)
-    {
-        // return the esl_node related to esl_address
-        return current_node_p;
-    }
-    LST_get_next_node(&current_node_p->esl_queue, (tListNode **)&current_node_p);
-  }
-  APP_DBG_MSG("Node with ESL address %04X not found.\n", esl_address);
-  return NULL;
-}
-
-/* Search by Connection Handle and return an ESL node on the list */
-esl_bonded_t* Search_by_Conn_Handle_In_List(uint16_t conn_handle)
-{  
-  tListNode *list_head_p;
-  esl_bonded_t *current_node_p;
-
-  list_head_p = &esl_bonded;
-  current_node_p = (esl_bonded_t *)list_head_p->next;
-
-  while (&current_node_p->esl_queue != list_head_p)
-  {
-    if (current_node_p->esl_info.Conn_Handle == conn_handle)
-    {
-        // return the esl_node related to conn_handle
-        return current_node_p;
-    }
-    LST_get_next_node(&current_node_p->esl_queue, (tListNode **)&current_node_p);
-  }
-  APP_DBG_MSG("Node with Connection Handle %04X not found.\n", conn_handle);
-  return NULL;
-}
-
-uint16_t ESL_AP_return_ESL_address(uint8_t group_id, uint8_t esl_id)
-{
-  uint16_t esl_addr;
-  
-  esl_addr = (group_id << 8) | (esl_id & 0x00FF);
-  return(esl_addr);
-}
-
-/* Return an ESL bonded to AP given the Group_ID and ESL_ID*/
-esl_bonded_t* ESL_AP_return_ESL_bonded(uint8_t group_id, uint8_t esl_id)
-{
-  uint16_t esl_address;  
-  esl_bonded_t* esl_device;   
- 
-  // return ESL_addres by group_id and esl_id
-  esl_address = ESL_AP_return_ESL_address(group_id, esl_id);
-  
-  // return the esl_node using Search_by_ESL_address_In_List     
-  esl_device = Search_by_ESL_address_In_List(esl_address);
-
-  return esl_device;
-}
-
-/* Update ESL queue with info written on characteristics during configuration */
-void Update_Info_to_ESL_queue(esl_bonded_t* esl_node, ESL_Profile_Context_t new_info, ESL_PROFILE_KeyMaterial_t new_ap_sync_key_material) 
-{
-  esl_node->esl_info.state = new_info.state;
-  esl_node->esl_info.esl_address = new_info.esl_address;
-  esl_node->esl_info.esl_resp_key_material = new_info.esl_resp_key_material;
-
-  APP_DBG_MSG("ESL Node Updated.\n");
-}
-
-static void ESL_AP_write_char(void)
-{ 
-  switch (get_AP_Status())
-  {
-    case ESL_AP_CONFIGURING_ESL:
-      {
-        ESL_APP_Read_All_Info_Chars();
-        ESL_AP_configuring_char();
-      }
-      break;
-    case ESL_AP_UPDATING_ESL_ADDRESS:
-      {
-        ESL_AP_write_esl_address();
-      }
-      break;  
-  }    
-    
-}
-
 /* If the AP establish a bond with an ESL and ESL is on Configuring state,
    the AP can configure ESL by writing some ESL Service characteristics  
    (called on ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE) */
-static void ESL_AP_configuring_char(void)
+uint8_t GATT_CLIENT_APP_ConfigureESL(void)
 {
   uint8_t index = 0;
-  esl_bonded_t *esl_node;
-  uint8_t key[24];
-  tBleStatus ret = BLE_STATUS_INVALID_PARAMS;  
+  uint8_t ret;
+  esl_info_t *p_esl_info = &ESL_AP_Context.conn_esl_info;
   
-  //APP_DBG_MSG("ESL_AP_write_char!\n");
-  esl_node = Search_by_ESL_address_In_List(esl_address_conn);
-  if (esl_node != NULL)
+  /* ESL Address characteristic */
+  APP_DBG_MSG("Writing ESL Address (0x%04X)\n", p_esl_info->esl_address);
+  ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
+                           BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
+                           a_ClientContext[index].ESLAddressValueHdl,
+                           2,
+                           (uint8_t *)&p_esl_info->esl_address); 
+  
+  if (ret != BLE_STATUS_SUCCESS)
   {
+    APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
+                a_ClientContext[index].connHdl,
+                a_ClientContext[index].ESLAddressValueHdl);
+    return 1;
+  }
+  else
+  {
+    /* wait until a gatt procedure complete is received */
+    gatt_cmd_resp_wait();
+    
+    if(a_ClientContext[0].gatt_error_code)
+    {
+      return 1;
+    }
+  }
   
-    /* ESL Address characteristic */
-    APP_DBG_MSG("Writing ESL Address (0x%04X)\n", esl_node->esl_info.esl_address);
-    ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
-                             BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
-                             a_ClientContext[index].ESLAddressValueHdl,
-                             2,
-                             (uint8_t *)&esl_node->esl_info.esl_address); 
-    
-    if (ret != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
-                  a_ClientContext[index].connHdl,
-                  a_ClientContext[index].ESLAddressValueHdl);
-    }
-    else
-    {
-      /* wait until a gatt procedure complete is received */
-      gatt_cmd_resp_wait();   
-    }
-    
+  if(ESL_AP_Context.provisioning)
+  {
+    /* keys are written only during provisioning. We let write other characteristics
+       even if we are just updating ESL.  */
+  
     //AP Sync Material characteristic
-    APP_DBG_MSG("Writing AP Sync Material\n");
-    memcpy(&key[0], ap_sync_key_material_config_value.Session_Key, 16);
-    memcpy(&key[16], ap_sync_key_material_config_value.IV, 8);
-    
+    APP_DBG_MSG("Writing AP Sync Material\n");  
     ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
                              BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
                              a_ClientContext[index].APSyncKeyMaterialValueHdl,
                              24,
-                             key); 
+                             (uint8_t *)&ESL_AP_Context.ap_sync_key_material); 
     
     if (ret != BLE_STATUS_SUCCESS)
     {
       APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
                   a_ClientContext[index].connHdl,
                   a_ClientContext[index].APSyncKeyMaterialValueHdl);
+      return 1;
     }
     else
     {
       /* wait until a gatt procedure complete is received */
-      gatt_cmd_resp_wait();     
+      gatt_cmd_resp_wait();
+      
+      if(a_ClientContext[0].gatt_error_code)
+      {
+        return 1;
+      }
     }
     
-    //ESL Resp Key Material characteristic
-    APP_DBG_MSG("Writing Response Key Material\n");      
-    memcpy(&key[0], esl_node->esl_info.esl_resp_key_material.Session_Key, 16);
-    memcpy(&key[16], esl_node->esl_info.esl_resp_key_material.IV, 8);
+    //ESL Resp Key Material characteristic  
+    ESL_AP_GenerateKeyMaterial(&p_esl_info->esl_resp_key_material);
+    
+    APP_DBG_MSG("Writing Response Key Material:\n");
+    APP_DBG_MSG("Session key: ");
+    for(int i = sizeof(p_esl_info->esl_resp_key_material.session_key); i >= 0; i--)
+    {
+      APP_DBG_MSG("%02X ", p_esl_info->esl_resp_key_material.session_key[i]);
+    }
+    APP_DBG_MSG("\nIV: ");
+    for(int i = sizeof(p_esl_info->esl_resp_key_material.iv); i >= 0; i--)
+    {
+      APP_DBG_MSG("%02X ", p_esl_info->esl_resp_key_material.iv[i]);
+    }
+    APP_DBG_MSG("\n");
     
     ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
                              BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
                              a_ClientContext[index].ESLRespKeyMaterialValueHdl,
                              24,
-                             key); //ESL Resp Key Material
+                             (uint8_t *)&p_esl_info->esl_resp_key_material); //ESL Resp Key Material
     
     if (ret != BLE_STATUS_SUCCESS)
     {
       APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
                   a_ClientContext[index].connHdl,
                   a_ClientContext[index].ESLRespKeyMaterialValueHdl);
+      return 1;
     }
     else
     {
       /* wait until a gatt procedure complete is received */
       gatt_cmd_resp_wait();
-    }
-    
-    /* ESL Current Absolute Time characteristic */  
-    uint32_t absoluteTime = TIMEREF_GetCurrentAbsTime();
-    APP_DBG_MSG("Writing Absolute time (%d)\n", absoluteTime);  
-    ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
-                             BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
-                             a_ClientContext[index].ESLCurrAbsTimeValueHdl,
-                             4,
-                             (uint8_t *)&absoluteTime);
-    
-    if (ret != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
-                  a_ClientContext[index].connHdl,
-                  a_ClientContext[index].ESLCurrAbsTimeValueHdl);
-    }
-    else
-    {
-      /* wait until a gatt procedure complete is received */
-      gatt_cmd_resp_wait();     
-    }
- 
-    Update_Info_to_ESL_queue(esl_node, esl_node->esl_info, ap_sync_key_material_config_value);
-
-    esl_node->esl_info.state = ESL_STATE_CONFIGURING;  
       
-    /* After configuration of the ESL has been completed, the AP shall send the Update Complete opcode (0x04)
-       using the ESL Control Point characteristic and shall commence the Periodic Advertising Synchronization
-       Transfer (PAST) procedure */
-    
-    APP_DBG_MSG("Sending Update Complete\n");
-    ret = ESL_AP_send_Update_Complete_cmd(esl_node->esl_info.esl_address);  
-    if (ret != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG("Update Complete command failed: 0x%02X \n", ret);
+      if(a_ClientContext[0].gatt_error_code)
+      {
+        return 1;
+      }
     }
-    else
-    {
-      APP_DBG_MSG("Update Complete command success! (Configuring state) \n");
-    }
-    
-    // Start PAST procedure (call "periodic_sync_info_transfer")
-    UTIL_SEQ_SetTask( 1U << CFG_TASK_START_INFO_TRANSFER, CFG_SEQ_PRIO_0);
-    
-    esl_node->esl_info.state = ESL_STATE_SYNCHRONIZED;
-  }  
-  return;
-}
-
-uint8_t ESL_AP_send_Update_Complete_cmd(uint16_t esl_address)
-{
-  uint8_t cmd[2];
-  uint8_t esl_id = (esl_address & 0x00FF);
+  }
   
-  cmd[0] = ESL_CMD_UPDATE_COMPLETE;
-  cmd[1] = esl_id;
-  return ESL_AP_write_ECP(cmd, 2, NULL, false); //No response 
+  /* ESL Current Absolute Time characteristic */  
+  uint32_t absoluteTime = TIMEREF_GetCurrentAbsTime();
+  APP_DBG_MSG("Writing Absolute time (%d)\n", absoluteTime);  
+  ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
+                           BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
+                           a_ClientContext[index].ESLCurrAbsTimeValueHdl,
+                           4,
+                           (uint8_t *)&absoluteTime);
+  
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG(" Failed, connHdl=0x%04X, ValueHdl=0x%04X\n",
+                a_ClientContext[index].connHdl,
+                a_ClientContext[index].ESLCurrAbsTimeValueHdl);
+    return 1;
+  }
+  else
+  {
+    /* wait until a gatt procedure complete is received */
+    gatt_cmd_resp_wait();
+    
+    if(a_ClientContext[0].gatt_error_code)
+    {
+      return 1;
+    }
+  }
+  
+  if(ESL_AP_Context.configuring)
+  {
+    ret = ESL_AP_CmdUpdateComplete();
+    if(ret)
+    {
+      APP_DBG_MSG("Fail sending update complete command\n");
+      return 2;
+    }
+  }
+  
+  ret = ESL_AP_StoreESLInfo(&ESL_AP_Context.conn_esl_info);
+  if(ret == 0)
+  {
+    APP_DBG_MSG("ESL configuration saved\n");
+  }
+  else
+  {
+    APP_DBG_MSG("Error while saving configuration\n");
+    aci_gap_terminate(a_ClientContext[0].connHdl, BLE_ERROR_TERMINATED_REMOTE_USER);
+    
+    return 2;
+  }
+  
+  return 0;
 }
 
 /* If bResponse is true the command wait for an ESL response, else the 
    command has no response, so the timer ECP_TIMEOUT_MS must not start */
-uint8_t ESL_AP_write_ECP(uint8_t* cmd, uint8_t len_cmd, uint16_t* conn_handle, bool bResponse)
+uint8_t GATT_CLIENT_APP_WriteECP(uint8_t* cmd, uint8_t len_cmd, bool bResponse)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   uint8_t index = 0;
@@ -1542,10 +1443,7 @@ uint8_t ESL_AP_write_ECP(uint8_t* cmd, uint8_t len_cmd, uint16_t* conn_handle, b
   /* If an ECP procedure times out, then the AP shall not start a new ECP 
    procedure until a new link is established with the ESL.*/
   if(!a_ClientContext[index].b_ECP_failed)
-  {
-    if (conn_handle!= NULL)
-      *conn_handle = a_ClientContext[index].connHdl;
-    
+  {    
     APP_DBG_MSG("Writing ECP\n");
     
     ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
@@ -1579,60 +1477,7 @@ uint8_t ESL_AP_write_ECP(uint8_t* cmd, uint8_t len_cmd, uint16_t* conn_handle, b
   return ret;
 }
 
-static void ESL_AP_write_esl_address(void)
-{
-  uint8_t index = 0;
-  uint16_t new_esl_address;
-  esl_bonded_t *esl_node;
-  tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
-  
-  new_esl_address = ESL_AP_New_esl_address();
-  
-  /* ESL Address characteristic */
-  ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
-                           BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
-                           a_ClientContext[index].ESLAddressValueHdl,
-                           2,
-                           (uint8_t *)&new_esl_address); 
-  
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    APP_DBG_MSG("New ESL_address aci_gatt_clt_write failed, connHdl=0x%04X, ValueHdl=0x%04X\n",  
-                a_ClientContext[index].connHdl,
-                a_ClientContext[index].ESLAddressValueHdl);
-  }
-  else
-  {
-    /* wait until a gatt procedure complete is received */
-    gatt_cmd_resp_wait();    
-    APP_DBG_MSG("New ESL_address 0x%04X aci_gatt_clt_write success, connHdl=0x%04X, ValueHdl=0x%04X\n",
-                new_esl_address,              
-                a_ClientContext[index].connHdl,
-                a_ClientContext[index].ESLAddressValueHdl);
-  }
-  
-  esl_node = ESL_AP_return_ESL_to_Update();
-  if (esl_node != NULL)
-  { 
-    esl_node->esl_info.esl_address = new_esl_address;
-    esl_node->esl_info.state = ESL_STATE_UPDATING;
-  }
-  
-  ret = ESL_AP_send_Update_Complete_cmd(new_esl_address);  
-  if (ret != BLE_STATUS_SUCCESS)
-  {
-    APP_DBG_MSG("Update Complete command failed: 0x%02X \n", ret);
-  }
-  else
-  {
-    APP_DBG_MSG("Update Complete command success! (Reconf command) \n");
-  }
-  // Start PAST procedure (call "periodic_sync_info_transfer")
-  UTIL_SEQ_SetTask( 1U << CFG_TASK_START_INFO_TRANSFER, CFG_SEQ_PRIO_0);
-  esl_node->esl_info.state = ESL_STATE_SYNCHRONIZED;
-}
-
-static void ESL_AP_ECP_Timeout(void *arg)
+static void ECPTimeout(void *arg)
 {  
   APP_DBG_MSG("ECP procedure failed\n");
   /* If an ECP procedure times out, then the AP shall not start a new ECP 
@@ -1640,56 +1485,11 @@ static void ESL_AP_ECP_Timeout(void *arg)
   set_ECP_Failed(true);
 }
 
-void set_ECP_Failed(bool bValue)
+static void set_ECP_Failed(bool bValue)
 {
   uint8_t index = 0;
   
   a_ClientContext[index].b_ECP_failed = bValue;
-}
-
-void ESL_APP_DisconnectionComplete(uint16_t conn_handle)
-{
-  esl_bonded_t * esl_node;
-  
-  esl_node = Search_by_Conn_Handle_In_List(conn_handle);
-  if(esl_node != NULL)  
-  {
-    if(esl_node->esl_info.state == ESL_STATE_CONFIGURING)
-    {
-      /* If link loss occurs before configuration of the ESL has been completed, 
-         the AP should not commence the PAST procedure and should attempt to 
-         reconnect to the ESL to continue the configuration. */
-         
-      /* When link loss occurs before configuration of the ESL has been completed,  
-         the ESL reverts to the Unassociated state */
-      esl_node->esl_info.state = ESL_STATE_UNASSOCIATED;
-      APP_DBG_MSG("Unassociated State transition for link loss\n ");
-    }
-    else if(esl_node->esl_info.state == ESL_STATE_UPDATING)
-    {
-      /* If the connection is lost owing to link loss occurring in the Updating state, 
-         then the ESL shall transition to the Unsynchronized state */
-      esl_node->esl_info.state = ESL_STATE_UNSYNCHRONIZED;
-      APP_DBG_MSG("Usynchronized State transition for link loss\n ");      
-    }
-  }
-  
-  OTP_CLIENT_DisconnectionComplete();
-}
-
-void ESL_APP_ReconnectionStateTransition(uint8_t Peer_Address[6], uint8_t Peer_Address_Type)
-{
-  esl_bonded_t * esl_node;
-  
-  esl_node = Search_by_Peer_address_In_List(Peer_Address, Peer_Address_Type);
-  if(esl_node != NULL)  
-  {
-    if(esl_node->esl_info.state == ESL_STATE_UNSYNCHRONIZED)
-    {
-      esl_node->esl_info.state = ESL_STATE_UPDATING;
-      APP_DBG_MSG("Updating State transition from Unsynchronized state\n ");
-    }
-  }    
 }
 
 static void print_Info_Char(void)
@@ -1703,63 +1503,85 @@ static void print_Info_Char(void)
   APP_DBG_MSG("\n");
 }
 
-uint8_t ESL_APP_Read_All_Info_Chars(void)
+uint8_t GATT_CLIENT_APP_ReadAllInfo(void)
 {
   tBleStatus ret = 0;
   
 //  APP_DBG_MSG("ESL_AP_Read_Info_Chars!\n");
   
-  APP_DBG_MSG("\nRead Display Information\n");  
-  ESL_APP_Read_Display_Info_Chars(); 
+  APP_DBG_MSG("Read Display Information\n");
+  GATT_CLIENT_APP_ReadDisplayInfo(); 
   
-  APP_DBG_MSG("\nRead Image Information\n");  
-  ESL_APP_Read_Image_Info_Chars();
+  APP_DBG_MSG("Read Image Information\n");
+  GATT_CLIENT_APP_ReadImageInfo();
   
-  APP_DBG_MSG("\nRead Sensor Information\n");  
-  ESL_APP_Read_Sensor_Info_Chars();
+  APP_DBG_MSG("Read Sensor Information\n");
+  GATT_CLIENT_APP_ReadSensorInfo();
   
-  APP_DBG_MSG("\nRead LED Information\n");  
-  ESL_APP_Read_Led_Info_Chars();
+  APP_DBG_MSG("Read LED Information\n");
+  GATT_CLIENT_APP_ReadLedInfo();
+  
+  APP_DBG_MSG("Read PnP ID\n");
+  GATT_CLIENT_APP_ReadPnPID();
   
   return ret;
 }
   
 
-uint8_t ESL_APP_Read_Display_Info_Chars(void)
+uint8_t GATT_CLIENT_APP_ReadDisplayInfo(void)
 {
   uint8_t index = 0;
+  
+  if(a_ClientContext[index].ESLDisplayInfoValueHdl == 0)
+    return BLE_STATUS_ERROR;
 
-  return ESL_APP_Read_Info_Char(a_ClientContext[index].ESLDisplayInfoValueHdl); 
+  return ReadInfoChar(a_ClientContext[index].ESLDisplayInfoValueHdl); 
 }
 
-uint8_t ESL_APP_Read_Image_Info_Chars(void)
+uint8_t GATT_CLIENT_APP_ReadImageInfo(void)
 {
   uint8_t index = 0;
+  
+  if(a_ClientContext[index].ESLImageInfoValueHdl == 0)
+    return BLE_STATUS_ERROR;
 
-  return ESL_APP_Read_Info_Char(a_ClientContext[index].ESLImageInfoValueHdl); 
+  return ReadInfoChar(a_ClientContext[index].ESLImageInfoValueHdl); 
 }
 
-uint8_t ESL_APP_Read_Sensor_Info_Chars(void)
+uint8_t GATT_CLIENT_APP_ReadSensorInfo(void)
 {
   uint8_t index = 0;
+  
+  if(a_ClientContext[index].ESLSensorInfoValueHdl == 0)
+    return BLE_STATUS_ERROR;
 
-  return ESL_APP_Read_Info_Char(a_ClientContext[index].ESLSensorInfoValueHdl); 
+
+  return ReadInfoChar(a_ClientContext[index].ESLSensorInfoValueHdl); 
 }
 
-uint8_t ESL_APP_Read_Led_Info_Chars(void)
+uint8_t GATT_CLIENT_APP_ReadLedInfo(void)
 {
   uint8_t index = 0;
+  
+  if(a_ClientContext[index].ESLLedInfoValueHdl == 0)
+    return BLE_STATUS_ERROR;
 
-  return ESL_APP_Read_Info_Char(a_ClientContext[index].ESLLedInfoValueHdl); 
+
+  return ReadInfoChar(a_ClientContext[index].ESLLedInfoValueHdl); 
 }
 
-uint8_t ESL_APP_Clear_Security_DB(void)
+uint8_t GATT_CLIENT_APP_ReadPnPID(void)
 {
-  APP_DBG_MSG("Clear Security DB!\n");
-  return aci_gap_clear_security_db(); 
+  uint8_t index = 0;
+  
+  if(a_ClientContext[index].DISPNPIdValueHdl == 0)
+    return BLE_STATUS_ERROR;
+
+
+  return ReadInfoChar(a_ClientContext[index].DISPNPIdValueHdl); 
 }
 
-uint8_t ESL_APP_Read_Info_Char(uint16_t ValueHdl)
+static uint8_t ReadInfoChar(uint16_t ValueHdl)
 {
   uint8_t index = 0;
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
@@ -1789,14 +1611,14 @@ uint8_t ESL_APP_Read_Info_Char(uint16_t ValueHdl)
   if (a_ClientContext[0].read_char_len >= (a_ClientContext[0].att_mtu - 1))
   {
     /* Display Information characteristic Read long */
-    ret = ESL_APP_Read_Long_Char(ValueHdl, a_ClientContext[0].read_char_len);
+    ret = ReadLongChar(ValueHdl, a_ClientContext[0].read_char_len);
   }  
   print_Info_Char();
   
   return ret;
 }
 
-static uint8_t ESL_APP_Read_Long_Char(uint16_t ValueHdl, uint16_t Offset)
+static uint8_t ReadLongChar(uint16_t ValueHdl, uint16_t Offset)
 {
   uint8_t index = 0;
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
@@ -1824,19 +1646,7 @@ static uint8_t ESL_APP_Read_Long_Char(uint16_t ValueHdl, uint16_t Offset)
   return a_ClientContext[0].gatt_error_code;  
 }
 
-static ESL_PROFILE_KeyMaterial_t ESL_APP_Return_KeyMaterial_Value(void) 
-{
-    ESL_PROFILE_KeyMaterial_t keyMaterial;
-
-    hci_le_rand(&keyMaterial.Session_Key[0]);
-    hci_le_rand(&keyMaterial.Session_Key[8]);
-
-    hci_le_rand(&keyMaterial.IV[0]);
-
-    return keyMaterial;
-}
-
-tBleStatus GATT_CLIENT_Read_Char(uint16_t ValueHdl, uint8_t **data_p, uint16_t *data_length_p)
+tBleStatus GATT_CLIENT_APP_ReadChar(uint16_t ValueHdl, uint8_t **data_p, uint16_t *data_length_p)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   
@@ -1861,18 +1671,17 @@ tBleStatus GATT_CLIENT_Read_Char(uint16_t ValueHdl, uint8_t **data_p, uint16_t *
   
   if (a_ClientContext[0].read_char_len >= (a_ClientContext[0].att_mtu - 1))
   {
-    ret = ESL_APP_Read_Long_Char(ValueHdl, a_ClientContext[0].read_char_len);
+    ret = ReadLongChar(ValueHdl, a_ClientContext[0].read_char_len);
   }
   
   *data_p = a_ClientContext[0].read_char;
   *data_length_p = a_ClientContext[0].read_char_len;
   
-  //TODO: check if ESL_APP_Read_Long_Char returned "Attribute Not Long".
   
   return ret;
 }
 
-tBleStatus GATT_CLIENT_Write_Char(uint16_t ValueHdl, uint8_t *data, uint16_t data_length)
+tBleStatus GATT_CLIENT_APP_WriteChar(uint16_t ValueHdl, uint8_t *data, uint16_t data_length)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   
@@ -1901,4 +1710,3 @@ tBleStatus GATT_CLIENT_Write_Char(uint16_t ValueHdl, uint8_t *data, uint16_t dat
 }
 
 /* USER CODE END LF */
-

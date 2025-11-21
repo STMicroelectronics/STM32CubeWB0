@@ -35,10 +35,9 @@
 #define TP_NETWORK_ADDRESS      (uint32_t)(0x888888DF)
 #define FREQUENCY_CHANNEL       (uint8_t)(21)            /* RF channel 21 */
 
-#define TX_WAKEUP_TIME          (300)          /* 320 us */
-#define RX_WAKEUP_TIME          (280)          /* 320 us */
-#define RX_TIMEOUT              (100000)       /* 100 ms */
-#define RX_TIMEOUT_ACK          (150)          /* 150 us */
+#define TX_WAKEUP_TIME          (300)          /* 300 us */
+#define RX_WAKEUP_TIME          (280)          /* 280 us */
+#define RX_TIMEOUT              (200000)       /* 200 ms */
 
 #define PRINT_FRAME             (1)
 /* USER CODE END PD */
@@ -317,15 +316,27 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 static uint8_t CondRoutineTrue(ActionPacket* p)
 {
+  if((p->status & BLUE_INTERRUPT1REG_DONE) != 0)    /* Transmit complete */
+  {
+    aPacket[2].ActionTag = 0;
+  }
   return TRUE;
 }
 
 static uint8_t CondRoutineRx(ActionPacket* p)
 {
   /* received a packet */
-  if((p->status & BLUE_INTERRUPT1REG_RCVOK) != 0){
+  if((p->status & BLUE_INTERRUPT1REG_RCVOK) != 0)
+  {
     /* packet received without CRC error */ 
     return TRUE;
+  }
+  else if ((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0)
+  {
+     aPacket[2].ActionTag =  0;
+  }else if ((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0)
+  {
+     aPacket[2].ActionTag =  RELATIVE | TIMER_WAKEUP;
   }
   return FALSE; 
 }
@@ -347,15 +358,22 @@ uint8_t RxCallback(ActionPacket* p, ActionPacket* next)
      BSP_LED_Toggle(LD1);
      rx_done = TRUE;
    }
-   else if(((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0) || ((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0))
+   else if((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0)
    {
      BSP_LED_Toggle(LD3);
+
+   }
+   else if((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0)
+   {
+     BSP_LED_Toggle(LD3); 
+     HAL_RADIO_TIMER_SetRadioCloseTimeout();
    }
   } 
   else if((p->status & BLUE_INTERRUPT1REG_DONE) != 0)    /* Transmit complete */
   {
     BSP_LED_Toggle(LD2);
   }
+ 
   return TRUE;   
 }
 
@@ -379,12 +397,12 @@ uint8_t BIDIRECTIONAL_RX_Sequence(uint8_t channel,
   if(returnValue == SUCCESS_0) {
         
     aPacket[0].StateMachineNo = STATE_MACHINE_0;
-    aPacket[0].ActionTag =  RELATIVE | TIMER_WAKEUP | PLL_TRIG;
+    aPacket[0].ActionTag =  RELATIVE | PLL_TRIG;
     aPacket[0].WakeupTime = RX_WAKEUP_TIME;
     aPacket[0].MaxReceiveLength = receive_length;
     aPacket[0].data = rxBuffer;
     aPacket[0].next_true = &aPacket[1];
-    aPacket[0].next_false = &aPacket[2];;
+    aPacket[0].next_false = &aPacket[2];
     aPacket[0].condRoutine = CondRoutineRx;
     aPacket[0].dataRoutine = Callback;
         
@@ -408,13 +426,17 @@ uint8_t BIDIRECTIONAL_RX_Sequence(uint8_t channel,
     aPacket[2].condRoutine = CondRoutineRx;
     aPacket[2].dataRoutine = Callback;
     
-    HAL_RADIO_SetReservedArea(&aPacket[0]);
-    HAL_RADIO_SetReservedArea(&aPacket[1]);
-    HAL_RADIO_SetReservedArea(&aPacket[2]);
-    HAL_RADIO_MakeActionPacketPending(&aPacket[0]);
-    HAL_RADIO_TIMER_SetRadioCloseTimeout();
     BLUEGLOB->TIMER12INITDELAYCAL = 66;
     BLUEGLOB->TIMER2INITDELAYNOCAL = 4;
+    
+    HAL_RADIO_SetBackToBackTime(90);
+    HAL_RADIO_SetReservedArea(&aPacket[0]);
+    HAL_RADIO_SetReservedArea(&aPacket[1]);
+    HAL_RADIO_SetBackToBackTime(100);
+    HAL_RADIO_SetReservedArea(&aPacket[2]);
+    HAL_RADIO_MakeActionPacketPending(&aPacket[0]);
+    
+    HAL_RADIO_TIMER_SetRadioCloseTimeout();
   }
   
   return returnValue; 

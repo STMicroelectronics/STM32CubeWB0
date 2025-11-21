@@ -177,12 +177,12 @@ uint8_t a_AdvData[] =
 /* Private function prototypes -----------------------------------------------*/
 static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
+                                      uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
                                       uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout);
-
 static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
 
@@ -252,6 +252,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -485,6 +486,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -577,9 +585,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -655,6 +663,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
           connection_complete_event(p_enhanced_conn_complete->Status,
                                     p_enhanced_conn_complete->Connection_Handle,
+                                    p_enhanced_conn_complete->Role,
                                     p_enhanced_conn_complete->Peer_Address_Type,
                                     p_enhanced_conn_complete->Peer_Address,
                                     p_enhanced_conn_complete->Connection_Interval,
@@ -669,6 +678,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
           connection_complete_event(p_conn_complete->Status,
                                     p_conn_complete->Connection_Handle,
+                                    p_conn_complete->Role,
                                     p_conn_complete->Peer_Address_Type,
                                     p_conn_complete->Peer_Address,
                                     p_conn_complete->Connection_Interval,
@@ -868,6 +878,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
 static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
+                                      uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
                                       uint16_t Connection_Interval,
@@ -895,8 +906,7 @@ static void connection_complete_event(uint8_t Status,
               INT(Connection_Interval*1.25),
               FRACTIONAL_2DIGITS(Connection_Interval*1.25),
               Peripheral_Latency,
-              Supervision_Timeout * 10
-              );
+              Supervision_Timeout * 10);
 
   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
   {

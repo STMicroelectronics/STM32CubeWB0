@@ -51,7 +51,7 @@ define symbol _MEMORY_ROM_END_        = 0x100017FF;
       
 
 /* Reserved for BTLE stack non volatile memory */
-define symbol FLASH_NVM_DATASIZE       = (4*1024);
+define symbol FLASH_NVM_DATASIZE       = (6*1024);
 
 if( !isdefinedsymbol( MEMORY_RAM_APP_OFFSET) ) {
   define symbol MEMORY_RAM_APP_OFFSET = (0x00);

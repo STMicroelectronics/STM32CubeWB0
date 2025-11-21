@@ -42,9 +42,6 @@ typedef enum
   APP_BLE_CONNECTED_SERVER,
   APP_BLE_CONNECTED_CLIENT,
   APP_BLE_SCANNING,
-  APP_BLE_CONNECTED,
-  APP_BLE_DISCOVERING_SERVICES,
-  APP_BLE_DISCOVERING_CHARACS,
 /* USER CODE BEGIN ConnStatus_t */
 
 /* USER CODE END ConnStatus_t */
@@ -111,7 +108,6 @@ typedef struct
 void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId);
 

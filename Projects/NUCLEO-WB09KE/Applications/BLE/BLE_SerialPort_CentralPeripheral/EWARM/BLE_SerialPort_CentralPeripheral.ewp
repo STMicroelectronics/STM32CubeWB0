@@ -1202,6 +1202,21 @@
       </group>
       <group>
         <name>Modules</name>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/stm_list.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/miscutil.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</name>
+        </file>
         <group>
           <name>RTDebug</name>
           <file>
@@ -1247,21 +1262,6 @@
             <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash/flash_driver.c</name>
           </file>
         </group>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/stm_list.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/miscutil.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</name>
-        </file>
       </group>
       <group>
         <name>Startup</name>

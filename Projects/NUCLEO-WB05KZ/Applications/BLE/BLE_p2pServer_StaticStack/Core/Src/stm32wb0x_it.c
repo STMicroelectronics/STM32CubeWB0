@@ -35,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
- 
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -81,7 +81,7 @@ void NMI_Handler(void)
   {
   }
   /* USER CODE END NonMaskableInt_IRQn 1 */
-  }
+}
 
 /**
   * @brief This function handles Hard fault interrupt.
@@ -163,7 +163,7 @@ void USART1_IRQHandler(void)
   }
   /* USER CODE END USART1_IRQn 0 */
   /* USER CODE BEGIN USART1_IRQn 1 */
-  
+
   /* USER CODE END USART1_IRQn 1 */
 }
 
@@ -201,7 +201,7 @@ void RADIO_TIMER_CPU_WKUP_IRQHandler(void)
 void RADIO_TIMER_ERROR_IRQHandler(void)
 {
   /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 0 */
-  
+
   /* USER CODE END RADIO_TIMER_ERROR_IRQn 0 */
   HAL_RADIO_TIMER_ERROR_IRQHandler();
   /* USER CODE BEGIN RADIO_TIMER_ERROR_IRQn 1 */
@@ -215,11 +215,11 @@ void RADIO_TIMER_ERROR_IRQHandler(void)
 void RADIO_TXRX_IRQHandler(void)
 {
   /* USER CODE BEGIN RADIO_TXRX_IRQn 0 */
-  
+
   /* USER CODE END RADIO_TXRX_IRQn 0 */
   HAL_RADIO_TXRX_IRQHandler();
   /* USER CODE BEGIN RADIO_TXRX_IRQn 1 */
-  
+
   /* USER CODE END RADIO_TXRX_IRQn 1 */
 }
 
@@ -235,6 +235,20 @@ void RADIO_TXRX_SEQ_IRQHandler(void)
   /* USER CODE BEGIN RADIO_TXRX_SEQ_IRQn 1 */
 
   /* USER CODE END RADIO_TXRX_SEQ_IRQn 1 */
+}
+
+/**
+  * @brief This function handles RADIO_RRM global interrupt.
+  */
+void RADIO_RRM_IRQHandler(void)
+{
+  /* USER CODE BEGIN RADIO_RRM_IRQn 0 */
+
+  /* USER CODE END RADIO_RRM_IRQn 0 */
+  HAL_RADIO_RRM_IRQHandler();
+  /* USER CODE BEGIN RADIO_RRM_IRQn 1 */
+
+  /* USER CODE END RADIO_RRM_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

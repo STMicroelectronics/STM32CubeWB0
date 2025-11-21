@@ -31,6 +31,7 @@
 #include "dtm_preprocess_events.h"
 #include "app_common.h"
 #include "app_ble.h"
+#include "dtm_cmds.h"
 
 /* Private typedef -----------------------------------------------------------*/\
 
@@ -81,6 +82,8 @@ static circular_fifo_t event_fifo, command_fifo;
 uint16_t command_fifo_dma_len;
 
 static event_lost_register_t event_lost_register;
+
+bool tx_test_stop_request = false;
 
 #ifdef DEBUG_DTM
 DebugLabel debug_buf[DEBUG_ARRAY_LEN] = {EMPTY,};
@@ -295,6 +298,12 @@ void transport_layer_tick(void)
   uint16_t len;
   uint16_t size = 0;
   uint32_t tick_start_val;  
+  
+  if(tx_test_stop_request)
+  {
+    tx_test_stop_request = false;
+    DTM_CMDS_TxTestStop();
+  }
   
   if(SPI_STATE_CHECK(SPI_PROT_CONFIGURED_HOST_REQ_STATE))
   {
@@ -611,18 +620,6 @@ void HAL_PWR_WKUPx_Callback(uint32_t wakeupIOs)
 }
 #endif
 
-PowerSaveLevels TL_PowerSaveLevelCheck(void)
-{ 
-  if(SPI_STATE_CHECK(SPI_PROT_CONFIGURED_EVENT_PEND_STATE) || SPI_STATE_CHECK(SPI_PROT_WAITING_DATA_STATE))
-  {    
-    return POWER_SAVE_LEVEL_CPU_HALT;
-  }  
-  else 
-  {
-    return POWER_SAVE_LEVEL_STOP;
-  }
-}
-
 __weak void TL_ProcessReqCallback(void){}
 
 __weak void TL_ResetReqCallback(void){}
@@ -700,5 +697,12 @@ send_event:
   {
     send_event((uint8_t *)hci_pckt, length, -1);
   }
+}
+
+/* Handle request to stop TX test for aci_hal_transmitter_test_packets */
+void DTM_CMDS_TxTestStopRequest(void)
+{
+  tx_test_stop_request = true;
+  TL_ProcessReqCallback();
 }
 

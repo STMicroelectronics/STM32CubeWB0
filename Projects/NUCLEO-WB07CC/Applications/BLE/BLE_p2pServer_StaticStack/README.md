@@ -17,13 +17,13 @@ Connectivity, BLE, BLE protocol, BLE pairing, BLE profile, Static Stack
     
 ### __How to use it?__
 
-- To be able to run the demo, first program BLE_StaticStack firmware (BLE_StaticStack.hex from BLE_StaticStack\\Binary folder) with STM32CubeProgrammer.
+- To be able to run the demo, first program BLE_StaticStack firmware (BLE_StaticStack.hex from Binary folder) with STM32CubeProgrammer.
 - Build BLE_p2pServer_StaticStack project with your preferred toolchain and load the image into target memory.
 - Reset the board to start the application.
 
 Refer to BLE_p2pServer application for more info.
 
-_Important_: BLE_p2pServer_StaticStack project by default uses ble_static_stack_sym.a from BLE_StaticStack\\Binary directory, which contains the symbol table needed to correctly link the application to the BLE_StaticStack.hex firmware present in Binary folder. If application does not use the precompiled BLE_StaticStack.hex in Binary folder, make sure to use the correct ble_static_stack_sym.a file.
+_Important_: BLE_p2pServer_StaticStack project by default uses ble_static_stack_sym.a from Binary directory, which contains the symbol table needed to correctly link the application to the BLE_StaticStack.hex firmware present in Binary folder. If application does not use the precompiled BLE_StaticStack.hex in Binary folder, make sure to use the correct ble_static_stack_sym.a file.
 
 ### __Converting existing application to use BLE Static Stack__
 
@@ -32,7 +32,7 @@ _Important_: BLE_p2pServer_StaticStack project by default uses ble_static_stack_
 
 - Remove stm32wb0x_ble_stack.a and ble_stack_user_cfg.c from build list.
 - Add ble_static_stack_sym.a as a library. This is a file generated after BLE_StaticStack is built.
-  - BLE_p2pServer_StaticStack uses ble_static_stack_sym.a from BLE_StaticStack\\Binary folder. If BLE_StaticStack is rebuilt, make sure to point to the new ble_static_stack_sym.a in BLE_StaticStack folder.
+  - BLE_p2pServer_StaticStack uses ble_static_stack_sym.a from Binary folder. If BLE_StaticStack is rebuilt, make sure to point to the new ble_static_stack_sym.a.
 - Add a copy of ble_static_stack_calls.c to the project. It can be found in BLE_p2pServer_StaticStack\\STM32_BLE\\App.
 - Replace original linker script with the one used by BLE_p2pServer_StaticStack, which contains instructions for the placement of STATIC_STACK_APP_CALL_TABLE section.
 - Take note of the following information from BLE_StaticStack project:

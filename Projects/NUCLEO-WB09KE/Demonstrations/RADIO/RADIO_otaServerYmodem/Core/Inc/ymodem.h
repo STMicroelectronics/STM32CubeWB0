@@ -84,4 +84,3 @@ int32_t Ymodem_Receive (uint8_t *buf, uint32_t buf_size, uint32_t *size, uint32_
 
 #endif  /* __YMODEM_H_ */
 
-/*******************(C)COPYRIGHT 2015 STMicroelectronics *****END OF FILE****/

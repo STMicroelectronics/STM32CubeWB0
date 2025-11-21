@@ -278,7 +278,7 @@ static BLEEVT_EvtAckStatus_t P2P_SERVER_EventHandler(aci_blecore_event *p_evt)
       {
         return_value = BLEEVT_Ack;
         /*USER CODE BEGIN Service1_Char_1_ACI_GATT_SRV_WRITE_VSEVT_CODE */
-        
+
         /*USER CODE END Service1_Char_1_ACI_GATT_SRV_WRITE_VSEVT_CODE*/
       } /*if(p_write->Attribute_Handle == (P2P_SERVER_Context.Led_CCharHdle + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))*/
 

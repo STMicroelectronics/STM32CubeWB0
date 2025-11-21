@@ -34,12 +34,12 @@
   * @brief This is the list of modules to be used in the HAL driver
   */
 #define HAL_MODULE_ENABLED
-#define HAL_ADC_MODULE_ENABLED          //Added for ESL 
+#define HAL_ADC_MODULE_ENABLED
 /*#define HAL_CRC_MODULE_ENABLED   */
 /*#define HAL_I2C_MODULE_ENABLED   */
 /*#define HAL_I2S_MODULE_ENABLED   */
 /*#define HAL_IRDA_MODULE_ENABLED   */
-#define HAL_IWDG_MODULE_ENABLED         //Added for ESL 
+#define HAL_IWDG_MODULE_ENABLED
 #define HAL_PKA_MODULE_ENABLED
 #define HAL_RADIO_MODULE_ENABLED
 #define HAL_RADIO_TIMER_MODULE_ENABLED

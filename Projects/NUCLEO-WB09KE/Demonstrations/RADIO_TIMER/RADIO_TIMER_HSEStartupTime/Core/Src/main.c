@@ -43,6 +43,10 @@
 
 /* USER CODE BEGIN PV */
 
+/* BLUE RAM, reserved for radio communication. Not usable from the application */
+__SECTION(".bss.__blue_RAM")
+__REQUIRED(uint8_t __blue_RAM[CFG_NUM_RADIO_TASKS * sizeof(STATMACH_TypeDef) + sizeof(GLOBALSTATMACH_TypeDef)]) = {0,};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

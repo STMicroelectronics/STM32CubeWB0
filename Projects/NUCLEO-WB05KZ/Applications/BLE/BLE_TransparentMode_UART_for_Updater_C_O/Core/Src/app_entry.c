@@ -76,6 +76,7 @@ static ButtonDesc_t buttonDesc[BUTTON_NB_MAX];
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
+extern uint8_t tone_started;
 
 /* USER CODE BEGIN GV */
 
@@ -208,9 +209,17 @@ __WEAK void APPE_Button3Action(void)
 static PowerSaveLevels App_PowerSaveLevel_Check(void)
 {
   PowerSaveLevels output_level = POWER_SAVE_LEVEL_STOP;
+
+  if(tone_started)
+  {
+    output_level = POWER_SAVE_LEVEL_RUNNING;
+  }
+  else
+  {
+    output_level = POWER_SAVE_LEVEL_CPU_HALT;
+  }
+
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
-  
-  output_level = POWER_SAVE_LEVEL_CPU_HALT;
   
   /* USER CODE END App_PowerSaveLevel_Check_1 */
 

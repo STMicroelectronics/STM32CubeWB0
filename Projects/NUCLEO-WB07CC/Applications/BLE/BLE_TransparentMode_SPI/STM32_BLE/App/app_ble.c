@@ -39,6 +39,7 @@
 #include "dm_alloc.h"
 #include "aci_adv_nwk.h"
 #include "dtm_burst.h"
+#include "dtm_cmds.h"
 /* Add aci_blue_initialized_event() prototype */
 void aci_blue_initialized_event(uint8_t Reason_Code);
 /* aci_blue_initialized_event with with legacy format (not extended) */
@@ -58,7 +59,6 @@ void aci_blue_crash_info_event(uint8_t Crash_Type,
                                uint8_t Debug_Data_Length,
                                uint8_t Debug_Data[]);
 
-uint16_t num_packets = 0;
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -149,6 +149,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -233,6 +234,16 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+  
+  /* This code is for aci_hal_transmitter_test_packets */
+  DTM_CMDS_TxEnd();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)

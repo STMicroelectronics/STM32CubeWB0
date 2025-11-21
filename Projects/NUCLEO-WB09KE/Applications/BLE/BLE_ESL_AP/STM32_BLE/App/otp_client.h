@@ -117,7 +117,7 @@ int OTP_CLIENT_ReadMetadata(OTPObjectMeatadata_t *metadata);
 int OTP_CLIENT_WriteStart(bool truncate);
 int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length);
 int OTP_CLIENT_ChannelClose(void);
-void OTP_CLIENT_L2CAPCreditsReceived(void);
+void OTP_CLIENT_L2CAPTxComplete(void);
 void OTP_CLIENT_L2CAPDisconnectionComplete(void);
 
 #endif /* OTP_CLIENT_H */

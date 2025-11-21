@@ -189,13 +189,12 @@ void MX_APPE_Idle(void)
 
   /* Need to consume some CSTACK, due to bootloader CSTACK usage. */
   volatile uint32_t dummy[15];
-
   uint8_t i;
   for (i=0; i<10; i++)
   {
     dummy[i] = 0;
     __NOP();
-  }  
+  }
   
   app_powerSave_level = App_PowerSaveLevel_Check();
   

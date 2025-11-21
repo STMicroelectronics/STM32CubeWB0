@@ -134,12 +134,9 @@ typedef struct
 {
   BleGlobalContext_t BleApplicationContext_legacy;
   APP_BLE_ConnStatus_t Device_Connection_Status;
-  /* USER CODE BEGIN PTD_1*/  
-  ESL_AP_status_t AP_status;
-
+  /* USER CODE BEGIN PTD_1*/
   uint8_t deviceServerBdAddrType;
   uint8_t a_deviceServerBdAddr[BD_ADDR_SIZE];
-
   /* USER CODE END PTD_1 */
 }BleApplicationContext_t;
 
@@ -180,12 +177,11 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout);
-
 static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
+
 /* USER CODE BEGIN PFP */
 static void start_periodic_adv(void);
-void periodic_sync_info_transfer(void);
 void connection_setup(void);
 
 static uint8_t analyse_adv_report(uint8_t adv_data_size, uint8_t *p_adv_data,
@@ -257,6 +253,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -301,6 +298,12 @@ void BLE_Init(void)
   else
   {
     APP_DBG_MSG("  Success: aci_hal_set_tx_power_level command\n");
+  }
+  
+  ret = hci_le_write_suggested_default_data_length(251, 2120);
+  if (ret != BLE_STATUS_SUCCESS)
+  {
+    APP_DBG_MSG("  Fail   : hci_le_write_suggested_default_data_length command, result: 0x%02X\n", ret);
   }
 
   /**
@@ -505,6 +508,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void UART_CMD_ProcessRequestCB(void)
@@ -530,25 +540,21 @@ void APP_BLE_Init(void)
 
   /* Initialization of HCI & GATT & GAP layer */
   BLE_Init();
-  
+
   /**
   * Initialize GATT Client Application
   */
   GATT_CLIENT_APP_Init();
-  
+
   /* USER CODE BEGIN APP_BLE_Init_2 */
   UTIL_SEQ_RegTask(1U << CFG_TASK_UART_CMD_PROCESS, UTIL_SEQ_RFU, UART_CMD_Process);
   UTIL_SEQ_RegTask(1u << CFG_TASK_CONN_DEV_ID, UTIL_SEQ_RFU, Connect_Request);
-  UTIL_SEQ_RegTask(1U << CFG_TASK_START_INFO_TRANSFER, UTIL_SEQ_RFU, periodic_sync_info_transfer);
   UTIL_SEQ_RegTask(1U << CFG_TASK_CONN_SETUP, UTIL_SEQ_RFU, connection_setup);  
   UTIL_SEQ_RegTask(1U << CFG_TASK_UPDATING_STATE_TRANSITION, UTIL_SEQ_RFU, ESL_AP_UpdatingStateTransition);
   
   ESL_AP_Init();
-  ESL_AP_List_Init();
   
   start_periodic_adv();
-  
-  set_AP_Status(ESL_AP_CONFIGURING_ESL);
   
   start_general_connection();
   
@@ -593,10 +599,14 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
     {
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
+      GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+      notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;
+      GATT_CLIENT_APP_Notification(&notif);
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -607,15 +617,10 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
                     p_disconnection_complete_event->Connection_Handle,
                     p_disconnection_complete_event->Reason);
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */        
+        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */
         memset(bleAppContext.a_deviceServerBdAddr, 0, sizeof(bleAppContext.a_deviceServerBdAddr));
         
-        GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
-        notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
-        notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;   
-        GATT_CLIENT_APP_Notification(&notif);
-        
-        ESL_APP_DisconnectionComplete(p_disconnection_complete_event->Connection_Handle);
+        ESL_AP_DisconnectionComplete(p_disconnection_complete_event->Connection_Handle);
         
         /* In case a task was waiting for this event. */
         UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_READ_REMOTE_FEATURES_COMPLETE);
@@ -675,7 +680,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           APP_DBG_MSG("HCI_LE_ENHANCED_CONNECTION_COMPLETE_SUBEVT_CODE\n");
           connection_complete_event(p_enhanced_conn_complete->Status,
                                     p_enhanced_conn_complete->Connection_Handle,
-				                    p_enhanced_conn_complete->Role,
+                                    p_enhanced_conn_complete->Role,
                                     p_enhanced_conn_complete->Peer_Address_Type,
                                     p_enhanced_conn_complete->Peer_Address,
                                     p_enhanced_conn_complete->Connection_Interval,
@@ -740,7 +745,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           UNUSED(p_ext_adv_report);
 
         }
-        break;          
+        break;
       /* USER CODE BEGIN EVT_LE_META_EVENT_1 */
       case HCI_LE_READ_REMOTE_FEATURES_COMPLETE_SUBEVT_CODE:
         {
@@ -784,7 +789,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           for(int i = 0; i < p_periodic_adv_response_report->Num_Responses; i++)
           {
             ESL_AP_ResponseReport(p_periodic_adv_response_report->Subevent, periodic_adv_resp_p->Response_Slot, periodic_adv_resp_p->Data_Length, periodic_adv_resp_p->Data);
-            periodic_adv_resp_p = periodic_adv_resp_p + sizeof(packed_Periodic_Advertising_Response_t) + periodic_adv_resp_p->Data_Length;
+            periodic_adv_resp_p = (packed_Periodic_Advertising_Response_t *)((uint8_t *)periodic_adv_resp_p + sizeof(packed_Periodic_Advertising_Response_t) + periodic_adv_resp_p->Data_Length);
           }
           
         }
@@ -863,14 +868,14 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         break;
       case ACI_HAL_END_OF_RADIO_ACTIVITY_VSEVT_CODE:
         /* USER CODE BEGIN RADIO_ACTIVITY_EVENT*/
-       
+
         /* USER CODE END RADIO_ACTIVITY_EVENT*/
         break;
       case ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE:
         {
           APP_DBG_MSG(">>== ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE\n");
           /* USER CODE BEGIN ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE*/
-          
+
           /* USER CODE END ACI_GAP_KEYPRESS_NOTIFICATION_VSEVT_CODE*/
         }
         break;
@@ -888,7 +893,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
             APP_DBG_MSG("==>> aci_gap_passkey_resp : Success\n");
           }
           /* USER CODE BEGIN ACI_GAP_PASSKEY_REQ_VSEVT_CODE*/
-          
+
           /* USER CODE END ACI_GAP_PASSKEY_REQ_VSEVT_CODE*/
         }
         break;
@@ -943,22 +948,28 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* If the AP establish a bond with an ESL and ESL is on Configuring state,
              the AP can configure ESL by writing some ESL Service characteristics  */
           if (p_pairing_complete->Status == SM_PAIRING_SUCCESS)
-          {						
-            if (ESL_AP_Insert_ESL_In_List(p_pairing_complete->Connection_Handle, bleAppContext.a_deviceServerBdAddr, bleAppContext.deviceServerBdAddrType, esl_address))
-              UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+          { 
+            ESL_AP_ESLConnected(bleAppContext.BleApplicationContext_legacy.connectionHandle, bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr);
           }
           else if (p_pairing_complete->Status == SM_ENCRYPTION_FAILED_MISSING_PEER_LTK)
           {
-            esl_bonded_t* esl_dev;
+            esl_info_t esl_info;
+            NVMDB_HandleType esl_db_h;
+            NVMDB_status_t status;
             
-            esl_dev = Search_by_Peer_address_In_List(bleAppContext.a_deviceServerBdAddr, bleAppContext.deviceServerBdAddrType);
-            if(esl_dev != NULL)
+            APP_DBG_MSG("Pairing failed for key missing on peer device\n");
+            
+            status = ESL_AP_GetESLInfoByBDAddress(bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr, &esl_info, &esl_db_h);
+            if(status == 0)
             {
-              ESL_AP_Remove_ESL_from_List(esl_dev);
-            }     
-            else
+              /* ESL is configured. Remove from list. */
+              APP_DBG_MSG("Remove device from NVM list\n");
+              NVMDB_DeleteRecord(&esl_db_h);
+            } 
+            if(status ==0 || status == 1)
             {
-              aci_gap_remove_bonded_device(bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr); // to check if address is not an identity address
+              APP_DBG_MSG("Remove bond\n");
+              aci_gap_remove_bonded_device(bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr); 
             }
           }
           
@@ -970,27 +981,75 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
         break;
+      case ACI_GATT_SRV_READ_VSEVT_CODE :
+        {
+          APP_DBG_MSG(">>== ACI_GATT_SRV_READ_VSEVT_CODE\n");
+
+          aci_gatt_srv_read_event_rp0    *p_read;
+          p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
+          uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
+
+          APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
+
+          aci_gatt_srv_resp(p_read->Connection_Handle,
+                            p_read->CID,
+                            p_read->Attribute_Handle,
+                            error_code,
+                            0,
+                            NULL);
+
+          /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+
+          /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
+          break;
+        }
         /* USER CODE BEGIN EVT_VENDOR_1 */
-        
       case ACI_L2CAP_COS_CONNECTION_RESP_VSEVT_CODE:
         {
           APP_DBG_MSG(">>== ACI_L2CAP_COS_CONNECTION_RESP_VSEVT_CODE\n");
           aci_l2cap_cos_connection_resp_event_rp0 *p_event;
           p_event = (aci_l2cap_cos_connection_resp_event_rp0 *) p_blecore_evt->data;
           
+          APP_DBG_MSG("Channel_Type: %d\nPeer_MTU: %d\nPeer_MPS: %d\nCID_Count: %d\n", p_event->Channel_Type, 
+                      p_event->Peer_MTU, 
+                      p_event->Peer_MPS,
+                      p_event->CID_Count);
+          
           OTP_CLIENT_L2CAPConnectionResp(p_event);
         }
         break;
-      case ACI_L2CAP_COS_FLOW_CONTROL_CREDIT_VSEVT_CODE:
+      case ACI_L2CAP_COS_SDU_DATA_TX_VSEVT_CODE:
         {
-          APP_DBG_MSG(">>== ACI_L2CAP_COS_FLOW_CONTROL_CREDIT_VSEVT_CODE\n");
-          OTP_CLIENT_L2CAPCreditsReceived();
+          APP_DBG_MSG(">>== ACI_L2CAP_COS_SDU_DATA_TX_VSEVT_CODE\n");
+          OTP_CLIENT_L2CAPTxComplete();
         }
         break;
       case ACI_L2CAP_COS_DISCONNECTION_COMPLETE_VSEVT_CODE:
         {
           APP_DBG_MSG(">>== ACI_L2CAP_COS_DISCONNECTION_COMPLETE_VSEVT_CODE\n");
           OTP_CLIENT_L2CAPDisconnectionComplete();
+        }
+        break;
+      case ACI_L2CAP_COMMAND_REJECT_VSEVT_CODE:
+        {
+          APP_DBG_MSG(">>== ACI_L2CAP_COMMAND_REJECT_VSEVT_CODE\n");
+          aci_l2cap_command_reject_event_rp0 *p_event;
+          p_event = (aci_l2cap_command_reject_event_rp0 *) p_blecore_evt->data;
+          
+          APP_DBG_MSG("Reason: 0x%04X\n", p_event->Reason);
+          if(p_event->Data_Length > 0)
+          {
+            APP_DBG_MSG("Reason Data:");
+            for(int i = 0;  i < p_event->Data_Length; i++)
+            {
+              APP_DBG_MSG("%02X ", p_event->Data[i]);
+            }
+            APP_DBG_MSG("\n");
+          }          
         }
         break;
       case ACI_HAL_FW_ERROR_VSEVT_CODE: 
@@ -1057,55 +1116,56 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
+
+  if(Status != 0)
+  {
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
+  }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
-   APP_DBG_MSG(">>== hci_le_connection_complete_event - Connection handle: 0x%04X\n", Connection_Handle);
-   APP_DBG_MSG("     - Connection established with @:%02x:%02x:%02x:%02x:%02x:%02x\n",
-               Peer_Address[5],
-               Peer_Address[4],
-               Peer_Address[3],
-               Peer_Address[2],
-               Peer_Address[1],
-               Peer_Address[0]);
-   APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms    - Status: 0x%02x\n",
+  APP_DBG_MSG(">>== hci_le_connection_complete_event - Connection handle: 0x%04X\n", Connection_Handle);
+  APP_DBG_MSG("     - Connection established with @:%02x:%02x:%02x:%02x:%02x:%02x\n",
+              Peer_Address[5],
+              Peer_Address[4],
+              Peer_Address[3],
+              Peer_Address[2],
+              Peer_Address[1],
+              Peer_Address[0]);
+   APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
                INT(Conn_Interval*1.25),
                FRACTIONAL_2DIGITS(Conn_Interval*1.25),
                Peripheral_Latency,
-               Supervision_Timeout * 10,
-               Status);
-   if(Status != BLE_STATUS_SUCCESS)
-    return;
-   
-   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
-   {
-     /* Connection as client */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
-   }
-   else
-   {
-     /* Connection as server */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
-   }  
-   bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
-   
-   GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
-   notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
-   notif.ConnHdl = Connection_Handle;   
-   GATT_CLIENT_APP_Notification(&notif);
-   
-   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
+               Supervision_Timeout * 10
+                 );
+
+  if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
+  {
+    /* Connection as client */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
+
+    notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+    notif.ConnHdl = Connection_Handle;
+    GATT_CLIENT_APP_Notification(&notif);
+  }
+  else
+  {
+    /* Connection as server */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
+  }
+  bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
+
+  /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
     
-   UTIL_SEQ_SetTask( 1U << CFG_TASK_CONN_SETUP, CFG_SEQ_PRIO_0);
-   
-   bleAppContext.deviceServerBdAddrType = Peer_Address_Type;
-   memcpy(bleAppContext.a_deviceServerBdAddr, Peer_Address, BD_ADDR_SIZE);
-   
-   set_ECP_Failed(false);
-   
-   ESL_APP_ReconnectionStateTransition(Peer_Address, Peer_Address_Type);
-   
-   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
+  UTIL_SEQ_SetTask( 1U << CFG_TASK_CONN_SETUP, CFG_SEQ_PRIO_0);
+  
+  bleAppContext.deviceServerBdAddrType = Peer_Address_Type;
+  memcpy(bleAppContext.a_deviceServerBdAddr, Peer_Address, BD_ADDR_SIZE); 
+  
+  /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
 
 }/* end hci_le_connection_complete_event() */
 
@@ -1252,6 +1312,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       /* USER CODE END PROC_GAP_CENTRAL_SCAN_TERMINATE */
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_1 */
+
+    /* USER CODE END GAP_CENTRAL_1 */
     default:
       break;
   }
@@ -1297,7 +1360,9 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
       }
       break;
     }/* PROC_GAP_CENTRAL_SCAN_TERMINATE */
+    /* USER CODE BEGIN GAP_CENTRAL_2 */
 
+    /* USER CODE END GAP_CENTRAL_2 */
     default:
       break;
   }
@@ -1442,7 +1507,6 @@ static void start_general_connection(void)
   }  
 }
 
-/* Task for CFG_TASK_START_INFO_TRANSFER */
 void periodic_sync_info_transfer(void)
 {
   tBleStatus status;
@@ -1481,7 +1545,6 @@ void connection_setup(void)
    }   
    
    UTIL_SEQ_WaitEvt(1 << CFG_IDLEEVT_READ_REMOTE_FEATURES_COMPLETE);
-   //to check if remote device has wanted feature
    
    ret = aci_gap_set_security(bleAppContext.BleApplicationContext_legacy.connectionHandle, GAP_SECURITY_LEVEL_2, 0x00);
    if (ret != BLE_STATUS_SUCCESS)
@@ -1495,7 +1558,7 @@ void connection_setup(void)
    }
 }
 
-void create_periodic_advertising_connection(uint8_t subevent, uint8_t Peer_Address[6], uint8_t Peer_Address_Type)
+void create_periodic_advertising_connection(uint8_t subevent, uint8_t Peer_Address_Type, uint8_t Peer_Address[6])
 { 
     tBleStatus ble_status;
     APP_DBG_MSG("!!!!! create_periodic_advertising_connection \n Peer_Address @:%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -1506,8 +1569,8 @@ void create_periodic_advertising_connection(uint8_t subevent, uint8_t Peer_Addre
                Peer_Address[1],
                Peer_Address[0]);
     APP_DBG_MSG("      Connection Interval:   %d ms\n  - Supervision Timeout: %d ms\n",
-               ((CONNECTION_INTERVAL_MS*100)/125), 
-               (SUPERVISION_TIMEOUT_MS/10) );
+                CONNECTION_INTERVAL_MS, 
+                SUPERVISION_TIMEOUT_MS);
 
     aci_gap_terminate_proc(GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC);
     gap_cmd_resp_wait();
@@ -1516,7 +1579,7 @@ void create_periodic_advertising_connection(uint8_t subevent, uint8_t Peer_Addre
     ble_status = aci_gap_create_periodic_advertising_connection(0, 
                                                                 subevent,
                                                                 0x00,
-                                                                0,
+                                                                CFG_BD_ADDRESS_TYPE,
                                                                 Peer_Address_Type,
                                                                 Peer_Address,
                                                                 (CONNECTION_INTERVAL_MS*100)/125, (CONNECTION_INTERVAL_MS*100)/125,
@@ -1536,16 +1599,6 @@ void create_periodic_advertising_connection(uint8_t subevent, uint8_t Peer_Addre
   bleAppContext.Device_Connection_Status = APP_BLE_LP_CONNECTING;
 }     
 
-void set_AP_Status(ESL_AP_status_t status)
-{
-  bleAppContext.AP_status = status;
-}
-
-ESL_AP_status_t get_AP_Status(void)
-{
-  return bleAppContext.AP_status;
-}
-
 static uint8_t analyse_adv_report(uint8_t adv_data_size, uint8_t *p_adv_data,
                                   uint8_t address_type, uint8_t *p_address)
 {
@@ -1555,18 +1608,15 @@ static uint8_t analyse_adv_report(uint8_t adv_data_size, uint8_t *p_adv_data,
 
   if (bGeneralConn)
   {
-    esl_bonded_t* esl_dev;
+    esl_info_t esl_info;
+    NVMDB_HandleType db_h;
     
-    esl_dev = Search_by_Peer_address_In_List(p_address, address_type);
-    if(esl_dev != NULL)
+    if(ESL_AP_GetESLInfoByBDAddress(address_type, p_address, &esl_info, &db_h) == 0)
     {
-      APP_DBG_MSG("Connection to ESL already bonded: %02x:%02x:%02x:%02x:%02x:%02x\n",p_address[5],p_address[4],p_address[3],p_address[2],p_address[1],p_address[0]);
-      //The ESL with p_address is already bonded --> the AP connect to this ESL
-      set_bleAppContext_address(address_type, p_address);
-  
-      // Connect to ESL address  
-      UTIL_SEQ_SetTask(1u << CFG_TASK_CONN_DEV_ID, CFG_SEQ_PRIO_0);
-    }   
+      /* Found associated ESL advertising. Connect. */
+      APP_DBG_MSG("Configured ESL found: %02x:%02x:%02x:%02x:%02x:%02x\n",p_address[5],p_address[4],p_address[3],p_address[2],p_address[1],p_address[0]);
+      ESL_AP_Reconnect(address_type, p_address);
+    } 
   }  
   else
   {  
@@ -1617,7 +1667,7 @@ static void Connect_Request(void)
   tBleStatus result;
   
   aci_gap_terminate_proc(GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC);
-//  gap_cmd_resp_wait();
+  
   bGeneralConn = false;
   
   result = aci_gap_set_scan_configuration(DUPLICATE_FILTER_ENABLED, HCI_SCAN_FILTER_BASIC_FILTERED, LE_1M_PHY_BIT, HCI_SCAN_TYPE_PASSIVE, SCAN_INT_MS(500), SCAN_WIN_MS(500));

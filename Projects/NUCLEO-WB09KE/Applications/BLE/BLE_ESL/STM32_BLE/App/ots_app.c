@@ -48,7 +48,7 @@
 #define OBJ_PROP_MARK                                                 0x00000080
 
 /* Object properties: Write & Patch */
-#define OBJ_PROPERTIES            (OBJ_PROP_WRITE|OBJ_PROP_TRUNC|OBJ_PROP_PATCH)
+#define DEFAULT_OBJ_PROPERTIES    (OBJ_PROP_WRITE|OBJ_PROP_TRUNC|OBJ_PROP_PATCH)
 
 /* Object type: unspecified */
 #define OBJ_TYPE                                                          0x2ACA
@@ -113,6 +113,23 @@ void OTS_APP_Init(void)
   return;
 }
 
+void OTS_APP_DeleteImages(void)
+{
+  uint32_t page_num = (OTS_FLASH_STORAGE_START_ADDRESS - _MEMORY_FLASH_BEGIN_) / _MEMORY_BYTES_PER_PAGE_;
+  uint32_t num_pages = (OTS_FLASH_STORAGE_END_ADDRESS - OTS_FLASH_STORAGE_START_ADDRESS) / _MEMORY_BYTES_PER_PAGE_;
+  uint32_t PageError;
+  
+  FLASH_EraseInitTypeDef EraseInit = {
+    .TypeErase = FLASH_TYPEERASE_PAGES,
+    .Page = page_num,
+    .NbPages = num_pages,
+  };
+  
+  HAL_FLASHEx_Erase(&EraseInit, &PageError);
+  
+  APP_DBG_MSG("OTP: all images erased.\n");
+}
+
 void OTS_GetCurrentObjName(char **name_p)
 {
   snprintf(OTS_APP_Context.curr_obj_name, MAX_OBJ_NAME_LENGTH, "Image %d", OTS_APP_Context.curr_obj_idx);
@@ -145,7 +162,37 @@ void OTS_GetCurrentObjSize(uint32_t *current_size_p, uint32_t *allocated_size_p)
   *allocated_size_p = OBJ_ALLOC_SIZE;
 }
 
-/* TODO: a dedicated sector can be used to avoid too many writes. Hovever, the
+void OTS_APP_GetObjInfo(uint8_t obj_index, OTS_ObjInfo_t *info)
+{
+  uint32_t *obj_header_p;
+  
+  if(obj_index > MAX_OBJ_IDX)
+  {
+    info->obj_p = NULL;
+    info->size = 0;
+    info->alloc_size = 0;
+    
+    return;
+  }
+  
+  obj_header_p = (uint32_t *)(OTS_FLASH_STORAGE_START_ADDRESS + obj_index * (OBJ_ALLOC_SIZE + OBJ_HEADER_SIZE));
+  
+  info->obj_p = ((uint8_t *)obj_header_p) + OBJ_HEADER_SIZE;
+  
+  if(*obj_header_p == 0xFFFFFFFF)
+  {
+    /* Special value: empty */
+    info->size = 0;
+  }
+  else
+  {
+    info->size = *obj_header_p;
+  }
+  
+  info->alloc_size = OBJ_ALLOC_SIZE;
+}
+
+/* A dedicated sector can be used to avoid too many writes. However, the
    size only changes if truncation is active, which should not happen since images
    should have fixed size in our case. */
 static void updateObjectSize(uint32_t size)
@@ -185,7 +232,7 @@ void OTS_GetCurrentObjID(uint8_t **id_p)
 
 void OTS_GetCurrentObjProp(uint32_t *prop_p)
 {
-  *prop_p = OBJ_PROPERTIES;
+  *prop_p = DEFAULT_OBJ_PROPERTIES;
 }
 
 uint8_t OTS_OACPWrite(uint32_t offset, uint32_t length, uint8_t mode)
@@ -193,8 +240,15 @@ uint8_t OTS_OACPWrite(uint32_t offset, uint32_t length, uint8_t mode)
   uint32_t obj_address;
   uint32_t current_size;
   uint32_t allocated_size;
+  uint32_t properties;
   
   APP_DBG_MSG("OTS_OACPWrite\n");
+  
+  OTS_GetCurrentObjProp(&properties);
+  if((properties & OBJ_PROP_WRITE) == 0)
+  {
+    return OACP_RESULT_PROC_NOT_PERMITTED;
+  }
   
   if(OTS_APP_Context.cid == 0)
   {
@@ -254,7 +308,6 @@ static void loadFlashPage(uint32_t address)
   }    
 }
 
-//TODO: Use flash manager/flash driver instead, to avoid collisions with radio activity?
 static void writeFlashPage(uint32_t address)
 {
   uint32_t page_address = BEGIN_OF_PAGE(address);
@@ -338,13 +391,14 @@ void OTS_APP_L2CAPChannelOpened(uint16_t conn_handle, uint16_t cid)
   OTS_APP_Context.cid = cid;
 }
 
-//TODO: update object size with data written so far.
 void OTS_APP_L2CAPChannelClosed(void)
 {
   APP_DBG_MSG("OTS_APP_L2CAPChannelClosed\n");
   
   OTS_APP_Context.cid = 0;
   OTS_APP_Context.write_started = false;
+  
+  HAL_RADIO_TIMER_StopVirtualTimer(&OTS_APP_Context.timer);
   
   if(OTS_APP_Context.flash_buff_valid == true)
   {
@@ -431,5 +485,6 @@ void OTS_APP_L2CAPDataReceived(uint16_t sdu_length, uint8_t *sdu_data)
 
 static void ObjTransferTimeout(void *arg)
 {
+  APP_DBG_MSG("Timeout\n");
   aci_l2cap_cos_disconnect_req(OTS_APP_Context.conn_handle, OTS_APP_Context.cid);
 }

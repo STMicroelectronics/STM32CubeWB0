@@ -131,9 +131,7 @@ typedef struct
 typedef struct
 {
   BleGlobalContext_t BleApplicationContext_legacy;
-  
   APP_BLE_ConnStatus_t Device_Connection_Status;
-  
   /* USER CODE BEGIN PTD_1*/
   
   /* Led Timeout timerID */
@@ -266,6 +264,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -419,6 +418,7 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   fill_advData(&a_AdvData[0], sizeof(a_AdvData), bd_address);
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
@@ -512,6 +512,12 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
   NVM_Process_Schedule();
 }
 
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
+}
+
 void BLE_STACK_ProcessRequest(void)
 {
   BLEStack_Process_Schedule();
@@ -535,7 +541,6 @@ void APP_BLE_Init(void)
   * Initialization of the BLE App Context
   */
   bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
-  
   bleAppContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;
   
   /* From here, all initialization are BLE application specific */
@@ -626,6 +631,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
       
       /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
         bleAppContext.BleApplicationContext_legacy.connectionHandle = 0xFFFF;
@@ -634,6 +640,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         APP_DBG_MSG("     - Connection Handle:   0x%02X\n     - Reason:    0x%02X\n",
                     p_disconnection_complete_event->Connection_Handle,
                     p_disconnection_complete_event->Reason);
+
         /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */
         
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
@@ -702,7 +709,6 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
                                     p_enhanced_conn_complete->Connection_Interval,
                                     p_enhanced_conn_complete->Peripheral_Latency,
                                     p_enhanced_conn_complete->Supervision_Timeout);
-          
         }
         break;
       case HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE:
@@ -1372,6 +1378,7 @@ static void Switch_OFF_GPIO(void *arg)
 static void Adv_Cancel(void)
 {
   BSP_LED_Off(LED_GREEN);
+
   APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_STOP);
   bleAppContext.Device_Connection_Status = APP_BLE_IDLE;  
   return;
@@ -1602,12 +1609,7 @@ uint8_t Get_Num_Bonded_Devices(void)
 /* USER CODE END FD_LOCAL_FUNCTION */
 
 /* USER CODE BEGIN FD_WRAP_FUNCTIONS */
-
-
-
 #if (CFG_BUTTON_SUPPORTED == 1)
-
-
 void APPE_Button1Action(void)
 {
   if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_SERVER)
@@ -1636,6 +1638,7 @@ void APPE_Button1Action(void)
       APP_DBG_MSG("  Advertising is already running\n");
     }
   }
+  
   return;
 }
 
@@ -1674,6 +1677,7 @@ void APPE_Button3Action(void)
       gap_cmd_resp_wait();
     }
   }
+
   return;
 }
 

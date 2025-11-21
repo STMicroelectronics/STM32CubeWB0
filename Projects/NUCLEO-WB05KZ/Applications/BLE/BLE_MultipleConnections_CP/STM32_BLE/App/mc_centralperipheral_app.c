@@ -77,7 +77,7 @@ typedef struct
   uint16_t MC_CENTRALPERIPHERAL_periph_connHdl;
   /* USER CODE BEGIN Service1_APP_Context_t */
 
-  ContextData_t central_array[CFG_BLE_NUM_CLT_CONTEXT_MAX];
+  ContextData_t central_array[CFG_BLE_NUM_CLIENT_CONTEXTS];
   ContextData_t peripheral_array[CFG_BLE_PERIPHERAL_HANDLES_MAX];
   
   P2P_LedCharValue_t              LedControl;
@@ -321,7 +321,7 @@ void MC_CENTRALPERIPHERAL_APP_LED_BUTTON_context_Init(void)
 */
 void APP_Context_init(void)
 {
-  for (int i = 0; i < CFG_BLE_NUM_CLT_CONTEXT_MAX; i++) 
+  for (int i = 0; i < CFG_BLE_NUM_CLIENT_CONTEXTS; i++) 
   {
     MC_CENTRALPERIPHERAL_APP_Context.central_array[i].connectionHandle = 0xFFFF;
     MC_CENTRALPERIPHERAL_APP_Context.central_array[i].pairing_status = 0x0;
@@ -355,7 +355,7 @@ int APP_Context_getActiveConnectionCount(ContextData_t* contextData_Array, int m
 
 int APP_Context_getActiveConnectionCountCentral(void)
 {
-  return APP_Context_getActiveConnectionCount(MC_CENTRALPERIPHERAL_APP_Context.central_array, CFG_BLE_NUM_CLT_CONTEXT_MAX);
+  return APP_Context_getActiveConnectionCount(MC_CENTRALPERIPHERAL_APP_Context.central_array, CFG_BLE_NUM_CLIENT_CONTEXTS);
 }
 
 int APP_Context_getActiveConnectionCountPeripheral(void)
@@ -407,7 +407,7 @@ int APP_Context_canStartAdvertising(void)
 */
 int APP_Context_canStartScanning(void) 
 {
-  return APP_Context_findFirstFreeIndex(MC_CENTRALPERIPHERAL_APP_Context.central_array, CFG_BLE_NUM_CLT_CONTEXT_MAX);
+  return APP_Context_findFirstFreeIndex(MC_CENTRALPERIPHERAL_APP_Context.central_array, CFG_BLE_NUM_CLIENT_CONTEXTS);
 }
 
 /**
@@ -425,7 +425,7 @@ int APP_Context_canStartScanning(void)
 int APP_Context_addConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, uint16_t connHdl, int isRolePeripheral)
 {
   ContextData_t* contextDataArray = isRolePeripheral ? context->peripheral_array : context->central_array;
-  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLT_CONTEXT_MAX;
+  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLIENT_CONTEXTS;
   
   int index = APP_Context_findFirstFreeIndex(contextDataArray, maxHandles);
   if (index == -1) 
@@ -437,9 +437,12 @@ int APP_Context_addConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, uint1
   contextDataArray[index].pairing_status = 0x1;
   if(!isRolePeripheral)
   {
+    GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
     /* Role: Central */
     /* When the central role completes a connection with a peripheral, it is mandatory to update the GATT client context with the new connection handle */
-    GATT_CLIENT_APP_Set_Conn_Handle(index, connHdl);
+    notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+    notif.ConnHdl = connHdl;
+    GATT_CLIENT_APP_Notification(&notif);
   }
   APP_Context_printContextArrays();
   return 0;
@@ -456,7 +459,7 @@ int APP_Context_addConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, uint1
 int APP_Context_removeConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, uint16_t connHdl, int isRolePeripheral)
 {
   ContextData_t* contextDataArray = isRolePeripheral ? context->peripheral_array : context->central_array;
-  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLT_CONTEXT_MAX;
+  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLIENT_CONTEXTS;
   
   for (int index = 0; index < maxHandles; index++) 
   {
@@ -466,9 +469,12 @@ int APP_Context_removeConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, ui
       contextDataArray[index].pairing_status = 0x0;
       if(!isRolePeripheral)
       {
+        GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
         /* Role: Central */
         /* When the central role completes a disconnection with a peripheral, it is mandatory to update the GATT client context removing the old connection handle */
-        GATT_CLIENT_APP_Clear_Conn_Handle(index);
+        notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+        notif.ConnHdl = connHdl;
+        GATT_CLIENT_APP_Notification(&notif);
       }
       APP_Context_printContextArrays();
       return 0;
@@ -489,7 +495,7 @@ int APP_Context_removeConnection(MC_CENTRALPERIPHERAL_APP_Context_t* context, ui
  */
 int APP_Context_updatePairingStatus(uint16_t connHdl, uint8_t newStatus)
 {
-  for (int i = 0; i < CFG_BLE_NUM_CLT_CONTEXT_MAX; i++)
+  for (int i = 0; i < CFG_BLE_NUM_CLIENT_CONTEXTS; i++)
   {
     if(MC_CENTRALPERIPHERAL_APP_Context.central_array[i].connectionHandle == connHdl)
     {
@@ -522,7 +528,7 @@ int APP_Context_updatePairingStatus(uint16_t connHdl, uint8_t newStatus)
 int APP_Context_isConnectionHandle(MC_CENTRALPERIPHERAL_APP_Context_t* context, uint16_t connHdl, int isRolePeripheral)
 {
   ContextData_t* contextDataArray = isRolePeripheral ? context->peripheral_array : context->central_array;
-  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLT_CONTEXT_MAX;
+  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLIENT_CONTEXTS;
   
   for (int i = 0; i < maxHandles; i++) 
   {
@@ -568,7 +574,7 @@ int APP_Context_isPeripheralConnectionHandle(uint16_t connHdl)
  */
 void APP_Context_printContextArrays(void) {
   printf("\tCentral Array:\n");
-  for (int i = 0; i < CFG_BLE_NUM_CLT_CONTEXT_MAX; i++)
+  for (int i = 0; i < CFG_BLE_NUM_CLIENT_CONTEXTS; i++)
   {
     printf("\tCentral[%d]: ConnectionHandle = 0x%04X, PairingStatus = 0x%02X\n", 
            i, MC_CENTRALPERIPHERAL_APP_Context.central_array[i].connectionHandle, MC_CENTRALPERIPHERAL_APP_Context.central_array[i].pairing_status);
@@ -596,7 +602,7 @@ void APP_Context_printContextArrays(void) {
 static void Terminate_Connections(MC_CENTRALPERIPHERAL_APP_Context_t* context, int isRolePeripheral)
 {
   ContextData_t* contextDataArray = isRolePeripheral ? context->peripheral_array : context->central_array;
-  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLT_CONTEXT_MAX;
+  int maxHandles = isRolePeripheral ? CFG_BLE_PERIPHERAL_HANDLES_MAX : CFG_BLE_NUM_CLIENT_CONTEXTS;
   
   for (int i = 0; i < maxHandles; i++) 
   {
@@ -749,7 +755,7 @@ __USED void MC_CENTRALPERIPHERAL_Switch_c_SendNotification(void) /* Property Not
   } 
   else
   {
-    APP_DBG_MSG("-- APPLICATION SERVER : CAN'T INFORM CLIENT - NOTIFICATION DISABLED\n"); 
+    APP_DBG_MSG("-- APPLICATION SERVER : CAN'T INFORM CLIENT - NOTIFICATION DISABLED \n"); 
   } 
 
   if (notification_on_off != Switch_c_NOTIFICATION_OFF)

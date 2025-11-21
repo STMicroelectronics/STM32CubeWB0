@@ -29,4 +29,3 @@ extern const uint32_t ciphertext_bin_len;
 
 #endif /* __CIPHERTEXT_H */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,8 +1,7 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    stm32wbxx_it.h
-  * @author  GPM WBL Application Team
+  * @file    stm32wb0x_it.h
   * @brief   This file contains the headers of the interrupt handlers.
   ******************************************************************************
   * @attention
@@ -59,6 +58,7 @@ void RADIO_TIMER_TXRX_WKUP_IRQHandler(void);
 void RADIO_TIMER_ERROR_IRQHandler(void);
 void RADIO_TXRX_IRQHandler(void);
 void RADIO_TXRX_SEQ_IRQHandler(void);
+void RADIO_RRM_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 void GPIOB_IRQHandler(void);
 void GPIOA_IRQHandler(void);

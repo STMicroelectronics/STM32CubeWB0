@@ -15,22 +15,6 @@
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
-                    <name>BrowseInfoPath</name>
-                    <state>BLE_TransparentMode_UART_for_Updater_C_O\BrowseInfo</state>
-                </option>
-                <option>
-                    <name>BuildFilesPath</name>
-                    <state>BLE_TransparentMode_UART_for_Updater_C_O\</state>
-                </option>
-                <option>
-                    <name>PointerAuthentication</name>
-                    <state>0</state>
-                </option>
-                <option>
-                    <name>FPU64</name>
-                    <state>1</state>
-                </option>
-                <option>
                     <name>ExePath</name>
                     <state>BLE_TransparentMode_UART_for_Updater_C_O/Exe</state>
                 </option>
@@ -74,7 +58,7 @@
                 </option>
                 <option>
                     <name>RTDescription</name>
-                    <state>A complete configuration of the C/C++14 runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
+          <state>Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
                 </option>
                 <option>
                     <name>OGProductVersion</name>
@@ -111,7 +95,7 @@
                 <option>
                     <name>GBECoreSlave</name>
                     <version>32</version>
-                    <state>35</state>
+          <state></state>
                 </option>
                 <option>
                     <name>OGUseCmsis</name>
@@ -132,7 +116,7 @@
                 </option>
                 <option>
                     <name>GFPUDeviceSlave</name>
-                    <state>STM32WB05KZ	ST STM32WB05KZ</state>
+          <state></state>
                 </option>
                 <option>
                     <name>FPU2</name>
@@ -221,12 +205,17 @@
                 <wantNonLocal>1</wantNonLocal>
                 <debug>1</debug>
                 <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
+        <option>
                     <name>CCDefines</name>
                     <state>NUCLEO_WB05KZ</state>
                     <state>BLESTACK_CONTROLLER_ONLY=1</state>
                     <state>USE_FULL_LL_DRIVER</state>
                     <state>USE_HAL_DRIVER</state>
                     <state>STM32WB05</state>
+          <state></state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -352,18 +341,18 @@
                     <state>$PROJ_DIR$/../STM32_BLE/Target</state>
                     <state>$PROJ_DIR$/../System/Config/Debug_GPIO</state>
                     <state>$PROJ_DIR$/../System/Interfaces</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Interfaces</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/Flash</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/NVMDB/Inc</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/PKAMGR/Inc</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/Profiles/Inc</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/RADIO_utils/Inc</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Modules/RTDebug</state>
-                    <state>$PROJ_DIR$/../../../../../Common/BLE/Startup</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/trace/adv_trace</state>
                     <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Interfaces</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RTDebug</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Profiles/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash</state>
+          <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Startup</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/misc</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/sequencer</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/lpm/tiny_lpm</state>
@@ -628,7 +617,7 @@
                 </option>
                 <option>
                     <name>AOutputFile</name>
-                    <state>$FILE_BNAME$.o</state>
+          <state></state>
                 </option>
                 <option>
                     <name>ALimitErrorsCheck</name>

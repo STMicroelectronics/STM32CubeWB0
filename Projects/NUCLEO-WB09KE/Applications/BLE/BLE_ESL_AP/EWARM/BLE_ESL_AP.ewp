@@ -356,6 +356,7 @@
                     <state>$PROJ_DIR$/../STM32_BLE/Target</state>
                     <state>$PROJ_DIR$/../System/Config/Debug_GPIO</state>
                     <state>$PROJ_DIR$/../System/Interfaces</state>
+                    <state>$PROJ_DIR$/../System/Modules/NVMDB/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Utilities/trace/adv_trace</state>
                     <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy</state>
@@ -382,7 +383,6 @@
                     <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Profiles/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc</state>
-                    <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc</state>
                     <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash</state>
                     <state>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Startup</state>
                 </option>
@@ -678,7 +678,7 @@
                 </option>
                 <option>
                     <name>OCOutputOverride</name>
-                    <state>1</state>
+                    <state>0</state>
                 </option>
                 <option>
                     <name>OOCOutputFile</name>
@@ -1147,7 +1147,7 @@
                         <name>$PROJ_DIR$\..\STM32_BLE\App\gatt_client_app.c</name>
                     </file>
                     <file>
-                        <name>$PROJ_DIR$\..\STM32_BLE\App\obj.c</name>
+                        <name>$PROJ_DIR$\..\STM32_BLE\App\image.c</name>
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\STM32_BLE\App\otp_client.c</name>
@@ -1189,6 +1189,15 @@
                         <name>$PROJ_DIR$\..\System\Interfaces\usart_if.c</name>
                     </file>
                 </group>
+                <group>
+                    <name>NVMDB</name>
+                    <file>
+                        <name>$PROJ_DIR$\..\System\Modules\NVMDB\Src\nvm_db.c</name>
+                    </file>
+                    <file>
+                        <name>$PROJ_DIR$\..\System\Modules\NVMDB\Src\nvm_db_conf.c</name>
+                    </file>
+                </group>
             </group>
         </group>
     </group>
@@ -1223,15 +1232,6 @@
                     </file>
                     <file>
                         <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Modules\Flash\flash_manager.c</name>
-                    </file>
-                </group>
-                <group>
-                    <name>NVMDB</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Modules\NVMDB\Src\nvm_db.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\..\..\..\..\Common\BLE\Modules\NVMDB\Src\nvm_db_conf.c</name>
                     </file>
                 </group>
                 <group>

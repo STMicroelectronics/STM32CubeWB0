@@ -48,7 +48,7 @@ STM32WB09 memory map
 
 
 /* Reserved for BTLE stack non volatile memory */
-#define FLASH_NVM_DATASIZE     (4*1024)
+#define FLASH_NVM_DATASIZE     (6*1024)
 
 #ifndef MEMORY_FLASH_APP_OFFSET
 #define MEMORY_FLASH_APP_OFFSET  (0)

@@ -210,10 +210,10 @@
         </option>
         <option>
           <name>CCDefines</name>
+          <state>NUCLEO_WB07CC</state>
           <state>USE_FULL_LL_DRIVER</state>
           <state>USE_HAL_DRIVER</state>
           <state>STM32WB07</state>
-          <state>NUCLEO_WB07CC</state>
           <state></state>
         </option>
         <option>
@@ -307,7 +307,7 @@
         </option>
         <option>
           <name>CCRequirePrototypes</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCDiagWarnAreErr</name>
@@ -1196,6 +1196,21 @@
       </group>
       <group>
         <name>Modules</name>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/stm_list.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/miscutil.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</name>
+        </file>
         <group>
           <name>RTDebug</name>
           <file>
@@ -1241,21 +1256,6 @@
             <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/Flash/flash_driver.c</name>
           </file>
         </group>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/stm_list.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal_memcpy.s</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/osal.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/miscutil.c</name>
-        </file>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Projects/Common/BLE/Modules/blue_unit_conversion.s</name>
-        </file>
       </group>
       <group>
         <name>Startup</name>
@@ -1278,12 +1278,6 @@
     <name>Drivers</name>
     <group>
       <name>BSP</name>
-      <group>
-        <name>NUCLEO-WB09KE</name>
-        <file>
-          <name>$PROJ_DIR$/../../../../../../Drivers/BSP/STM32WB0x-nucleo/stm32wb0x_nucleo.c</name>
-        </file>
-      </group>
       <group>
         <name>NUCLEO-WB07CC</name>
         <file>

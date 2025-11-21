@@ -44,9 +44,6 @@ typedef enum
   APP_BLE_ADV_FAST,
   APP_BLE_ADV_LP,
   APP_BLE_SCANNING,
-  APP_BLE_CONNECTED,
-  APP_BLE_DISCOVERING_SERVICES,
-  APP_BLE_DISCOVERING_CHARACS,
 /* USER CODE BEGIN ConnStatus_t */
   APP_BLE_WAIT_START_ENC,
   APP_BLE_SECURITY_REQ_STATE,
@@ -148,7 +145,6 @@ void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void);
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle);
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId);
 void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId);
 void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId);

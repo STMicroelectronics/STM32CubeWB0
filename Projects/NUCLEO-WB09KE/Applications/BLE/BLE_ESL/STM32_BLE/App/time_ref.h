@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file         time_ref.h
-  * @brief        Header file of TME_REF library.
+  * @brief        Header file of TIME_REF library.
   ******************************************************************************
   * @attention
   *

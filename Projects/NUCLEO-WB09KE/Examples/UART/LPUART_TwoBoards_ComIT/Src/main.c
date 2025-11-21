@@ -331,6 +331,10 @@ static void MX_LPUART1_UART_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_UARTEx_DisableFifoMode(&hlpuart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN LPUART1_Init 2 */
 
   /* USER CODE END LPUART1_Init 2 */

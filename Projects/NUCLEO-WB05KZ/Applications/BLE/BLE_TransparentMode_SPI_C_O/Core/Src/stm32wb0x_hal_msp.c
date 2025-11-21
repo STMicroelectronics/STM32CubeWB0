@@ -96,6 +96,7 @@ void HAL_PKA_MspInit(PKA_HandleTypeDef* hpka)
   /* USER CODE BEGIN PKA_MspInit 1 */
 
   /* USER CODE END PKA_MspInit 1 */
+
   }
 
 }
@@ -170,9 +171,12 @@ void HAL_RADIO_MspInit(RADIO_HandleTypeDef* hradio)
     HAL_NVIC_EnableIRQ(RADIO_TXRX_IRQn);
     HAL_NVIC_SetPriority(RADIO_TXRX_SEQ_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(RADIO_TXRX_SEQ_IRQn);
+    HAL_NVIC_SetPriority(RADIO_RRM_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(RADIO_RRM_IRQn);
   /* USER CODE BEGIN RADIO_MspInit 1 */
 
   /* USER CODE END RADIO_MspInit 1 */
+
   }
 
 }
@@ -198,6 +202,7 @@ void HAL_RADIO_MspDeInit(RADIO_HandleTypeDef* hradio)
     /* RADIO interrupt DeInit */
     HAL_NVIC_DisableIRQ(RADIO_TXRX_IRQn);
     HAL_NVIC_DisableIRQ(RADIO_TXRX_SEQ_IRQn);
+    HAL_NVIC_DisableIRQ(RADIO_RRM_IRQn);
   /* USER CODE BEGIN RADIO_MspDeInit 1 */
 
   /* USER CODE END RADIO_MspDeInit 1 */

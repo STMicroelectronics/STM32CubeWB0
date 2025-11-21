@@ -193,6 +193,12 @@
 #define CFG_BLE_NUM_CIS_MAX                             (1U)
 
 /**
+* Maximum number of simultaneous Link Layer procedures that can be managed, in addition to the minimum required by the stack.
+*  The minimum number guarantees one LL procedure initiated by the peer for each link, one LL procedure automatically initiated by the Controller and one LL procedure initiated by the Host.
+*/
+#define  CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS        (0)
+
+/**
  * Size of the internal FIFO used for critical controller events produced by the
  * ISR (e.g. rx data packets).
  */
@@ -252,6 +258,7 @@
                                                         CFG_BLE_NUM_BRC_BIS_MAX,\
                                                         CFG_BLE_NUM_CIG_MAX,\
                                                         CFG_BLE_NUM_CIS_MAX,\
+                                                        CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,\
                                                         CFG_BLE_ISR0_FIFO_SIZE,\
                                                         CFG_BLE_ISR1_FIFO_SIZE,\
                                                         CFG_BLE_USER_FIFO_SIZE))
@@ -271,7 +278,7 @@
 /**
  * Size of buffer used for ATT queued writes
  */
-#define CFG_BLE_ATT_QUEUED_WRITE_SIZE                   (300)
+#define CFG_BLE_ATT_QUEUED_WRITE_SIZE                   (100)
 
 /**
  * Amount of RAM used to store GATT services (bytes)

@@ -3,5 +3,5 @@
   <project>
     <path>$WS_DIR$\BLE_p2pServer_FreeRTOS.ewp</path>
   </project>
-<batchBuild />
+  <batchBuild />
 </workspace>

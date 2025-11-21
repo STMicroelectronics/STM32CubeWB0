@@ -292,6 +292,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -356,7 +357,6 @@ void BLE_Init(void)
   */
   role = 0U;
   role |= GAP_CENTRAL_ROLE;
-
 #if CFG_BLE_PRIVACY_ENABLED
   privacy_type = 0x02;
 #endif
@@ -445,6 +445,7 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   fill_advData(&a_AdvData[0], sizeof(a_AdvData), bd_address);
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
@@ -536,6 +537,12 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
   
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -1180,7 +1187,8 @@ static void connection_complete_event(uint8_t Status,
       bleAppContext.Device_Connection_Status_Central = APP_BLE_CONNECTED_CLIENT;
       
       APP_DBG_MSG("HCI_EVT_LE_CONN_COMPLETE \n");
-      UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+      
+      GATT_CLIENT_APP_Discover_services(Connection_Handle);
       
       /* Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function. */
       APP_DBG_MSG("Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function.\n");

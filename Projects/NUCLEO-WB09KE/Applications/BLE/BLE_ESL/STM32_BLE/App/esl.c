@@ -38,7 +38,7 @@
 
 typedef struct{
   uint16_t  ESL_SvcHdl;			                /**< ESL Service Handle */
-  uint16_t  ESL_Address_CharHdl;			/**< ESL Address Characteristic Handle */
+  uint16_t  ESL_Address_CharHdl;			    /**< ESL Address Characteristic Handle */
   uint16_t  AP_Sync_Key_Material_CharHdl;		/**< AP Sync Key Material Characteristic Handle */
   uint16_t  ESL_Resp_Key_Material_CharHdl;		/**< ESL Response Key Material Characteristic Handle */
   uint16_t  ESL_Curr_Abs_Time_CharHdl;			/**< ESL Current Absolute Time Characteristic Handle */
@@ -261,7 +261,7 @@ static BLEEVT_EvtAckStatus_t ESL_SERVICE_EventHandler(aci_blecore_event *p_evt)
         
         /* USER CODE BEGIN Service1_Char_5_ACI_GATT_SRV_ATTRIBUTE_MODIFIED_VSEVT_CODE */
         APP_DBG_MSG("Write on ECP\n"); 
-        ESL_ControlPoint_received(p_attribute_modified->Attr_Data, p_attribute_modified->Attr_Data_Length);
+        ESL_APP_ControlPointReceived(p_attribute_modified->Attr_Data, p_attribute_modified->Attr_Data_Length);
         
         /* USER CODE END Service1_Char_5_ACI_GATT_SRV_ATTRIBUTE_MODIFIED_VSEVT_CODE */
       }
@@ -331,7 +331,7 @@ static BLEEVT_EvtAckStatus_t ESL_SERVICE_EventHandler(aci_blecore_event *p_evt)
                               p_read->Attribute_Handle,
                               BLE_ATT_ERR_NONE,
                               sizeof(ESL_Display_Info),
-                              ESL_Display_Info);
+                              (uint8_t *)ESL_Display_Info);
           /*USER CODE BEGIN Service1_Char_6_ACI_GATT_SRV_READ_VSEVT_CODE_2 */
 
           /*USER CODE END Service1_Char_6_ACI_GATT_SRV_READ_VSEVT_CODE_2 */
@@ -366,7 +366,7 @@ static BLEEVT_EvtAckStatus_t ESL_SERVICE_EventHandler(aci_blecore_event *p_evt)
                               p_read->Attribute_Handle,
                               BLE_ATT_ERR_NONE,
                               sizeof(ESL_Sensor_info),
-                              ESL_Sensor_info);
+                              (uint8_t *)ESL_Sensor_info);
           /*USER CODE BEGIN Service1_Char_8_ACI_GATT_SRV_READ_VSEVT_CODE_2 */
 
           /*USER CODE END Service1_Char_8_ACI_GATT_SRV_READ_VSEVT_CODE_2 */
@@ -384,7 +384,7 @@ static BLEEVT_EvtAckStatus_t ESL_SERVICE_EventHandler(aci_blecore_event *p_evt)
                               p_read->Attribute_Handle,
                               BLE_ATT_ERR_NONE,
                               sizeof(ESL_LED_info),
-                              ESL_LED_info);          
+                              (uint8_t *)ESL_LED_info);          
           /*USER CODE BEGIN Service1_Char_9_ACI_GATT_SRV_READ_VSEVT_CODE_2 */
 
           /*USER CODE END Service1_Char_9_ACI_GATT_SRV_READ_VSEVT_CODE_2 */

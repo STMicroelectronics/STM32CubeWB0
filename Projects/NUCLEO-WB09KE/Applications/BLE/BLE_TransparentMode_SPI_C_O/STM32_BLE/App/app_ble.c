@@ -39,6 +39,7 @@
 #include "dm_alloc.h"
 #include "aci_adv_nwk.h"
 #include "dtm_burst.h"
+#include "dtm_cmds.h"
 /* Add aci_blue_initialized_event() prototype */
 void aci_blue_initialized_event(uint8_t Reason_Code);
 /* aci_blue_initialized_event with with legacy format (not extended) */
@@ -58,7 +59,6 @@ void aci_blue_crash_info_event(uint8_t Crash_Type,
                                uint8_t Debug_Data_Length,
                                uint8_t Debug_Data[]);
 
-uint16_t num_packets = 0;
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -149,6 +149,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -159,6 +160,7 @@ void BLE_Init(void)
   if (ret != BLE_STATUS_SUCCESS) {
     Error_Handler();
   }
+
 }
 
 void BLEStack_Process_Schedule(void)
@@ -167,7 +169,6 @@ void BLEStack_Process_Schedule(void)
      where stack wants to be rescheduled for busy waiting.  */
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
 }
-
 static void BLEStack_Process(void)
 {
   APP_DEBUG_SIGNAL_SET(APP_STACK_PROCESS);
@@ -185,7 +186,6 @@ void VTimer_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_VTIMER, CFG_SEQ_PRIO_0);
 }
-
 void NVM_Process(void)
 {
   NVMDB_Tick();
@@ -210,7 +210,6 @@ void BURST_Process_Schedule(void)
 {
   UTIL_SEQ_SetTask( 1U << CFG_TASK_BURST, CFG_SEQ_PRIO_1);
 }
-
 void BURST_Process(void)
 {
   BURST_Tick();
@@ -235,6 +234,16 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+  
+  /* This code is for aci_hal_transmitter_test_packets */
+  DTM_CMDS_TxEnd();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -249,13 +258,11 @@ void APP_BLE_Init(void)
   /* USER CODE BEGIN APP_BLE_Init_1 */
 
   /* USER CODE END APP_BLE_Init_1 */
-
   UTIL_SEQ_RegTask(1U << CFG_TASK_BLE_STACK, UTIL_SEQ_RFU, BLEStack_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_VTIMER, UTIL_SEQ_RFU, VTimer_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_NVM, UTIL_SEQ_RFU, NVM_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_TM, UTIL_SEQ_RFU, TM_Process);
   UTIL_SEQ_RegTask(1U << CFG_TASK_BURST, UTIL_SEQ_RFU, BURST_Process);
-
   ModulesInit();
 
   /* Initialization of HCI & GATT & GAP layer */

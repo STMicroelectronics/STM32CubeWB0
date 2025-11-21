@@ -141,7 +141,8 @@ int main(void)
   COM_Init.StopBits = COM_STOPBITS_1;
   BSP_COM_Init(COM1, &COM_Init);
   
-  if(DATA_PACKET_LEN > (MAX_PACKET_LENGTH-HEADER_LENGTH)) {
+  if(DATA_PACKET_LEN > (MAX_PACKET_LENGTH-HEADER_LENGTH)) 
+  {
     printf("DATA_PACKET_LEN too big %d\r\n", DATA_PACKET_LEN);
     while(1);
   }
@@ -164,7 +165,7 @@ int main(void)
   HAL_RADIO_SetTxAttributes(STATE_MACHINE_0, TP_NETWORK_ADDRESS, 0x555555);
   
   HAL_RADIO_SetTxPower(MAX_OUTPUT_RF_POWER);
-  HAL_RADIO_SetBackToBackTime(100);  
+  HAL_RADIO_SetBackToBackTime(90);  
   
   /* Start Timer */
   if (HAL_TIM_Base_Start_IT(&htim1) != HAL_OK)
@@ -184,22 +185,21 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if(packet_counter == MAX_NUM_PACKET) {
-      BSP_LED_Off(LD1);
-      if(time_cumulate!=0) {
+    if(packet_counter == MAX_NUM_PACKET) 
+    {
+      if(time_cumulate!=0) 
+      {
         printf("%d TX packets. %d PCKT LEN. Average time: %d.%02d ms. Data throughput: %d.%01d kbps.\r\n", packet_counter, DATA_PACKET_LEN,PRINT_INT(time_cumulate/1000.0/packet_counter),PRINT_FLOAT(time_cumulate/1000.0/packet_counter),PRINT_INT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate),PRINT_FLOAT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate));
       }
       packet_counter = 0;
-      //timeout_error_counter = 0;
-      //crc_error_counter = 0;
       sendData[6] = 0;
       sendNewPacket = TRUE;
       time_cumulate = 0;
       for(volatile uint32_t i = 0; i<0xFFFFF; i++);
     }
     
-    
-    if(sendNewPacket == TRUE) {
+    if(sendNewPacket == TRUE) 
+    {
       sendNewPacket = FALSE;      
       ret = UNIDIRECTIONAL_Sequence(channel, sendData, UniTxCallback);
       if(ret != SUCCESS_0) {
@@ -396,10 +396,14 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 static uint8_t CondRoutineTrue(ActionPacket* p)
 {
-  if((p->status & BLUE_INTERRUPT1REG_DONE) != 0){
+  if((p->status & BLUE_INTERRUPT1REG_DONE) != 0)
+  {
     packet_counter++;
   }
-  if(packet_counter == MAX_NUM_PACKET) {
+  
+  if(packet_counter == MAX_NUM_PACKET) 
+  {
+    BSP_LED_Off(LD1);
     return FALSE;
   }
   return TRUE;
@@ -410,6 +414,7 @@ uint8_t UniTxCallback(ActionPacket* p, ActionPacket* next)
   /* Transmit complete */
   if((p->status & BLUE_INTERRUPT1REG_DONE) != 0)
   {
+    sendData[6] += 1;
     time2 = htim1.Instance->CNT;
     timer_reload_store = timer_reload;
     
@@ -422,12 +427,10 @@ uint8_t UniTxCallback(ActionPacket* p, ActionPacket* next)
     timer_reload = 0;
       
     htim1.Instance->CNT = PERIOD_VALUE;
-      
-    //packet_counter++;
-    /* if(packet_counter != MAX_NUM_PACKET) {
-      sendNewPacket = TRUE;
-    } */
+    
+    
   }
+  HAL_RADIO_TIMER_SetRadioCloseTimeout();
   return TRUE;
 }
 
@@ -444,8 +447,8 @@ uint8_t UNIDIRECTIONAL_Sequence(uint8_t channel, uint8_t* txBuffer,
   if(returnValue == SUCCESS_0) {
     
     aPacket[0].StateMachineNo = STATE_MACHINE_0;
-    aPacket[0].ActionTag =  TXRX | PLL_TRIG;
-    aPacket[0].WakeupTime = 0;
+    aPacket[0].ActionTag =  TXRX | PLL_TRIG | RELATIVE;
+    aPacket[0].WakeupTime = 350;
     aPacket[0].MaxReceiveLength = 0; /* does not affect for Tx */
     aPacket[0].data = txBuffer;
     aPacket[0].next_true = &aPacket[0];
@@ -456,8 +459,6 @@ uint8_t UNIDIRECTIONAL_Sequence(uint8_t channel, uint8_t* txBuffer,
     HAL_RADIO_SetReservedArea(&aPacket[0]); 
     returnValue = HAL_RADIO_MakeActionPacketPending(&aPacket[0]);
     
-    /* BLUEGLOB->TIMER12INITDELAYCAL = 4;*/
-    /* BLUEGLOB->TIMER2INITDELAYNOCAL = 4;*/
     HAL_RADIO_TIMER_SetRadioCloseTimeout();
   }
   

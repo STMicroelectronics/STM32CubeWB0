@@ -96,10 +96,8 @@
 #define PAWR_NUM_RESPONSE_SLOTS         8
 
 #define PAWR_INTERVAL_MS                (PAWR_SUBEVENT_INTERVAL_MS * PAWR_NUM_SUBEVENTS + 400)
-   
-#define SCAN_INTERVAL_MS                100
-#define SCAN_WINDOW_MS                  100
-#define CONNECTION_INTERVAL_MS          50
+
+#define CONNECTION_INTERVAL_MS          40
 #define SUPERVISION_TIMEOUT_MS          500
 
 /* USER CODE END Generic_Parameters */
@@ -193,7 +191,7 @@
 
 /**
  * Maximum number of subevent data that can be queued in the controller.
- */    
+ */
 #define CFG_BLE_PAWR_SUBEVENT_DATA_COUNT_MAX            (8U)
 
 /**
@@ -255,6 +253,12 @@
 #define CFG_BLE_NUM_CIS_MAX                             (2U)
 
 /**
+* Maximum number of simultaneous Link Layer procedures that can be managed, in addition to the minimum required by the stack.
+*  The minimum number guarantees one LL procedure initiated by the peer for each link, one LL procedure automatically initiated by the Controller and one LL procedure initiated by the Host.
+*/
+#define  CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS        (0)
+
+/**
  * Size of the internal FIFO used for critical controller events produced by the
  * ISR (e.g. rx data packets).
  */
@@ -314,6 +318,7 @@
                                                         CFG_BLE_NUM_BRC_BIS_MAX,\
                                                         CFG_BLE_NUM_CIG_MAX,\
                                                         CFG_BLE_NUM_CIS_MAX,\
+                                                        CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,\
                                                         CFG_BLE_ISR0_FIFO_SIZE,\
                                                         CFG_BLE_ISR1_FIFO_SIZE,\
                                                         CFG_BLE_USER_FIFO_SIZE))
@@ -328,7 +333,7 @@
 #define CFG_BLE_CONTROLLER_SCAN_ENABLED                   (1U)
 #define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U)
 #define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (1U)
-#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (0U)
+#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (1U)
 #define CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED           (0U)
 #define CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED           (1U)
 #define CFG_BLE_L2CAP_COS_ENABLED                         (1U)
@@ -460,8 +465,6 @@ typedef enum
   TASK_BUTTON_2,
   TASK_BUTTON_3,
   CFG_TASK_CONN_DEV_ID,
-  CFG_TASK_ESL_AP_WRITE_CHARS_ID,
-  CFG_TASK_START_INFO_TRANSFER,
   CFG_TASK_CONN_SETUP,
   CFG_TASK_UART_CMD_PROCESS,  
   CFG_TASK_UPDATING_STATE_TRANSITION,
@@ -517,7 +520,7 @@ typedef enum
  */
 
 #define CFG_LED_SUPPORTED                       (1)
-#define CFG_BUTTON_SUPPORTED                    (1)
+#define CFG_BUTTON_SUPPORTED                    (0)
 
 /**
  * If CFG_FULL_LOW_POWER is requested, make sure LED and debugger are disabled

@@ -88,7 +88,6 @@ typedef enum
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
 /** 
   * ST Manufacturer ID (2 bytes: least significant and most significant bytes).
   */

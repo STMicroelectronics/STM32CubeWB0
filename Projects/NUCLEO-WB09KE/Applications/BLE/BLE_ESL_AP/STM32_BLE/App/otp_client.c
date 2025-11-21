@@ -56,7 +56,7 @@ typedef enum
   OTP_EVENT_DISCONNECTION,
   OTP_EVENT_TIMEOUT,
   OTP_EVENT_L2CAP_OPEN,
-  OTP_EVENT_L2CAP_CREDITS,
+  OTP_EVENT_L2CAP_TX_CMPLT,
   OTP_EVENT_L2CAP_ERROR,
 }OTPEvent_t;
 
@@ -71,7 +71,7 @@ typedef struct
   uint32_t OLCPFeautures;
   uint8_t CP_response_length;
   uint8_t CP_response[7];
-  bool features_discovered;  /* TODO: use bitmask to save space. */
+  bool features_discovered; 
   bool truncate;
   OTPEvent_t event;
   VTIMER_HandleType timer;
@@ -124,8 +124,6 @@ void OTP_CLIENT_L2CAPDisconnectionComplete(void)
   OTPClientContext.cid = 0;
 }
 
-//TODO: do it automatically before first OTP operation? Need to have the handles passed in any case.
-//TODO: add return parameter
 uint8_t OTP_CLIENT_DiscoverFeatures(void)
 {
   uint8_t *data_p;
@@ -139,7 +137,7 @@ uint8_t OTP_CLIENT_DiscoverFeatures(void)
   
   OTPClientContext.state = OTP_CLIENT_STATE_DISC_FEATURES;
   
-  ret = GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->OTSFeatureValueHdl, &data_p, &data_length);
+  ret = GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->OTSFeatureValueHdl, &data_p, &data_length);
   
   if(ret == 0 && data_length == 8)
   {
@@ -184,7 +182,7 @@ static int waitOLCPResponse(void)
       { 
 #if OTP_DEBUG
         APP_DBG_MSG("Response: ");
-        for(int i = 0; i < sizeof(OTPClientContext.CP_response_length); i++)
+        for(int i = 0; i < OTPClientContext.CP_response_length; i++)
         {
           APP_DBG_MSG("%02X ", OTPClientContext.CP_response[i]);
         }
@@ -253,7 +251,7 @@ static int waitOACPResponse(void)
       {
 #if OTP_DEBUG
         APP_DBG_MSG("Response: ");
-        for(int i = 0; i < sizeof(OTPClientContext.CP_response_length); i++)
+        for(int i = 0; i < OTPClientContext.CP_response_length; i++)
         {
           APP_DBG_MSG("%02X ", OTPClientContext.CP_response[i]);
         }
@@ -348,13 +346,13 @@ int OTP_CLIENT_DiscoverAllObjects(objectFoundCB_t object_found_cb)
       uint16_t data_length;
       /* Disable Filter. */
       data = 0;
-      ble_ret = GATT_CLIENT_Write_Char(OTPClientContext.OTSHandleContext_p->ObjListFilterValueHdl[i],
+      ble_ret = GATT_CLIENT_APP_WriteChar(OTPClientContext.OTSHandleContext_p->ObjListFilterValueHdl[i],
                              &data, 1);
       if(ble_ret != BLE_STATUS_SUCCESS)
       {
         return -1;
       }
-      ble_ret = GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjListFilterValueHdl[i], &data_p, &data_length);
+      ble_ret = GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjListFilterValueHdl[i], &data_p, &data_length);
       if(ble_ret != BLE_STATUS_SUCCESS)
       {
         return -1;
@@ -378,7 +376,7 @@ int OTP_CLIENT_DiscoverAllObjects(objectFoundCB_t object_found_cb)
     
     //APP_DBG_MSG("Writing OLCP\n");
     
-    ble_ret = GATT_CLIENT_Write_Char(OTPClientContext.OTSHandleContext_p->ObjListCPValueHdl, &data, 1);
+    ble_ret = GATT_CLIENT_APP_WriteChar(OTPClientContext.OTSHandleContext_p->ObjListCPValueHdl, &data, 1);
     if(ble_ret != BLE_STATUS_SUCCESS)
     {
       return -2;
@@ -397,7 +395,7 @@ int OTP_CLIENT_DiscoverAllObjects(objectFoundCB_t object_found_cb)
     
     //APP_DBG_MSG("Reading name\n");
     
-    ble_ret = GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjNameValueHdl, &name_p, &name_length);
+    ble_ret = GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjNameValueHdl, &name_p, &name_length);
     if(ble_ret != BLE_STATUS_SUCCESS)
     {
       return -1;
@@ -462,14 +460,14 @@ int OTP_CLIENT_ReadMetadata(OTPObjectMeatadata_t *metadata)
   
   memset(metadata, 0, sizeof(OTPObjectMeatadata_t));
   
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjNameValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjNameValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
   {
     return -2;
   }  
   
   memcpy(metadata->name, data_p, MIN(data_length, sizeof(metadata->name) - 1));
   
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjTypeValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjTypeValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
   
   if(data_length != 2 && data_length != 16)
   {
@@ -479,7 +477,7 @@ int OTP_CLIENT_ReadMetadata(OTPObjectMeatadata_t *metadata)
   metadata->type_length = data_length;
   memcpy(metadata->type, data_p, data_length);
   
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjSizeValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjSizeValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
   {
     return -2;
   }  
@@ -494,7 +492,7 @@ int OTP_CLIENT_ReadMetadata(OTPObjectMeatadata_t *metadata)
   
   if(OTPClientContext.OTSHandleContext_p->ObjIdValueHdl != 0x0000)
   {
-    if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjIdValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+    if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjIdValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
     {
       return -2;
     }
@@ -507,7 +505,7 @@ int OTP_CLIENT_ReadMetadata(OTPObjectMeatadata_t *metadata)
     memcpy(metadata->id, data_p, OBJECT_ID_SIZE);
   }
   
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjPropValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjPropValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
   {
     return -2;
   }
@@ -562,7 +560,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
   }
   
   /* Read and check object properties */  
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjPropValueHdl, &att_data_p, &att_data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjPropValueHdl, &att_data_p, &att_data_length) != BLE_STATUS_SUCCESS)
   {
     return -2;
   }  
@@ -579,7 +577,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
     return -3;
   }
   
-  if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjSizeValueHdl, &att_data_p, &att_data_length) != BLE_STATUS_SUCCESS)
+  if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjSizeValueHdl, &att_data_p, &att_data_length) != BLE_STATUS_SUCCESS)
   {
     return -2;
   }  
@@ -596,14 +594,12 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
   if((obj_data_length > alloc_size) &
      ((obj_prop & OBJ_PROP_APPEND) == 0))
   {
-    /* Not possible to append data. TODO: need to check also OTS feature? */
     return -3;
   }
   
   if((obj_data_length < curr_size) & !OTPClientContext.truncate &
      ((obj_prop & OBJ_PROP_PATCH) == 0))
   {
-    /* Not possible to patch data. TODO: need to check also OTS feature? */
     return -3;
   }
   
@@ -619,7 +615,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
     oacp_packet[9] = 0; /* Mode (truncate off) */
   }
   
-  ret = GATT_CLIENT_Write_Char(OTPClientContext.OTSHandleContext_p->ObjActionCPValueHdl, oacp_packet, sizeof(oacp_packet));
+  ret = GATT_CLIENT_APP_WriteChar(OTPClientContext.OTSHandleContext_p->ObjActionCPValueHdl, oacp_packet, sizeof(oacp_packet));
   if(ret != BLE_STATUS_SUCCESS)
   {
     return -2;
@@ -651,7 +647,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
     else if(ret == BLE_STATUS_INSUFFICIENT_RESOURCES)
     {
       //Wait for credits
-      ret = waitL2CAPEvent(OTP_EVENT_L2CAP_CREDITS);
+      ret = waitL2CAPEvent(OTP_EVENT_L2CAP_TX_CMPLT);
       if(ret < 0)
       {
         return -5;
@@ -670,7 +666,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
        Object Client does not have valid data shall be written with a 0 to show that valid data is not available. */
     
     /* Read characteristic value to know the size. */
-    if(GATT_CLIENT_Read_Char(OTPClientContext.OTSHandleContext_p->ObjLastModifiedValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
+    if(GATT_CLIENT_APP_ReadChar(OTPClientContext.OTSHandleContext_p->ObjLastModifiedValueHdl, &data_p, &data_length) != BLE_STATUS_SUCCESS)
     {
       return -2;
     }
@@ -678,7 +674,7 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
     /* Set value to 0. */    
     memset(data_p, 0, data_length);    
     
-    if(GATT_CLIENT_Write_Char(OTPClientContext.OTSHandleContext_p->ObjLastModifiedValueHdl, data_p, data_length) != BLE_STATUS_SUCCESS)
+    if(GATT_CLIENT_APP_WriteChar(OTPClientContext.OTSHandleContext_p->ObjLastModifiedValueHdl, data_p, data_length) != BLE_STATUS_SUCCESS)
     {
       return -2;
     }
@@ -742,7 +738,6 @@ void OTP_CLIENT_OACPIndication(uint8_t *data_p, uint16_t data_length)
   UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_OTP_EVENT);
 }
 
-//TODO: pass single parameters instead of event for better portability?
 void OTP_CLIENT_L2CAPConnectionResp(aci_l2cap_cos_connection_resp_event_rp0 *event)
 {
   if(event->Connection_Handle != OTPClientContext.connection_handle)
@@ -762,9 +757,9 @@ void OTP_CLIENT_L2CAPConnectionResp(aci_l2cap_cos_connection_resp_event_rp0 *eve
   UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_OTP_EVENT);
 }
 
-void OTP_CLIENT_L2CAPCreditsReceived(void)
+void OTP_CLIENT_L2CAPTxComplete(void)
 {
-  OTPClientContext.event = OTP_EVENT_L2CAP_CREDITS;
+  OTPClientContext.event = OTP_EVENT_L2CAP_TX_CMPLT;
   UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_OTP_EVENT);
 }
 

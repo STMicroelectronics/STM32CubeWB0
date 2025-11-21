@@ -27,6 +27,13 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
   
 /* Exported types ------------------------------------------------------------*/
+  
+typedef struct
+{
+  uint8_t *obj_p;
+  uint32_t size;
+  uint32_t alloc_size;
+}OTS_ObjInfo_t;
 
 /* Exported constants --------------------------------------------------------*/
 
@@ -45,6 +52,10 @@ extern "C" {
 /* Exported functions ------------------------------------------------------- */
   
 void OTS_APP_Init(void);
+
+void OTS_APP_DeleteImages(void);
+
+void OTS_APP_GetObjInfo(uint8_t obj_index, OTS_ObjInfo_t *info);
 
 void OTS_APP_L2CAPChannelOpened(uint16_t conn_handle, uint16_t cid);
 

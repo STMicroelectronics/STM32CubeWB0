@@ -170,6 +170,7 @@ static void APB2periphContextSave(apb2PeriphT *apb2)
 #if defined(RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS)
     apb2->LDO_TRANSFO_vr = READ_BIT(RRM->LDO_ANA_ENG, RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS);
 #endif
+    apb2->BLE_IRQ_ENABLE_vr = RRM->BLE_IRQ_ENABLE;
   }
 }
 
@@ -417,11 +418,12 @@ static void APB2periphContextRestore(apb2PeriphT *apb2)
   if (LL_APB2_GRP1_IsEnabledClock(LL_APB2_GRP1_PERIPH_MRBLE))
   {
 #if defined(RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS)
-      if (apb2->LDO_TRANSFO_vr)
-      {
-        SET_BIT(RRM->LDO_ANA_ENG, RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS);
-      }
+    if (apb2->LDO_TRANSFO_vr)
+    {
+      SET_BIT(RRM->LDO_ANA_ENG, RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS);
+    }
 #endif
+    RRM->BLE_IRQ_ENABLE = apb2->BLE_IRQ_ENABLE_vr;
   }
 }
 

@@ -70,7 +70,7 @@ The output files of the projects are:
 - BLE_StaticStack_ota.hex: binary image to be loaded in Flash memory
 - ble_static_stack_sym.a: library with symbol table to be referenced by application.
 
-_Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_stack_sym.a from BLE_StaticStack_ota\Binary directory. After generating the new binary, make sure that its symbol table (generated in BLE_StaticStack_ota folder) is referenced by the application.
+_Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_stack_sym.a from its Binary directory. After generating the new binary, make sure that its symbol table (generated in BLE_StaticStack_ota folder) is referenced by the application.
 
 ### __How to use it?__
 

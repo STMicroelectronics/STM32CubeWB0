@@ -135,14 +135,6 @@ typedef struct
   APP_BLE_ConnStatus_t Device_Connection_Status;
   /* USER CODE BEGIN PTD_1*/
   
-  /* To track the status for the Central role */
-  APP_BLE_ConnStatus_t Device_Connection_Status_Central;
-
-  uint16_t Central_Connection_Handle;
-  
-  /* To track the status for the Peripheral role */
-  APP_BLE_ConnStatus_t Device_Connection_Status_Peripheral;
-  
   /* Advertising timeout timerID*/
   VTIMER_HandleType Advertising_mgr_timer_Id;
 
@@ -280,6 +272,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -513,6 +506,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -543,11 +543,6 @@ void APP_BLE_Init(void)
   /* From here, all initialization are BLE application specific */
 
   /* USER CODE BEGIN APP_BLE_Init_4 */
-  
-  bleAppContext.Device_Connection_Status_Central = APP_BLE_IDLE;
-  bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_IDLE;
-  
-  bleAppContext.Central_Connection_Handle = 0xFFFF;
   
   /* Create timer to handle the Advertising Stop */
   bleAppContext.Advertising_mgr_timer_Id.callback = Adv_Cancel_Req;
@@ -632,10 +627,14 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
     {
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
+      GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+      notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;
+      GATT_CLIENT_APP_Notification(&notif);
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -648,7 +647,6 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
         /* USER CODE BEGIN EVT_DISCONN_COMPLETE_2 */
 
-      
         /* USER CODE END EVT_DISCONN_COMPLETE_2 */
       }
       gap_cmd_resp_release();
@@ -663,10 +661,6 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       BSP_LED_Off(LD1);
       BSP_LED_Off(LD2);
       BSP_LED_Off(LD3);
-
-      bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_IDLE;
-      bleAppContext.Device_Connection_Status_Central = APP_BLE_IDLE;
-      bleAppContext.Central_Connection_Handle = 0xFFFF;
 
       UTIL_SEQ_SetTask(1U << TASK_BUTTON_3, CFG_SEQ_PRIO_0);
         
@@ -859,8 +853,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           }
           else
           {
-            if(bleAppContext.Device_Connection_Status_Central != APP_BLE_CONNECTED_CLIENT && bleAppContext.Device_Connection_Status_Peripheral != APP_BLE_CONNECTED_SERVER)
+            if(bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_CLIENT && bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_SERVER)
             {
+              bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
               /* discovery procedure has been completed and no device found: go to discovery mode */
               /* Start to Advertise to accept a connection */
               UTIL_SEQ_SetTask(1U << TASK_BUTTON_1, CFG_SEQ_PRIO_0);
@@ -982,7 +977,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         /* USER CODE END EVT_VENDOR_1 */
       default:
         /* USER CODE BEGIN EVT_VENDOR_DEFAULT */
-        APP_DBG_MSG("HCI_VENDOR_EVT: 0x%04X\n", p_blecore_evt->ecode);
+
         /* USER CODE END EVT_VENDOR_DEFAULT */
         break;
       }
@@ -1018,10 +1013,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
-                                      uint16_t Conn_Interval,
+                                      uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
+
   if(Status != 0)
   {
     APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
@@ -1029,42 +1026,7 @@ static void connection_complete_event(uint8_t Status,
     return;
   }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
-  APP_DBG_MSG("--  Role 0x%02X\n", Role);
-  
-  if (Role == HCI_ROLE_PERIPHERAL)
-  {
-    /* The connection is done, there is no need anymore to schedule the LP ADV */
-    HAL_RADIO_TIMER_StopVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id);
-    if(bleAppContext.Device_Connection_Status_Peripheral == APP_BLE_ADV_FAST || bleAppContext.Device_Connection_Status_Peripheral == APP_BLE_ADV_LP)
-    {
-      /* Connection as server */
-      bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_CONNECTED_SERVER;
-      /* Once connected the LED1 is always on and LED2 is always off. */
-      APP_DBG_MSG("--  PERIPHERAL\n");
-      BSP_LED_Off(LD1);
-      BSP_LED_On(LD2);
-    }
-  }
-   
-  if (Role == HCI_ROLE_CENTRAL)
-  {
-    if (bleAppContext.Device_Connection_Status_Central == APP_BLE_LP_CONNECTING)
-    {
-      /* Connection as client */
-      bleAppContext.Device_Connection_Status_Central = APP_BLE_CONNECTED_CLIENT;
-      /* Once connected the LED1 is always off and LED2 is always on. */
-      BSP_LED_On(LD1);
-      BSP_LED_Off(LD2);
-      APP_DBG_MSG("--  CENTRAL\n");
-      bleAppContext.Central_Connection_Handle = Connection_Handle;
-      
-      GATT_CLIENT_APP_Set_Conn_Handle(0, bleAppContext.Central_Connection_Handle);
-      UTIL_SEQ_SetTask(1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
-      
-      UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_CONNECTION_COMPLETE);
-    }
-    
-  }
+
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
   APP_DBG_MSG(">>== hci_le_connection_complete_event - Connection handle: 0x%04X\n", Connection_Handle);
   APP_DBG_MSG("     - Connection established with @:%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -1074,22 +1036,25 @@ static void connection_complete_event(uint8_t Status,
               Peer_Address[2],
               Peer_Address[1],
               Peer_Address[0]);
-   APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
-               INT(Conn_Interval*1.25),
-               FRACTIONAL_2DIGITS(Conn_Interval*1.25),
-               Peripheral_Latency,
-               Supervision_Timeout * 10
-                 );
+  APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
+              INT(Connection_Interval*1.25),
+              FRACTIONAL_2DIGITS(Connection_Interval*1.25),
+              Peripheral_Latency,
+              Supervision_Timeout * 10);
 
   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
   {
-   /* Connection as client */
-   bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
+    /* Connection as client */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
+
+    notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+    notif.ConnHdl = Connection_Handle;
+    GATT_CLIENT_APP_Notification(&notif);
   }
   else
   {
-   /* Connection as server */
-   bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
+    /* Connection as server */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
   }
   bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
   if (Role == HCI_ROLE_PERIPHERAL)
@@ -1105,6 +1070,29 @@ static void connection_complete_event(uint8_t Status,
   SERIALPORT_CENTRALPERIPHERAL_APP_EvtRx(&SERIALPORT_CENTRALPERIPHERALHandleNotification);
 
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
+  
+  APP_DBG_MSG("--  Role 0x%02X\n", Role);
+  
+  if (Role == HCI_ROLE_PERIPHERAL)
+  {
+    /* The connection is done, there is no need anymore to schedule the LP ADV */
+    HAL_RADIO_TIMER_StopVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id);
+    /* Once connected the LED1 is always on and LED2 is always off. */
+    APP_DBG_MSG("--  PERIPHERAL\n");
+    BSP_LED_Off(LD1);
+    BSP_LED_On(LD2);
+  }   
+  else if (Role == HCI_ROLE_CENTRAL)
+  {
+    /* Once connected the LED1 is always off and LED2 is always on. */
+    APP_DBG_MSG("--  CENTRAL\n");
+    BSP_LED_On(LD1);
+    BSP_LED_Off(LD2);
+    
+    GATT_CLIENT_APP_Discover_services(Connection_Handle);
+    
+    UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_CONNECTION_COMPLETE);
+  }
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
 }/* end hci_le_connection_complete_event() */
@@ -1116,22 +1104,6 @@ static void connection_complete_event(uint8_t Status,
 APP_BLE_ConnStatus_t APP_BLE_Get_Server_Connection_Status(void)
 {
   return bleAppContext.Device_Connection_Status;
-}
-
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle)
-{
-  APP_BLE_ConnStatus_t conn_status;
-
-  if (bleAppContext.BleApplicationContext_legacy.connectionHandle == Connection_Handle)
-  {
-    conn_status = bleAppContext.Device_Connection_Status;
-  }
-  else
-  {
-    conn_status = APP_BLE_IDLE;
-  }
-
-  return conn_status;
 }
 
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId)
@@ -1239,8 +1211,6 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       paramC = APP_BLE_ADV_FAST;
 
       /* USER CODE BEGIN PROC_GAP_PERIPH_ADVERTISE_START_FAST */
-
-      bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_ADV_FAST;
       
       /* Start the timer to handle the Advertising stop. */
       HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id, Get_Random_Delay());
@@ -1256,8 +1226,6 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
 
       /* USER CODE BEGIN PROC_GAP_PERIPH_ADVERTISE_START_LP */
 
-      bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_ADV_LP;
-
       /* Start the timer to handle the Advertising stop. */
       HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id, Get_Random_Delay());
     
@@ -1269,8 +1237,6 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       paramC = APP_BLE_IDLE;
 
       /* USER CODE BEGIN PROC_GAP_PERIPH_ADVERTISE_STOP */
-
-      bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_IDLE;
       
       /* USER CODE END PROC_GAP_PERIPH_ADVERTISE_STOP */
       break;
@@ -1552,7 +1518,7 @@ void APP_BLE_Procedure_Gap_Central(ProcGapCentralId_t ProcGapCentralId)
                                            &bleAppContext.a_deviceServerBdAddr[0]);    
         if (result == BLE_STATUS_SUCCESS)
         {
-          bleAppContext.Device_Connection_Status_Central = APP_BLE_LP_CONNECTING;
+          bleAppContext.Device_Connection_Status = APP_BLE_LP_CONNECTING;
           APP_DBG_MSG("  wait for event HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE\n");
           UTIL_SEQ_WaitEvt(1U << CFG_IDLEEVT_CONNECTION_COMPLETE);
 
@@ -1634,17 +1600,14 @@ static void Adv_Cancel(void)
 {
   HAL_RADIO_TIMER_StopVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id);
   APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_STOP);
-  bleAppContext.Device_Connection_Status_Peripheral = APP_BLE_IDLE; 
+  bleAppContext.Device_Connection_Status = APP_BLE_IDLE; 
     
-  if(bleAppContext.Device_Connection_Status_Central != APP_BLE_CONNECTED_CLIENT || bleAppContext.Device_Connection_Status_Peripheral != APP_BLE_CONNECTED_SERVER )
-  {
-    /* Start the Discovery mode to accept a connection */
-    /* The BLE_SerialPort_CentralPeripheral application acts as a router, meaning it can function as both a central and a peripheral. */
-    /* To connect to each other, two devices with the same firmware are loaded onto STM32WB0 devices. The application starts in discovery mode, */
-    /* scanning for peripherals. Since the same application can also be a peripheral, at the end of the GAP discovery procedure, the application */
-    /* decides to enable advertising to be found by a central that is scanning. */
-    UTIL_SEQ_SetTask(1U << TASK_BUTTON_3, CFG_SEQ_PRIO_0); 
-  }
+  /* Start the Discovery mode to accept a connection.
+  The BLE_SerialPort_CentralPeripheral application can be either a central or a peripheral.
+  To connect to each other, two devices with the same firmware are loaded onto STM32WB0 devices. The application starts in discovery mode,
+  scanning for peripherals. Since the same application can also be a peripheral, at the end of the GAP discovery procedure, the application
+  decides to enable advertising so that it can be found by a central that is scanning. */
+  UTIL_SEQ_SetTask(1U << TASK_BUTTON_3, CFG_SEQ_PRIO_0); 
   
   return;
 }
@@ -1820,34 +1783,17 @@ static uint8_t Analyse_Adv_Report(uint8_t adv_data_size, uint8_t *p_adv_data,
  */
 static void Periph_Security_Request(void)
 {
-  uint16_t tmp_connection_handle = 0xFFFF;
-  
-  if(bleAppContext.BleApplicationContext_legacy.connectionHandle != 0xFFFF)
+  tBleStatus status;
+  status = aci_gap_set_security(bleAppContext.BleApplicationContext_legacy.connectionHandle, GAP_SECURITY_LEVEL_2, 0);
+  if (status != BLE_STATUS_SUCCESS)
   {
-    tmp_connection_handle = bleAppContext.BleApplicationContext_legacy.connectionHandle;
+    APP_DBG_MSG("Periph security request cmd failure: 0x%02X\n", status);
   }
   else
   {
-    if(bleAppContext.Central_Connection_Handle != 0xFFFF)
-    {
-      tmp_connection_handle = bleAppContext.Central_Connection_Handle;
-    }
+    APP_DBG_MSG("Periph security request cmd success\n");
   }
-  
-  if(tmp_connection_handle != 0xFFFF)
-  {
-    tBleStatus status;
-    status = aci_gap_set_security(tmp_connection_handle, GAP_SECURITY_LEVEL_2, 0);
-    if (status != BLE_STATUS_SUCCESS)
-    {
-      APP_DBG_MSG("  Periph security request cmd failure: 0x%02X\n", status);
-    }
-    else
-    {
-      APP_DBG_MSG("  Periph security request cmd success\n");
-    }
-    BLEStack_Process_Schedule();
-  }
+  BLEStack_Process_Schedule();
 }
 
 static uint32_t Get_Random_Delay(void)
@@ -1879,14 +1825,14 @@ static uint32_t Get_Random_Delay(void)
  */
 void APPE_Button1Action(void)
 {
-  if(bleAppContext.Device_Connection_Status_Peripheral == APP_BLE_IDLE)
+  if(bleAppContext.Device_Connection_Status == APP_BLE_IDLE)
   {
     /* Relaunch advertising */
     APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_FAST);
   }
   else
   {
-    APP_DBG_MSG("Device_Connection_Status_Peripheral 0x%02X\n", bleAppContext.Device_Connection_Status_Peripheral);
+    APP_DBG_MSG("Device_Connection_Status 0x%02X\n", bleAppContext.Device_Connection_Status);
   }	
   return;
 }
@@ -1905,7 +1851,7 @@ void APPE_Button2Action(void)
 {
   tBleStatus ret = BLE_STATUS_INVALID_PARAMS;
   
-  if (bleAppContext.Device_Connection_Status_Central != APP_BLE_CONNECTED_CLIENT && bleAppContext.Device_Connection_Status_Peripheral != APP_BLE_CONNECTED_SERVER)
+  if (bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_CLIENT && bleAppContext.Device_Connection_Status != APP_BLE_CONNECTED_SERVER)
   {
     ret = aci_gap_clear_security_db();
     if (ret != BLE_STATUS_SUCCESS)
@@ -1917,7 +1863,7 @@ void APPE_Button2Action(void)
       APP_DBG_MSG("==>> aci_gap_clear_security_db - Success\n");
     }
   }
-  else
+  else if(bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_SERVER)
   {
     APP_DBG_MSG("  SetTask CFG_TASK_PERIPH_SECURITY_REQUEST_ID\n");
     UTIL_SEQ_SetTask(1 << CFG_TASK_PERIPH_SECURITY_REQUEST_ID, CFG_SEQ_PRIO_0);
@@ -1942,20 +1888,14 @@ void APPE_Button2Action(void)
  */
 void APPE_Button3Action(void)
 {
-  if(bleAppContext.Device_Connection_Status_Central == APP_BLE_IDLE)
+  if(bleAppContext.Device_Connection_Status == APP_BLE_IDLE)
   {
     /* Relaunch advertising */
-    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
     APP_BLE_Procedure_Gap_Central(PROC_GAP_CENTRAL_SCAN_START);
-    bleAppContext.Device_Connection_Status_Central = APP_BLE_SCANNING;
-    
-//    /* Keep BLE Stack Process priority low, since there are limited cases
-//    where stack wants to be rescheduled for busy waiting.  */
-//    UTIL_SEQ_SetTask( 1U << CFG_TASK_BLE_STACK, CFG_SEQ_PRIO_1);
   }
   else
   {
-    APP_DBG_MSG("Device_Connection_Status_Peripheral 0x%02X\n", bleAppContext.Device_Connection_Status_Peripheral);
+    APP_DBG_MSG("Device_Connection_Status 0x%02X\n", bleAppContext.Device_Connection_Status);
   }	
   return;
 }

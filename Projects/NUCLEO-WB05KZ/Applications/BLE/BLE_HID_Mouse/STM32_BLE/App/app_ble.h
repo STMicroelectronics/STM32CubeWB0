@@ -126,7 +126,7 @@ typedef struct devContextS {
 #define  FW_ID_HEART_RATE       0x89
 #define  FW_ID_HEALTH_THERMO    0x8A
 
-#define  FW_ID_HID              0x8B
+#define  FW_ID_HID              0x8C
 /* USER CODE END EC */
 
 /* External variables --------------------------------------------------------*/

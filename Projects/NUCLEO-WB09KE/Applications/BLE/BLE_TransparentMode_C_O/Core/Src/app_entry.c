@@ -63,6 +63,7 @@
 /* USER CODE END PV */
 
 /* Global variables ----------------------------------------------------------*/
+extern uint8_t tone_started;
 
 /* USER CODE BEGIN GV */
 
@@ -133,9 +134,17 @@ uint32_t MX_APPE_Init(void *p_param)
 static PowerSaveLevels App_PowerSaveLevel_Check(void)
 {
   PowerSaveLevels output_level = POWER_SAVE_LEVEL_STOP;
+
+  if(tone_started)
+  {
+    output_level = POWER_SAVE_LEVEL_RUNNING;
+  }
+  else
+  {
+    output_level = POWER_SAVE_LEVEL_CPU_HALT;
+  }
+
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
-  
-  output_level = POWER_SAVE_LEVEL_CPU_HALT;
   
   /* USER CODE END App_PowerSaveLevel_Check_1 */
 

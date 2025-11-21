@@ -286,6 +286,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -406,7 +407,6 @@ void BLE_Init(void)
     APP_DBG_MSG("  Success: Gap_profile_set_appearance - Appearance\n");
   }
 
-
   /**
    * Initialize IO capability
    */
@@ -525,6 +525,12 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
   BLEStack_Process_Schedule_From_ISR();
 }
 
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
+}
+
 static void BLEStack_Process_Task(void *pvParameters)
 {
   while(1)
@@ -640,9 +646,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -873,22 +879,22 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           aci_gatt_srv_read_event_rp0    *p_read;
           p_read = (aci_gatt_srv_read_event_rp0*)p_blecore_evt->data;
           uint8_t error_code = BLE_ATT_ERR_INSUFF_AUTHORIZATION;
-          
+
           APP_DBG_MSG("Handle 0x%04X\n",  p_read->Attribute_Handle);
-          
+
           /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_1*/
-          
+
           /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_1*/
-          
+
           aci_gatt_srv_resp(p_read->Connection_Handle,
                             p_read->CID,
                             p_read->Attribute_Handle,
                             error_code,
                             0,
                             NULL);
-          
+
           /* USER CODE BEGIN ACI_GATT_SRV_READ_VSEVT_CODE_2*/
-          
+
           /* USER CODE END ACI_GATT_SRV_READ_VSEVT_CODE_2*/
           break;
         }
@@ -936,6 +942,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  if(Status != 0)
+  {
+    APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
+    bleAppContext.Device_Connection_Status = APP_BLE_IDLE;
+    return;
+  }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
 
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
@@ -1232,11 +1244,11 @@ void APP_BLE_Procedure_Gap_Peripheral(ProcGapPeripheralId_t ProcGapPeripheralId)
       status = aci_gap_set_advertising_enable(DISABLE, 0, NULL);
       if (status != BLE_STATUS_SUCCESS)
       {
-        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("Disable advertising - fail, result: 0x%02X\n",status);
       }
       else
       {
+        bleAppContext.Device_Connection_Status = (APP_BLE_ConnStatus_t)paramC;
         APP_DBG_MSG("==>> Disable advertising - Success\n");
       }
       break;

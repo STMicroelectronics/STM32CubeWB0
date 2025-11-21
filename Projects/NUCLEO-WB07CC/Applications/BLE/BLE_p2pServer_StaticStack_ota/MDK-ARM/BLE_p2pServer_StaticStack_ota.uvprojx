@@ -10,7 +10,7 @@
       <TargetName>BLE_p2pServer_StaticStack_ota</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6190000::V6.19::ARMCLANG</pCCUsed>
+      <pCCUsed>6210000::V6.21::ARMCLANG</pCCUsed>
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
@@ -80,9 +80,9 @@
             <nStopB2X>0</nStopB2X>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>fromelf #L --bincombined  --output=$L@L.bin</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -338,7 +338,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls>-fshort-enums</MiscControls>
-              <Define>NUCLEO_WB07CC,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB07,RESET_MANAGER_SIZE=0x1A000</Define>
+              <Define>NUCLEO_WB07CC,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB07,RESET_MANAGER_SIZE=0x1A800</Define>
               <Undefine></Undefine>
               <IncludePath>../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../System/Config/Debug_GPIO;../System/Interfaces;../../../../../../Utilities/trace/adv_trace;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Projects/Common/BLE/Interfaces;../../../../../../Projects/Common/BLE/Modules;../../../../../../Projects/Common/BLE/Modules/RTDebug;../../../../../../Projects/Common/BLE/Modules/RADIO_utils/Inc;../../../../../../Projects/Common/BLE/Modules/Profiles/Inc;../../../../../../Projects/Common/BLE/Modules/PKAMGR/Inc;../../../../../../Projects/Common/BLE/Modules/NVMDB/Inc;../../../../../../Projects/Common/BLE/Modules/Flash;../../../../../../Projects/Common/BLE/Startup;../../../../../../Utilities/misc;../../../../../../Utilities/sequencer;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/ECB;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo</IncludePath>
             </VariousControls>
@@ -374,7 +374,7 @@
             <ScatterFile>stm32wb07_flash.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>--predefine="-DMEMORY_FLASH_APP_OFFSET=0x1A000 -DMEMORY_RAM_APP_OFFSET=0x300 -DMEMORY_FLASH_APP_SIZE=0x12800"
+            <Misc>--predefine="-DMEMORY_FLASH_APP_OFFSET=0x1A800 -DMEMORY_RAM_APP_OFFSET=0x300 -DMEMORY_FLASH_APP_SIZE=0x12000"
 --diag_suppress L6312W
 --diag_suppress L6314W
 --diag_suppress L6329W</Misc>
@@ -780,7 +780,7 @@
             <File>
               <FileName>ble_static_stack_sym.a</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\BLE_StaticStack_ota\Binary\ble_static_stack_sym.a</FilePath>
+              <FilePath>..\Binary\ble_static_stack_sym.a</FilePath>
             </File>
           </Files>
         </Group>

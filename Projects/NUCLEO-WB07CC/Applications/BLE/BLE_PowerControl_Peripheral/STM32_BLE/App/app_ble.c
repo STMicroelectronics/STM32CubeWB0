@@ -156,18 +156,18 @@ typedef struct
 #define ADV_TIMEOUT_MS                                               (60 * 1000)
 
 /* Values for power control */
-#define RSSI_TARGET_1M              -70  // dBm
-#define RSSI_TARGET_2M              -67  // dBm
-#define RSSI_TARGET_CODED_S8        -77  // dBm
-#define RSSI_TARGET_CODED_S2        -73  // dBm
-#define RSSI_HYSTERESIS               8  // dB
+#define RSSI_TARGET_1M              -65  // dBm
+#define RSSI_TARGET_2M              -62  // dBm
+#define RSSI_TARGET_CODED_S8        -72  // dBm
+#define RSSI_TARGET_CODED_S2        -68  // dBm
+#define RSSI_HYSTERESIS              10  // dB
 
 /* Values for path loss monitoring */
 #define HIGH_THRESHOLD      74  // dB
 #define HIGH_HYSTERESIS     6   // dB
 #define LOW_THRESHOLD       55  // dB
 #define LOW_HYSTERESIS      6   // dB
-#define MIN_TIME            4   // Connection events
+#define MIN_TIME            6   // Connection events
 
 #define PATHLOSS_LOW_LED_INTERVAL_MS    100
 #define PATHLOSS_MID_LED_INTERVAL_MS    300
@@ -214,12 +214,12 @@ static uint8_t phy = LE_1M_PHY_BIT;
 /* Private function prototypes -----------------------------------------------*/
 static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
+                                      uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
                                       uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout);
-
 static void gap_cmd_resp_wait(void);
 static void gap_cmd_resp_release(void);
 
@@ -301,6 +301,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -374,16 +375,16 @@ void BLE_Init(void)
   APP_DBG_MSG("\n* * * * * * Application name : BLE_PowerControl_Peripheral * * * * * *\n");
   
   /* Enable LE Power Control for LE 1M PHY with specified parameters */
-  ret = aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_1M, RSSI_TARGET_1M, RSSI_HYSTERESIS, 6, 3);
+  ret = aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_1M, RSSI_TARGET_1M, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE 2M PHY with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_2M, RSSI_TARGET_2M, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_2M, RSSI_TARGET_2M, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE Coded PHY S8 with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S8, RSSI_TARGET_CODED_S8, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S8, RSSI_TARGET_CODED_S8, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE Coded PHY S2 with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S2, RSSI_TARGET_CODED_S2, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S2, RSSI_TARGET_CODED_S2, RSSI_HYSTERESIS, 6, 4);
   
   if(ret != BLE_STATUS_SUCCESS)
   {
@@ -579,6 +580,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -685,9 +693,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -782,6 +790,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
           connection_complete_event(p_enhanced_conn_complete->Status,
                                     p_enhanced_conn_complete->Connection_Handle,
+                                    p_enhanced_conn_complete->Role,
                                     p_enhanced_conn_complete->Peer_Address_Type,
                                     p_enhanced_conn_complete->Peer_Address,
                                     p_enhanced_conn_complete->Connection_Interval,
@@ -796,6 +805,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
           connection_complete_event(p_conn_complete->Status,
                                     p_conn_complete->Connection_Handle,
+                                    p_conn_complete->Role,
                                     p_conn_complete->Peer_Address_Type,
                                     p_conn_complete->Peer_Address,
                                     p_conn_complete->Connection_Interval,
@@ -1024,6 +1034,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
 
 static void connection_complete_event(uint8_t Status,
                                       uint16_t Connection_Handle,
+                                      uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
                                       uint16_t Connection_Interval,
@@ -1054,8 +1065,7 @@ static void connection_complete_event(uint8_t Status,
               INT(Connection_Interval*1.25),
               FRACTIONAL_2DIGITS(Connection_Interval*1.25),
               Peripheral_Latency,
-              Supervision_Timeout * 10
-              );
+              Supervision_Timeout * 10);
 
   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
   {

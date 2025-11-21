@@ -587,7 +587,6 @@ static void P2PR_Connect_Request(void)
 
         P2PR_APP_Context.P2PR_device_status[device_index] = P2PR_DEV_CONNECTING;
         P2PR_APP_Context.P2PR_device_connHdl[device_index] = last_connHdl;
-        GATT_CLIENT_APP_Set_Conn_Handle(device_index, P2PR_APP_Context.P2PR_device_connHdl[device_index]);
 
         result = aci_gatt_clt_exchange_config(P2PR_APP_Context.P2PR_device_connHdl[device_index]);
         if (result != BLE_STATUS_SUCCESS)
@@ -603,7 +602,7 @@ static void P2PR_Connect_Request(void)
 
         APP_DBG_MSG("Discover services, characteristics and descriptors for table index %d\n",device_index);
         P2PR_APP_Context.P2PR_device_status[device_index] = P2PR_DEV_DISCOVERING;
-        GATT_CLIENT_APP_Discover_services(device_index);
+        GATT_CLIENT_APP_Discover_services(P2PR_APP_Context.P2PR_device_connHdl[device_index]);
 
         P2PR_APP_Context.P2PR_device_status[device_index] = P2PR_DEV_CONNECTED;        
         BSP_LED_Off(LED_BLUE);

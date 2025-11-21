@@ -74,9 +74,8 @@ typedef struct apb2PeriphS
 {
 #if defined(RRM_LDO_ANA_ENG_RFD_LDO_TRANSFO_BYPASS)
   uint32_t LDO_TRANSFO_vr;
-#else
-  uint32_t dummy;
 #endif
+  uint32_t BLE_IRQ_ENABLE_vr;
 } apb2PeriphT;
 
 /* AHB0 structure with all the virtual register

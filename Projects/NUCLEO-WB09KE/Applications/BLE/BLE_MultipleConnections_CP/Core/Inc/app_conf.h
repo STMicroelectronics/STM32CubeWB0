@@ -117,7 +117,8 @@
 #define CFG_BLE_NUM_RADIO_TASKS                         (CFG_NUM_RADIO_TASKS)
 
 /**
- * Maximum number of Attributes that can be stored in the GATT database.
+ * Maximum number of attributes that can be stored in the GATT database in addition to the attributes number already defined for the GATT and GAP services
+ * (BLE_STACK_NUM_GATT_MANDATORY_ATTRIBUTES value on STM32_BLE middleware, ble_stack.h header file).
  */
 #define CFG_BLE_NUM_GATT_ATTRIBUTES                     (6)
 
@@ -125,7 +126,7 @@
  * Maximum number of concurrent Client's Procedures. This value must be less
  * than or equal to the maximum number of supported links (CFG_BLE_NUM_RADIO_TASKS).
  */
-#define CFG_BLE_NUM_OF_CONCURRENT_GATT_CLIENT_PROC      (2)
+#define CFG_BLE_NUM_OF_CONCURRENT_GATT_CLIENT_PROC      (1)
 
 /**
  * Maximum supported ATT MTU size [23-1020].
@@ -248,6 +249,12 @@
 #define CFG_BLE_NUM_CIS_MAX                             (2U)
 
 /**
+* Maximum number of simultaneous Link Layer procedures that can be managed, in addition to the minimum required by the stack.
+*  The minimum number guarantees one LL procedure initiated by the peer for each link, one LL procedure automatically initiated by the Controller and one LL procedure initiated by the Host.
+*/
+#define  CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS        (0)
+
+/**
  * Size of the internal FIFO used for critical controller events produced by the
  * ISR (e.g. rx data packets).
  */
@@ -307,19 +314,14 @@
                                                         CFG_BLE_NUM_BRC_BIS_MAX,\
                                                         CFG_BLE_NUM_CIG_MAX,\
                                                         CFG_BLE_NUM_CIS_MAX,\
+                                                        CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,\
                                                         CFG_BLE_ISR0_FIFO_SIZE,\
                                                         CFG_BLE_ISR1_FIFO_SIZE,\
                                                         CFG_BLE_USER_FIFO_SIZE))
 
-/**
- * Macro to define the dimension of the context array a_ClientContext.
- */
-#define CFG_BLE_NUM_CLT_CONTEXT_MAX                       (15U)
-
 #define CFG_BLE_PERIPHERAL_HANDLES_MAX                    (10U)
 
 /* USER CODE BEGIN BLE_Stack */
-
 
 /* USER CODE END BLE_Stack */
 
@@ -354,6 +356,9 @@
  *  When CFG_FULL_LOW_POWER is set to 1, the system is configured in full
  *  low power mode. It means that all what can have an impact on the consumptions
  *  are powered down.(For instance LED, Access to Debugger, Etc.)
+ *
+ *  When CFG_LPM_SUPPORTED and CFG_FULL_LOW_EMULATED are both set to 1, the system is configured to
+ *  emulate the Deepstop mode without losing the debugger connection and breakpoints nor watchpoints.
  *
  ******************************************************************************/
 

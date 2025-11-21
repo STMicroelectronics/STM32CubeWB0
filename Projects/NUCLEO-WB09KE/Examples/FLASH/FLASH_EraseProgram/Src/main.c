@@ -297,7 +297,7 @@ static void MX_GPIO_Init(void)
   */
 static uint32_t GetPage(uint32_t Addr)
 {
-  return (Addr - FLASH_BASE) / FLASH_PAGE_SIZE;;
+  return (Addr - FLASH_START_ADDR) / FLASH_PAGE_SIZE;
 }
 
 

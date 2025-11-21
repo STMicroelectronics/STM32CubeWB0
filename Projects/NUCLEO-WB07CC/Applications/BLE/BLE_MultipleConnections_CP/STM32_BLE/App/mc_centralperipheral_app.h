@@ -61,9 +61,9 @@ typedef struct
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#if (CFG_BLE_NUM_CLT_CONTEXT_MAX + CFG_BLE_PERIPHERAL_HANDLES_MAX) > CFG_NUM_RADIO_TASKS
+#if (CFG_BLE_NUM_CLIENT_CONTEXTS + CFG_BLE_PERIPHERAL_HANDLES_MAX) > CFG_NUM_RADIO_TASKS
 
-#error "The total number of central and peripheral devices that can be managed in the application depends on the number of radio tasks configured in the radio driver. Each connection, whether with a central or peripheral device, or even to have advertising enabled, requires a radio task. Current configuration: CFG_BLE_NUM_CLT_CONTEXT_MAX, CFG_BLE_PERIPHERAL_HANDLES_MAX, CFG_NUM_RADIO_TASKS"
+#error "The total number of central and peripheral devices that can be managed in the application depends on the number of radio tasks configured in the radio driver. Each connection, whether with a central or peripheral device, or even to have advertising enabled, requires a radio task. Current configuration: CFG_BLE_NUM_CLIENT_CONTEXTS, CFG_BLE_PERIPHERAL_HANDLES_MAX, CFG_NUM_RADIO_TASKS"
 
 #endif
 

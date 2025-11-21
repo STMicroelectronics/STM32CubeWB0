@@ -28,8 +28,7 @@
         peer, this is notified on the terminal with a string like
         <em>+&lt;RESP&gt;:&lt;group_id&gt;,&lt;esl_id&gt;,&lt;status&gt;[,&lt;return_params&gt;]</em>.
         Commands can be sent in broadcast with all the ESLs in the
-        group, by specifying 0xFF as ESL ID. Broadcast commands are
-        automatically retransmitted to increase reliability.</p>
+        group, by specifying 0xFF as ESL ID.</p>
         <p><em>ATE</em> can be typed to enable local echo.</p>
         <p>The number of groups is equal to the number of PAwR
         subevents, which can be configured with PAWR_NUM_SUBEVENTS macro
@@ -45,10 +44,9 @@
         Unassociate from AP</li>
         <li><em>AT+SRVRST=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Service
         Reset</li>
-        <li><em>AT+FRST=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Factory
-        Reset</li>
-        <li><em>AT+UPDCMP=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Update
-        Complete</li>
+        <li><em>AT+FRST</em>: Factory Reset (for the connected ESL)</li>
+        <li><em>AT+UPDCMP</em>: Update Complete (for the connected
+        ESL)</li>
         <li><em>AT+SENS=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;sensor_index&gt;</em>:
         Read Sensor Data</li>
         <li><em>AT+REFRESH=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;display_index&gt;</em>:
@@ -74,13 +72,16 @@
         <li><em>AT+PRICE=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;price&gt;</em>:
         Set price</li>
         </ul>
-        <p>The following AT commands can be used to perform other
-        special operations and for tests:</p>
+        <p>The following AT commands can be used to perform special
+        operations and for tests:</p>
         <ul>
-        <li><em>AT+RECONF=&lt;group_id&gt;,&lt;esl_id&gt;,&lt;new_group_id&gt;,&lt;new_esl_id&gt;</em>:
-        Reconfigure an ESL with a new address</li>
+        <li><em>AT+SCAN</em>: Scan for ESLs</li>
+        <li><em>AT+ADD=&lt;addr_type&gt;,&lt;address&gt;,&lt;group_id&gt;,&lt;esl_id&gt;</em>:
+        Perform ESL device provisioning</li>
         <li><em>AT+CONN=&lt;group_id&gt;,&lt;esl_id&gt;</em>: Connect to
         an ESL (ESL enters <em>updating state</em>)</li>
+        <li><em>AT+RECONF=&lt;new_group_id&gt;,&lt;new_esl_id&gt;</em>:
+        Reconfigure the connected ESL with a new address</li>
         <li><em>AT+INFO</em>: Read all the Information Characteristics
         from the connected ESL</li>
         <li><em>AT+DISPLAYINFO</em>: Read the Display Information
@@ -89,11 +90,8 @@
         Characteristic from the connected ESL</li>
         <li><em>AT+LEDINFO</em>: Read the LED Information Characteristic
         from the connected ESL</li>
-        <li><em>AT+CLRSCDB</em>: Delete all bonding information</li>
+        <li><em>AT+CLRNVM</em>: Delete all bonding information</li>
         <li><em>AT+ABSTIME?</em>: Read current absolute time</li>
-        <li><em>AT+SCAN</em>: Scan for ESLs</li>
-        <li><em>AT+PROVISION=&lt;addr_type&gt;,&lt;address&gt;,&lt;group_id&gt;,&lt;esl_id&gt;</em>:
-        Perform ESL device provisioning</li>
         <li><em>AT+OTPSEARCH</em>: Discover images on the connected
         server on the ESL</li>
         <li><em>AT+OTPSEARCH=&lt;name&gt;</em>: Search and select the
@@ -104,7 +102,7 @@
         to 1 to truncate image, otherwise set it to 0.</li>
         <li><em>AT+OTPWRITE=&lt;size&gt;</em>: Send image data, up to
         the given size in bytes (maximum is 5000). Data to be sent is
-        stored inside <strong>obj.c</strong> file.</li>
+        stored inside <strong>image.c</strong> file.</li>
         <li><em>AT+OTPCLOSE</em>: Close L2CAP channel to transfer image
         data. It should be issued when there are not other images to be
         sent.</li>
@@ -138,8 +136,8 @@
         <li>Launch <em>AT+SCAN</em> to discover the ESL: <em>+SCAN:
         0,0280E1AA0001</em> should be printed on the terminal.</li>
         <li>Start ESL provisioning, e.g. with
-        <em>AT+PROVISION=0,0280e1aa0001,1,2</em>, where 1 is the group
-        ID and 2 is the ESL ID.</li>
+        <em>AT+ADD=0,0280e1aa0001,1,2</em>, where 1 is the group ID and
+        2 is the ESL ID.</li>
         <li>Once provisioning is completed, ESL disconnects. Commands
         can be sent on the terminal by specifying the assigned GROUP_ID
         and ESL_ID to:
@@ -161,7 +159,7 @@
         <li>Send data with <em>AT+OTPWRITE=5000</em>.</li>
         <li>Close channel with AT+OTPCLOSE.</li>
         <li>Close connection and put ESL back to synchronized state with
-        <em>AT+UPDCMP</em> (e.g. <em>AT+UPDCMP=1,2</em>).</li>
+        <em>AT+UPDCMP</em>.</li>
         </ul></li>
         </ul>
         <h3 id="notes"><strong>Notes</strong></h3>

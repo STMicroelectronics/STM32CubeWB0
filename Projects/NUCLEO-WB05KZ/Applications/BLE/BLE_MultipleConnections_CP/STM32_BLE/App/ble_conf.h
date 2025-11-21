@@ -33,7 +33,7 @@
 /**
  * There is one handler per BLE service
  */
-#define BLE_CFG_MAX_NBR_GATT_EVT_HANDLERS                       CFG_BLE_NUM_CLT_CONTEXT_MAX
+#define BLE_CFG_MAX_NBR_GATT_EVT_HANDLERS                       (2)
 
 /* USER CODE BEGIN ble_conf_1 */
    

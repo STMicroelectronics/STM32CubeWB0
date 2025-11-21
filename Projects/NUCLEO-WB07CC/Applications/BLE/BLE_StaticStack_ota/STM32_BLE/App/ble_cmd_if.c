@@ -27,9 +27,11 @@ SECTION(".cmd_call_table")
 REQUIRED(void * const cmd_call_table[]) = {
   (void *) BLE_STACK_Init,
   (void *) BLE_STACK_Tick,
+  (void *) BLE_STACK_TickNoEvents,
   (void *) BLE_STACK_SleepCheck,
   (void *) BLE_STACK_RadioHandler,
   (void *) BLE_STACK_ReadNextRadioActivity,
+  (void *) BLE_STACK_RRMHandler,
   (void *) hci_disconnect,
   (void *) hci_read_remote_version_information,
   (void *) hci_set_event_mask,

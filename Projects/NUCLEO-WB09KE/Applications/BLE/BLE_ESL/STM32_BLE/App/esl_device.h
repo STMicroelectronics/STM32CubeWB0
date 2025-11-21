@@ -26,14 +26,14 @@
 #define NUM_IMAGES              3
 
 #if NUM_DISPLAYS
-extern uint8_t ESL_Display_Info[5*NUM_DISPLAYS];
+extern const uint8_t ESL_Display_Info[5*NUM_DISPLAYS];
 #endif
 #if NUM_SENSORS
 /* Size depends on type and number of sensors. To be changed accordingly. */
-extern uint8_t ESL_Sensor_info[3];
+extern const uint8_t ESL_Sensor_info[3];
 #endif
 #if NUM_LEDS
-extern uint8_t ESL_LED_info[NUM_LEDS];
+extern const uint8_t ESL_LED_info[NUM_LEDS];
 #endif
 
 /* Callbacks to be implemented. */
@@ -41,10 +41,12 @@ void ESL_DEVICE_LEDControlCmdCB(uint8_t led_index,  uint8_t led_RGB_Brigthness, 
 uint8_t ESL_DEVICE_SensorDataCmdCB(uint8_t sensor_index, uint8_t *data_p, uint8_t *data_length_p);
 uint8_t ESL_DEVICE_TxtVsCmdCB(uint8_t txt_length, char *txt_p);
 uint8_t ESL_DEVICE_PriceVsCmdCB(uint16_t int_part, uint8_t fract_part);
-void ESL_DEVICE_DisplayImageCmdCB(uint8_t display_index, uint8_t image_index);
+uint8_t ESL_DEVICE_DisplayImageCmdCB(uint8_t display_index, uint8_t image_index);
+/* ESL_DEVICE_DisplayTimedImageCmdCB() is called when the Timed command is received to verify image validity.
+   ESL_DEVICE_DisplayImageCmdCB() will be called when execution time is reached. */
+uint8_t ESL_DEVICE_DisplayTimedImageCmdCB(uint8_t image_index);
 void ESL_DEVICE_ServiceResetCmdCB(void);
 void ESL_DEVICE_FactoryResetCB(void);
-void ESL_DEVICE_RefreshDisplayCmdCB(uint8_t display_index, uint8_t *image_index_p);
-uint8_t returnIndexCurrImage(void);
+uint8_t ESL_DEVICE_RefreshDisplayCmdCB(uint8_t display_index, uint8_t *image_index_p);
 
 #endif /* ESL_DEVICE_H */

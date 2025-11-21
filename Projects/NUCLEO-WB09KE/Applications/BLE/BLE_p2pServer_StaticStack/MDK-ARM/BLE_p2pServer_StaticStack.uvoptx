@@ -1028,7 +1028,7 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>..\..\BLE_StaticStack\Binary\ble_static_stack_sym.a</PathWithFileName>
+      <PathWithFileName>..\Binary\ble_static_stack_sym.a</PathWithFileName>
       <FilenameWithoutPath>ble_static_stack_sym.a</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

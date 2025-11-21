@@ -242,6 +242,7 @@ __WEAK void APPE_Button3Action(void)
 static PowerSaveLevels App_PowerSaveLevel_Check(void)
 {
   PowerSaveLevels output_level = POWER_SAVE_LEVEL_STOP;
+
   /* USER CODE BEGIN App_PowerSaveLevel_Check_1 */
   
   /* Enable UART CLOCK for the DEBUG MSG */

@@ -1367,7 +1367,7 @@
                 <name>$PROJ_DIR$\..\..\..\..\..\..\Middlewares\ST\STM32_BLE\evt_handler\src\ble_evt.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\..\BLE_StaticStack\Binary\ble_static_stack_sym.a</name>
+                <name>$PROJ_DIR$\..\Binary\ble_static_stack_sym.a</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\..\..\..\..\..\Middlewares\ST\STM32_BLE\queued_writes\src\eatt_pwrq.c</name>

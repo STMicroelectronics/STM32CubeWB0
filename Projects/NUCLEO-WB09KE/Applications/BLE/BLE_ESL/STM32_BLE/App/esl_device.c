@@ -23,6 +23,7 @@
 #include "time_ref.h"
 #include "app_ble.h"
 #include "led_flash.h"
+#include "ots_app.h"
 
 /* Property ID used for Sensor Type, as specified in Mesh Device Properties.
    Present Input Voltage:
@@ -32,20 +33,18 @@
    Unit is volt with a resolution of 1/64V.   */
 #define PRESENT_INPUT_VOLTAGE_PROP_ID       0x0059
 
-bool bFactoryReset = false;
-
 extern ADC_HandleTypeDef hadc;
 
 /* The ESL Display Information characteristic value consists of an array of one or more Display Data:
-    - Width (uint16) = 0x01F4  (500 pixels)
-    - Height (uint16) = 0x0064 (100 pixels)
-    - Display_Type (uint8) = 0x0B (Full RGB) */
-uint8_t ESL_Display_Info[] = {0xF4, 0x01, 0x64, 0x00, 0x0B};
+    - Width (uint16) = 0x00C8  (200 pixels)
+    - Height (uint16) = 0x00C8 (200 pixels)
+    - Display_Type (uint8) = 0x01 (black white) */
+const uint8_t ESL_Display_Info[] = {0xC8, 0x00, 0xC8, 0x00, 0x01};
 
 /* ESL Sensor Information Characteristic fields values for one sensor (battery):
    - Size = 0x00
    - Sensor_Type: Present Input Voltage Property ID  */
-uint8_t ESL_Sensor_info[] = {0x00, PRESENT_INPUT_VOLTAGE_PROP_ID & 0xFF, (PRESENT_INPUT_VOLTAGE_PROP_ID >> 8) & 0xFF};
+const uint8_t ESL_Sensor_info[] = {0x00, PRESENT_INPUT_VOLTAGE_PROP_ID & 0xFF, (PRESENT_INPUT_VOLTAGE_PROP_ID >> 8) & 0xFF};
 
 /* The ESL LED Information characteristic is an array of one or more octets in 
    which each octet represents an LED that is supported by the ESL.
@@ -53,10 +52,20 @@ uint8_t ESL_Sensor_info[] = {0x00, PRESENT_INPUT_VOLTAGE_PROP_ID & 0xFF, (PRESEN
     - index 0: LED Blue  01110000 = 0x70 
     - index 1: LED Green 01001100 = 0x4C 
     - index 2: LED Red   01000011 = 0x43  */ 
-uint8_t ESL_LED_info[] = {0x70, 0x4c, 0x43};
+const uint8_t ESL_LED_info[] = {0x70, 0x4c, 0x43};
 
+typedef struct
+{
+  uint8_t curr_img_index;
+} ESL_DEVICE_Context_t;
+
+ESL_DEVICE_Context_t ESL_DEVICE_Context = 
+{
+  .curr_img_index = 0xFF,
+};
 
 #if NUM_LEDS
+
 void ESL_DEVICE_LEDControlCmdCB(uint8_t led_index, uint8_t led_RGB_Brigthness, uint8_t led_flash_pattern[5], uint8_t off_period, uint8_t on_period, uint16_t led_repeat)
 {
   Led_TypeDef Led;
@@ -98,7 +107,6 @@ void ESL_DEVICE_LEDControlCmdCB(uint8_t led_index, uint8_t led_RGB_Brigthness, u
   APP_DBG_MSG("LED Repeats:  0x%04x [Repeat type: %d - Repeat duration: 0x%04x]\n", 
               led_repeat, repeat_type, repeat_duration);
   
-  //to implement LED brightness
   
   if(repeat_duration == 0)
   { 
@@ -163,13 +171,54 @@ uint8_t ESL_DEVICE_PriceVsCmdCB(uint16_t int_part, uint8_t fract_part)
 }
 
 #if NUM_DISPLAYS
-void ESL_DEVICE_DisplayImageCmdCB(uint8_t display_index, uint8_t image_index)
+
+uint8_t ESL_DEVICE_DisplayImageCmdCB(uint8_t display_index, uint8_t image_index)
 {
-  APP_DBG_MSG("ESL_DEVICE_DisplayImageCmdCB: display %d, image %d\n", display_index, image_index);
+  OTS_ObjInfo_t obj_info;
+  
+  OTS_APP_GetObjInfo(image_index, &obj_info);
+  
+  if(obj_info.size == 0)
+  {
+    APP_DBG_MSG("Image not available.\n");
+    return ERROR_IMAGE_NOT_AVAILABLE;
+  }
+  
+  APP_DBG_MSG("Display Index: %d - Image Index: %d\n", display_index, image_index);
+
+  ESL_DEVICE_Context.curr_img_index = image_index;
+  
+  return 0;
 }
 
-void ESL_DEVICE_RefreshDisplayCmdCB(uint8_t display_index, uint8_t *image_index_p)
+uint8_t ESL_DEVICE_DisplayTimedImageCmdCB(uint8_t image_index)
 {
+  OTS_ObjInfo_t obj_info;
+  
+  OTS_APP_GetObjInfo(image_index, &obj_info);
+  
+  if(obj_info.size == 0)
+  {
+    APP_DBG_MSG("Image not available.\n");
+    return ERROR_IMAGE_NOT_AVAILABLE;
+  }
+  
+  return 0;
+}
+
+uint8_t ESL_DEVICE_RefreshDisplayCmdCB(uint8_t display_index, uint8_t *image_index_p)
+{
+  if(ESL_DEVICE_Context.curr_img_index == 0xFF)
+  {
+    APP_DBG_MSG("No image displayed.\n");
+    return ERROR_IMAGE_NOT_AVAILABLE;
+  }
+  
+  *image_index_p = ESL_DEVICE_Context.curr_img_index;
+    
+  APP_DBG_MSG("Refresh Display Command - Index: %d\n", display_index);
+  
+  return 0;
 }
 
 #endif
@@ -219,10 +268,11 @@ void ESL_DEVICE_ServiceResetCmdCB(void)
      We may keep Service Needed state if condition requiring service is still
      present.  */
   
-  ESL_APP_Reset_Basic_State_Bitmap(BASIC_STATE_SERVICE_NEEDED_BIT);
+  ESL_APP_ResetBasicStateBitmap(BASIC_STATE_SERVICE_NEEDED_BIT);
 }
 
 void ESL_DEVICE_FactoryResetCB(void)
 {
+  OTS_APP_DeleteImages();
   HAL_NVIC_SystemReset();
 }

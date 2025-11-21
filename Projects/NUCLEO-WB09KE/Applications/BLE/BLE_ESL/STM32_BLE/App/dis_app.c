@@ -56,7 +56,7 @@ typedef struct
 
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-uint8_t DISAPP_PNPID_REVISION[] = {0x01, 0x30, 0x00, 0x01, 0x00, 0x01, 0x00};
+
 /* USER CODE END PD */
 
 /* External variables --------------------------------------------------------*/
@@ -73,7 +73,7 @@ uint8_t DISAPP_PNPID_REVISION[] = {0x01, 0x30, 0x00, 0x01, 0x00, 0x01, 0x00};
 static DIS_APP_Context_t DIS_APP_Context;
 
 /* USER CODE BEGIN PV */
-
+uint8_t DISAPP_PNPID_REVISION[] = {0x01, 0x30, 0x00, 0x01, 0x00, 0x01, 0x00};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

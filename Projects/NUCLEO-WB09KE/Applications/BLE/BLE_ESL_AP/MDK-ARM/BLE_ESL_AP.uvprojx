@@ -340,7 +340,7 @@
               <MiscControls>-fshort-enums</MiscControls>
               <Define>NUCLEO_WB09KE,USE_FULL_LL_DRIVER,USE_HAL_DRIVER,STM32WB09,DISABLE_WATCHDOG</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../System/Config/Debug_GPIO;../System/Interfaces;..\..\..\..\..\..\Projects\Common\BLE\Interfaces;..\..\..\..\..\..\Projects\Common\BLE\Modules;..\..\..\..\..\..\Projects\Common\BLE\Modules\RTDebug;..\..\..\..\..\..\Projects\Common\BLE\Modules\RADIO_utils\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\Profiles\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\PKAMGR\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\NVMDB\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\Flash;../../../../../../Utilities/trace/adv_trace;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Utilities/misc;../../../../../../Utilities/sequencer;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/ECB;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;..\..\..\..\..\..\Projects\Common\BLE\Startup</IncludePath>
+              <IncludePath>../Core/Inc;../STM32_BLE/App;../STM32_BLE/Target;../System/Config/Debug_GPIO;../System/Interfaces;..\System\Modules\NVMDB\Inc;..\..\..\..\..\..\Projects\Common\BLE\Interfaces;..\..\..\..\..\..\Projects\Common\BLE\Modules;..\..\..\..\..\..\Projects\Common\BLE\Modules\RTDebug;..\..\..\..\..\..\Projects\Common\BLE\Modules\RADIO_utils\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\Profiles\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\PKAMGR\Inc;..\..\..\..\..\..\Projects\Common\BLE\Modules\Flash;../../../../../../Utilities/trace/adv_trace;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc;../../../../../../Drivers/STM32WB0x_HAL_Driver/Inc/Legacy;../../../../../../Utilities/misc;../../../../../../Utilities/sequencer;../../../../../../Utilities/lpm/tiny_lpm;../../../../../../Middlewares/ST/STM32_BLE;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CBC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/CMAC;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/Common;../../../../../../Middlewares/ST/STM32_BLE/cryptolib/Inc/AES/ECB;../../../../../../Drivers/CMSIS/Device/ST/STM32WB0X/Include;../../../../../../Middlewares/ST/STM32_BLE/evt_handler/inc;../../../../../../Middlewares/ST/STM32_BLE/queued_writes/inc;../../../../../../Middlewares/ST/STM32_BLE/stack/include;../../../../../../Drivers/CMSIS/Include;../../../../../../Drivers/BSP/STM32WB0x-nucleo;..\..\..\..\..\..\Projects\Common\BLE\Startup</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -439,6 +439,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Application/User/System/NVMDB</GroupName>
+          <Files>
+            <File>
+              <FileName>nvm_db.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Modules\NVMDB\Src\nvm_db.c</FilePath>
+            </File>
+            <File>
+              <FileName>nvm_db_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\System\Modules\NVMDB\Src\nvm_db_conf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>Application/User/STM32_BLE/Target</GroupName>
           <Files>
             <File>
@@ -492,9 +507,9 @@
               <FilePath>..\STM32_BLE\App\otp_client.c</FilePath>
             </File>
             <File>
-              <FileName>obj.c</FileName>
+              <FileName>image.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\STM32_BLE\App\obj.c</FilePath>
+              <FilePath>..\STM32_BLE\App\image.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -785,21 +800,6 @@
               <FileName>pka_manager.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\Common\BLE\Modules\PKAMGR\Src\pka_manager.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Common/BLE/Modules/NVMDB</GroupName>
-          <Files>
-            <File>
-              <FileName>nvm_db.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\Common\BLE\Modules\NVMDB\Src\nvm_db.c</FilePath>
-            </File>
-            <File>
-              <FileName>nvm_db_conf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\Common\BLE\Modules\NVMDB\Src\nvm_db_conf.c</FilePath>
             </File>
           </Files>
         </Group>

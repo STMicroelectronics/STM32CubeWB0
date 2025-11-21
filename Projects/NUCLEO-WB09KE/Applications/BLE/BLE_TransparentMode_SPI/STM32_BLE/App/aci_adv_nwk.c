@@ -800,4 +800,3 @@ tBleStatus aci_gap_decrypt_adv_data_nwk(uint8_t session_key[16],
 
 #endif
 
-/******************* (C) COPYRIGHT 2020 STMicroelectronics *****END OF FILE****/

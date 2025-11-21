@@ -157,8 +157,6 @@ static const char a_GapDeviceName[] = {  'P', 'r', 'i', 'v', 'a', 'c', 'y', ' ',
 
 /* USER CODE BEGIN PV */
 
-static uint16_t new_ConnHdl;
-
 /* 'Privacy_peripheral' is the code used at application level in order to allow peripheral selection from central */
 /* Peripheral local name: don't change it */
 static uint8_t peripheral_local_name[] = {AD_TYPE_COMPLETE_LOCAL_NAME,'P', 'r', 'i', 'v', 'a', 'c', 'y', ' ', 'P', 'e', 'r', 'i', 'p', 'h', 'e', 'r', 'a', 'l'};
@@ -254,6 +252,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -502,6 +501,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -569,10 +575,14 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
     {
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
+      GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+      notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;
+      GATT_CLIENT_APP_Notification(&notif);
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -852,7 +862,8 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           {
             /* At pairing completion, the central writes the characteristic to enable the notification. */
             APP_DBG_MSG("At pairing completion, the central writes the characteristic to enable the notification.\n");
-            UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+            
+            GATT_CLIENT_APP_Discover_services(p_pairing_complete->Connection_Handle);
           }
           /* USER CODE END ACI_GAP_PAIRING_COMPLETE_VSEVT_CODE*/
         }
@@ -924,10 +935,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
-                                      uint16_t Conn_Interval,
+                                      uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
+
   if(Status != 0)
   {
     APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
@@ -945,28 +958,29 @@ static void connection_complete_event(uint8_t Status,
               Peer_Address[2],
               Peer_Address[1],
               Peer_Address[0]);
-   APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
-               INT(Conn_Interval*1.25),
-               FRACTIONAL_2DIGITS(Conn_Interval*1.25),
-               Peripheral_Latency,
-               Supervision_Timeout * 10
-                 );
+  APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
+              INT(Connection_Interval*1.25),
+              FRACTIONAL_2DIGITS(Connection_Interval*1.25),
+              Peripheral_Latency,
+              Supervision_Timeout * 10);
 
-   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
-   {
-     /* Connection as client */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
-   }
-   else
-   {
-     /* Connection as server */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
-   }
-   bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
+  if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
+  {
+    /* Connection as client */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
 
-   GATT_CLIENT_APP_Set_Conn_Handle(0, Connection_Handle);
+    notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+    notif.ConnHdl = Connection_Handle;
+    GATT_CLIENT_APP_Notification(&notif);
+  }
+  else
+  {
+    /* Connection as server */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
+  }
+  bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
 
-   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
+  /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
    
    if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
    {                
@@ -974,34 +988,16 @@ static void connection_complete_event(uint8_t Status,
    }
    if (Role == HCI_ROLE_CENTRAL)
    { 
-     /* Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function. */
-     new_ConnHdl = Connection_Handle;
      APP_DBG_MSG("Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function.\n");
      UTIL_SEQ_SetEvt(1 << CFG_IDLEEVT_CONNECTION_COMPLETE);
    }
-   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
+  /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
 
 }/* end hci_le_connection_complete_event() */
 
 /* USER CODE BEGIN EVT_VENDOR_2 */
 
 /* USER CODE END EVT_VENDOR_2 */
-
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle)
-{
-  APP_BLE_ConnStatus_t conn_status;
-
-  if (bleAppContext.BleApplicationContext_legacy.connectionHandle == Connection_Handle)
-  {
-    conn_status = bleAppContext.Device_Connection_Status;
-  }
-  else
-  {
-    conn_status = APP_BLE_IDLE;
-  }
-
-  return conn_status;
-}
 
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId)
 {
@@ -1299,14 +1295,8 @@ static void Connect_Request(void)
     {
       bleAppContext.Device_Connection_Status = APP_BLE_LP_CONNECTING;
       APP_DBG_MSG("  wait for event HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE\n");
-      UTIL_SEQ_WaitEvt(1u << CFG_IDLEEVT_CONNECTION_COMPLETE); 
+      UTIL_SEQ_WaitEvt(1u << CFG_IDLEEVT_CONNECTION_COMPLETE);
       APP_DBG_MSG("  received event HCI_LE_CONNECTION_COMPLETE_SUBEVT_CODE\n");
-      
-      if(new_ConnHdl != 0u)
-      {
-        GATT_CLIENT_APP_Set_Conn_Handle(0, new_ConnHdl);
-        new_ConnHdl = 0u;
-      }
     }
     else
     {

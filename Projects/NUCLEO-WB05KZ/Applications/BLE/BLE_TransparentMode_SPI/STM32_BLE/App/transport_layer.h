@@ -148,6 +148,5 @@ void TL_CSHandler(void);
 void TL_ProcessReqCallback(void);
 /* A request to reset the devie has been received. */
 void TL_ResetReqCallback(void);
-PowerSaveLevels TL_PowerSaveLevelCheck(void);
 
 #endif /* TRANSPORT_LAYER_H */

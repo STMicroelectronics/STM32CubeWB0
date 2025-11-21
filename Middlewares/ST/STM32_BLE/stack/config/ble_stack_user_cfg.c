@@ -486,77 +486,6 @@ tBleStatus hci_acl_data_ind_event_int_cb_ucfg(void* header_p,
 }
 #endif /* (CONNECTION_ENABLED == 1) */
 
-#if (DTM_DEBUG_ENABLED == 1)
-uint8_t log_verbosity_set_ucfg(void* p)
-{
-    return log_verbosity_set(p);
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-void log_verbosity_get_ucfg(void* verb_p)
-{
-    log_verbosity_get(verb_p);
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-void log_init_ucfg(void)
-{
-    log_init();
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-void log_notify_stu_ucfg(uint8_t lvl,
-                         uint8_t cid,
-                         uint16_t mid,
-                         uint8_t uid,
-                         uint8_t fmt,
-                         uint8_t len,
-                         uint8_t* buf_p)
-{
-    log_notify_stu(lvl,
-                   cid,
-                   mid,
-                   uid,
-                   fmt,
-                   len,
-                   buf_p);
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-void log_notify_us_deferred_ucfg(uint8_t lvl,
-                                 uint8_t cid,
-                                 uint16_t mid,
-                                 uint8_t uid,
-                                 uint8_t add_info_present,
-                                 uint32_t add_info)
-{
-    log_notify_us_deferred(lvl,
-                           cid,
-                           mid,
-                           uid,
-                           add_info_present,
-                           add_info);
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-void log_notify_us_flush_ucfg(void)
-{
-    log_notify_us_flush();
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
-#if (DTM_DEBUG_ENABLED == 1)
-uint32_t log_csr_ucfg(void)
-{
-    return log_csr();
-}
-#endif /* (DTM_DEBUG_ENABLED == 1) */
-
 #if (CONNECTION_ENABLED == 1)
 void LLC_offline_control_procedures_processing_ucfg(uint16_t task_idx)
 {
@@ -845,6 +774,124 @@ void smp_sap_hci_le_generate_dhkey_complete_evt_hndl_ucfg(uint8_t status,
 #endif /* ((SECURE_CONNECTIONS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
 #endif /* (BLESTACK_CONTROLLER_ONLY == 0) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+uint8_t ble_stack_log_verbosity_set_ucfg(void* p)
+{
+    return ble_stack_log_verbosity_set(p);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void ble_stack_log_verbosity_get_ucfg(void* verb_p)
+{
+    ble_stack_log_verbosity_get(verb_p);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void ble_stack_log_init_ucfg(void)
+{
+    ble_stack_log_init();
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void ble_stack_log_notify_stu_ucfg(uint8_t lvl,
+                                   uint8_t cid,
+                                   uint16_t mid,
+                                   uint8_t uid,
+                                   uint8_t fmt,
+                                   uint8_t len,
+                                   uint8_t* buf_p,
+                                   uint8_t isr)
+{
+    ble_stack_log_notify_stu(lvl,
+                             cid,
+                             mid,
+                             uid,
+                             fmt,
+                             len,
+                             buf_p,
+                             isr);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void ble_stack_log_notify_us_deferred_ucfg(uint8_t lvl,
+                                           uint8_t cid,
+                                           uint16_t mid,
+                                           uint8_t uid,
+                                           uint8_t add_info_present,
+                                           uint32_t add_info)
+{
+    ble_stack_log_notify_us_deferred(lvl,
+                                     cid,
+                                     mid,
+                                     uid,
+                                     add_info_present,
+                                     add_info);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void ble_stack_log_notify_us_flush_ucfg(void)
+{
+    ble_stack_log_notify_us_flush();
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+uint32_t ble_stack_log_csr_ucfg(void)
+{
+    return ble_stack_log_csr();
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+int llc_isr_tim_mon_reset_stat_params_ucfg(uint8_t* params_p)
+{
+    return llc_isr_tim_mon_reset_stat_params(params_p);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void llc_isr_tim_mon_stat_abs_ucfg(uint8_t mod_id,
+                                   uint8_t var_id,
+                                   uint8_t checkp)
+{
+    llc_isr_tim_mon_stat_abs(mod_id,
+                             var_id,
+                             checkp);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void llc_isr_tim_mon_stat_rel_ucfg(uint8_t mod_id,
+                                   uint8_t var_id,
+                                   uint8_t checkp)
+{
+    llc_isr_tim_mon_stat_rel(mod_id,
+                             var_id,
+                             checkp);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void llc_isr_tim_mon_stat_check_ucfg(uint8_t mod_id,
+                                     uint8_t var_id)
+{
+    llc_isr_tim_mon_stat_check(mod_id,
+                               var_id);
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
+
+#if (DTM_DEBUG_ENABLED == 1)
+void llc_isr_tim_mon_stat_notify_ucfg(void)
+{
+    llc_isr_tim_mon_stat_notify();
+}
+#endif /* (DTM_DEBUG_ENABLED == 1) */
 
 #if (BLESTACK_CONTROLLER_ONLY == 0)
 #if ((L2CAP_COS_ENABLED == 1) &&\
@@ -1405,17 +1452,17 @@ tBleStatus llc_big_cmn_get_iso_params_ucfg(uint8_t direction,
       )\
      )\
     )
-uint32_t llc_cig_cen_get_cis_offset_from_acl_us_ucfg(void* ctx_p,
+uint16_t llc_cig_cen_get_cis_offset_from_acl_us_ucfg(void* ctx_p,
                                                      void* cis_p,
                                                      uint8_t conn_idx,
-                                                     uint16_t* event_count_p,
-                                                     uint32_t* cig_anchor_st_p)
+                                                     uint32_t* cis_min_offset_us_p,
+                                                     uint32_t* cis_max_offset_us_p)
 {
     return llc_cig_cen_get_cis_offset_from_acl_us(ctx_p,
                                                   cis_p,
                                                   conn_idx,
-                                                  event_count_p,
-                                                  cig_anchor_st_p);
+                                                  cis_min_offset_us_p,
+                                                  cis_max_offset_us_p);
 }
 #endif
 
@@ -1526,6 +1573,27 @@ uint32_t llc_cig_cmn_get_own_cig_event_time_ucfg(void* ctx_p,
 
 #if ((CONTROLLER_CIS_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
+void llc_cig_cmn_get_cis_anchor_range_ucfg(void* cig_p,
+                                           void* cis_p,
+                                           uint8_t conn_idx,
+                                           uint16_t event_offset,
+                                           uint16_t* acl_event_counter_p,
+                                           uint32_t* cis_min_offset_us_p,
+                                           uint32_t* cis_max_offset_us_p)
+{
+    llc_cig_cmn_get_cis_anchor_range(cig_p,
+                                     cis_p,
+                                     conn_idx,
+                                     event_offset,
+                                     acl_event_counter_p,
+                                     cis_min_offset_us_p,
+                                     cis_max_offset_us_p);
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
 tBleStatus llc_cig_cmn_enqueue_pdu_to_tx_ucfg(void* ctx_p,
                                               uint32_t iso_interval_idx,
                                               uint16_t conn_handle,
@@ -1563,18 +1631,18 @@ void llc_cig_cmn_start_cis_ucfg(uint8_t conn_idx,
 
 #if ((CONTROLLER_CIS_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
-uint8_t llc_cig_cmn_is_active_cis_on_acl_ucfg(uint16_t acl_conn_handle)
+uint8_t llc_cig_cmn_is_active_cis_on_acl_ucfg(uint8_t acl_conn_idx)
 {
-    return llc_cig_cmn_is_active_cis_on_acl(acl_conn_handle);
+    return llc_cig_cmn_is_active_cis_on_acl(acl_conn_idx);
 }
 #endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
 
 #if ((CONTROLLER_CIS_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
-void llc_cig_cmn_terminate_cises_on_acl_ucfg(uint16_t acl_conn_handle)
+void llc_cig_cmn_terminate_cises_on_acl_ucfg(uint8_t conn_idx)
 {
-    llc_cig_cmn_terminate_cises_on_acl(acl_conn_handle);
+    llc_cig_cmn_terminate_cises_on_acl(conn_idx);
 }
 #endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
@@ -1588,6 +1656,30 @@ void llc_cig_cmn_cis_established_event_gen_ucfg(void* cig_p,
     llc_cig_cmn_cis_established_event_gen(cig_p,
                                           cis_p,
                                           status);
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+tBleStatus llc_cig_cmn_check_params_ucfg(uint8_t cig_id,
+                                         void* cig_p,
+                                         void* cis_p)
+{
+    return llc_cig_cmn_check_params(cig_id,
+                                    cig_p,
+                                    cis_p);
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+tBleStatus llc_cig_cmn_check_iso_params_ucfg(void* cig_p,
+                                             void* cis_p)
+{
+    return llc_cig_cmn_check_iso_params(cig_p,
+                                        cis_p);
 }
 #endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
@@ -1624,6 +1716,25 @@ tBleStatus llc_cig_cmn_read_iso_link_quality_ucfg(uint16_t conn_handle,
                                              crc_error_packets_p,
                                              rx_unreceived_packets_p,
                                              duplicate_packets_p);
+}
+#endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1)) */
+
+#if ((CONTROLLER_CIS_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1))
+tBleStatus llc_cig_cmn_validate_cis_params_from_acl_ucfg(void* ctx_p,
+                                                         void* cis_p,
+                                                         uint8_t conn_idx,
+                                                         uint16_t event_counter,
+                                                         uint32_t cis_min_offset_us,
+                                                         uint32_t cis_max_offset_us)
+{
+    return llc_cig_cmn_validate_cis_params_from_acl(ctx_p,
+                                                    cis_p,
+                                                    conn_idx,
+                                                    event_counter,
+                                                    cis_min_offset_us,
+                                                    cis_max_offset_us);
 }
 #endif /* ((CONTROLLER_CIS_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1)) */
@@ -2078,17 +2189,6 @@ void llc_pscan_cancel_slot_cte_ucfg(void* cntxt_per_p)
 #if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
     (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
     (CONTROLLER_SCAN_ENABLED == 1)
-uint8_t llc_pscan_isr_ucfg(void* cntxt_per_p)
-{
-    return llc_pscan_isr(cntxt_per_p);
-}
-#endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-          (CONTROLLER_SCAN_ENABLED == 1) */
-
-#if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-    (CONTROLLER_SCAN_ENABLED == 1)
 void llc_pscan_init_ucfg(void)
 {
     llc_pscan_init();
@@ -2202,21 +2302,6 @@ void llc_pscan_synchronizing_ucfg(void* params_p)
 #endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
           (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
           (CONTROLLER_SCAN_ENABLED == 1) */
-
-#if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-    (CONTROLLER_SCAN_ENABLED == 1) &&\
-    (CONTROLLER_CTE_ENABLED == 1)
-void llc_pscan_wrong_cte_type_ucfg(void* cntxt_p,
-                                   uint8_t pawr_feat)
-{
-    llc_pscan_wrong_cte_type(cntxt_p,
-                             pawr_feat);
-}
-#endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
-          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
-          (CONTROLLER_SCAN_ENABLED == 1) &&\
-          (CONTROLLER_CTE_ENABLED == 1) */
 
 #if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
     (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) &&\
@@ -2406,37 +2491,21 @@ void llc_scan_conn_ind_sent_ucfg(void* ptr,
 #endif /* (CONTROLLER_SCAN_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
 
-#if (CONTROLLER_SCAN_ENABLED == 1)
-uint8_t llc_scan_isr_uncoded_ucfg(void* cntxt_p)
-{
-    return llc_scan_isr_uncoded(cntxt_p);
-}
-#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
-
 #if (CONTROLLER_SCAN_ENABLED == 1) &&\
     (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)
-uint8_t llc_scan_isr_coded_ucfg(void* cntxt_p)
+void llc_scan_process_ext_adv_ucfg(void* scan_p,
+                                   void* params_p,
+                                   uint32_t direct_addr[2],
+                                   uint8_t idx,
+                                   uint8_t advertiser_addr_flag,
+                                   uint8_t* send_report_p)
 {
-    return llc_scan_isr_coded(cntxt_p);
-}
-#endif /* (CONTROLLER_SCAN_ENABLED == 1) &&\
-          (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) */
-
-#if (CONTROLLER_SCAN_ENABLED == 1) &&\
-    (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)
-uint8_t llc_scan_process_ext_adv_ucfg(void* scan_p,
-                                      void* params_p,
-                                      uint32_t direct_addr[2],
-                                      uint8_t idx,
-                                      uint8_t advertiser_addr_flag,
-                                      uint8_t* send_report_p)
-{
-    return llc_scan_process_ext_adv(scan_p,
-                                    params_p,
-                                    direct_addr,
-                                    idx,
-                                    advertiser_addr_flag,
-                                    send_report_p);
+    llc_scan_process_ext_adv(scan_p,
+                             params_p,
+                             direct_addr,
+                             idx,
+                             advertiser_addr_flag,
+                             send_report_p);
 }
 #endif /* (CONTROLLER_SCAN_ENABLED == 1) &&\
           (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) */
@@ -2541,22 +2610,6 @@ void llc_scan_disable_ucfg(void* scan_p)
 }
 #endif /* (CONTROLLER_SCAN_ENABLED == 1) &&\
           (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) */
-
-#if (CONTROLLER_SCAN_ENABLED == 1)
-uint8_t llc_scan_stop_ucfg(uint8_t scan_disable)
-{
-    return llc_scan_stop(scan_disable);
-}
-#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
-
-#if ((CONNECTION_SUBRATING_ENABLED == 1) &&\
-    (CONNECTION_ENABLED == 1))
-uint8_t llc_subrate_get_active_sr_req_proc_ucfg(uint8_t conn_idx)
-{
-    return llc_subrate_get_active_sr_req_proc(conn_idx);
-}
-#endif /* ((CONNECTION_SUBRATING_ENABLED == 1) &&\
-          (CONNECTION_ENABLED == 1)) */
 
 #if ((CONNECTION_SUBRATING_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1))
@@ -2789,6 +2842,17 @@ void LLC_connection_cte_response_pause_resume_ucfg(uint8_t conn_idx,
 
 #if (CONTROLLER_CTE_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1)
+void LLC_connection_cte_request_disable_ucfg(uint8_t conn_idx,
+                                             uint8_t taskslot_no)
+{
+    LLC_connection_cte_request_disable(conn_idx,
+                                       taskslot_no);
+}
+#endif /* (CONTROLLER_CTE_ENABLED == 1) &&\
+          (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_CTE_ENABLED == 1) &&\
+    (CONNECTION_ENABLED == 1)
 void LLC_connection_cte_response_disable_ucfg(uint8_t conn_idx,
                                               uint8_t taskslot_no)
 {
@@ -2970,9 +3034,11 @@ tBleStatus LL_phy_update_init_ucfg(void)
 
 #if (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
     (CONNECTION_ENABLED == 1)
-tBleStatus LL_phy_update_init_per_st_data_ucfg(uint8_t conn_idx)
+tBleStatus LL_phy_update_init_per_st_data_ucfg(uint8_t conn_idx,
+                                               uint8_t hw_phy)
 {
-    return LL_phy_update_init_per_st_data(conn_idx);
+    return LL_phy_update_init_per_st_data(conn_idx,
+                                          hw_phy);
 }
 #endif /* (CONTROLLER_2M_CODED_PHY_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
@@ -3074,9 +3140,11 @@ void llc_cte_timer_error_ucfg(void)
     (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
     (CONTROLLER_SCAN_ENABLED == 1) &&\
     (CONTROLLER_CTE_ENABLED == 1)
-void llc_cte_timer_start_ucfg(void* params)
+void llc_cte_timer_start_ucfg(void* params,
+                              uint32_t radio_task_anchor)
 {
-    llc_cte_timer_start(params);
+    llc_cte_timer_start(params,
+                        radio_task_anchor);
 }
 #endif /* ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
           (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)) &&\
@@ -3111,13 +3179,13 @@ void LLC_test_set_cte_ucfg(void* params)
 #endif /* (CONTROLLER_CTE_ENABLED == 1) */
 
 #if (CONNECTION_ENABLED == 1)
-void ADV_ISR_connect_request_received_ucfg(void* pointer,
+uint8_t ADV_ISR_connect_request_received_ucfg(void* pointer,
                                            uint8_t* packet,
                                            void* PeerIDAddress_p)
 {
-    ADV_ISR_connect_request_received(pointer,
-                                     packet,
-                                     PeerIDAddress_p);
+    return ADV_ISR_connect_request_received(pointer,
+                                            packet,
+                                            PeerIDAddress_p);
 }
 #endif /* (CONNECTION_ENABLED == 1) */
 
@@ -3154,9 +3222,11 @@ tBleStatus llc_eadv_max_supported_data_check_ucfg(uint16_t data_length,
 #endif /* (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) */
 
 #if (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)
-void LL_eadv_start_extended_ucfg(void* pointer)
+tBleStatus LL_eadv_start_extended_ucfg(void* pointer,
+                                       uint32_t anchor_stu)
 {
-    LL_eadv_start_extended(pointer);
+    return LL_eadv_start_extended(pointer,
+                                  anchor_stu);
 }
 #endif /* (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) */
 

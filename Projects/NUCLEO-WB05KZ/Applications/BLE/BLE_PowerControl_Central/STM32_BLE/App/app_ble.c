@@ -158,18 +158,18 @@ typedef struct
 #define STATS_INTERVAL_MS                                                  10000
 
 /* Values for power control */
-#define RSSI_TARGET_1M              -70  // dBm
-#define RSSI_TARGET_2M              -67  // dBm
-#define RSSI_TARGET_CODED_S8        -77  // dBm
-#define RSSI_TARGET_CODED_S2        -73  // dBm
-#define RSSI_HYSTERESIS               8  // dB
+#define RSSI_TARGET_1M              -65  // dBm
+#define RSSI_TARGET_2M              -62  // dBm
+#define RSSI_TARGET_CODED_S8        -72  // dBm
+#define RSSI_TARGET_CODED_S2        -68  // dBm
+#define RSSI_HYSTERESIS              10  // dB
 
 /* Values for path loss monitoring */
 #define HIGH_THRESHOLD      74  // dB
 #define HIGH_HYSTERESIS     6   // dB
 #define LOW_THRESHOLD       55  // dB
 #define LOW_HYSTERESIS      6   // dB
-#define MIN_TIME            4   // Connection events
+#define MIN_TIME            6   // Connection events
 
 #define PATHLOSS_LOW_LED_INTERVAL_MS    100
 #define PATHLOSS_MID_LED_INTERVAL_MS    300
@@ -302,6 +302,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -374,16 +375,16 @@ void BLE_Init(void)
   APP_DBG_MSG("\n\n * * * * * Application name : BLE_PowerControl_Central * * * * * \n\n");
   
   /* Enable LE Power Control for LE 1M PHY with specified parameters */
-  ret = aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_1M, RSSI_TARGET_1M, RSSI_HYSTERESIS, 6, 3);
+  ret = aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_1M, RSSI_TARGET_1M, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE 2M PHY with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_2M, RSSI_TARGET_2M, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_2M, RSSI_TARGET_2M, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE Coded PHY S8 with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S8, RSSI_TARGET_CODED_S8, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S8, RSSI_TARGET_CODED_S8, RSSI_HYSTERESIS, 6, 4);
 
   /* Enable LE Power Control for LE Coded PHY S2 with specified parameters */
-  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S2, RSSI_TARGET_CODED_S2, RSSI_HYSTERESIS, 6, 3);
+  ret |= aci_hal_set_le_power_control(ENABLE, HCI_PHY_LE_CODED_S2, RSSI_TARGET_CODED_S2, RSSI_HYSTERESIS, 6, 4);
   
   if(ret != BLE_STATUS_SUCCESS)
   {
@@ -579,6 +580,13 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
 
   VTimer_Process_Schedule();
   NVM_Process_Schedule();
+
+}
+
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
 }
 
 void BLE_STACK_ProcessRequest(void)
@@ -661,10 +669,14 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
     {
       hci_disconnection_complete_event_rp0 *p_disconnection_complete_event;
       p_disconnection_complete_event = (hci_disconnection_complete_event_rp0 *) p_event_pckt->data;
+      GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
 
-        /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE BEGIN EVT_DISCONN_COMPLETE_3 */
 
-        /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      /* USER CODE END EVT_DISCONN_COMPLETE_3 */
+      notif.ConnOpcode = PEER_DISCON_HANDLE_EVT;
+      notif.ConnHdl = p_disconnection_complete_event->Connection_Handle;
+      GATT_CLIENT_APP_Notification(&notif);
 
       if (p_disconnection_complete_event->Connection_Handle == bleAppContext.BleApplicationContext_legacy.connectionHandle)
       {
@@ -997,10 +1009,12 @@ static void connection_complete_event(uint8_t Status,
                                       uint8_t Role,
                                       uint8_t Peer_Address_Type,
                                       uint8_t Peer_Address[6],
-                                      uint16_t Conn_Interval,
+                                      uint16_t Connection_Interval,
                                       uint16_t Peripheral_Latency,
                                       uint16_t Supervision_Timeout)
 {
+  GATT_CLIENT_APP_ConnHandle_Notif_evt_t notif;
+
   if(Status != 0)
   {
     APP_DBG_MSG("==>> connection_complete_event Fail, Status: 0x%02X\n", Status);
@@ -1008,7 +1022,7 @@ static void connection_complete_event(uint8_t Status,
     return;
   }
   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE_1 */
-    
+
   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE_1 */
   APP_DBG_MSG(">>== hci_le_connection_complete_event - Connection handle: 0x%04X\n", Connection_Handle);
   APP_DBG_MSG("     - Connection established with @:%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -1018,33 +1032,34 @@ static void connection_complete_event(uint8_t Status,
               Peer_Address[2],
               Peer_Address[1],
               Peer_Address[0]);
-   APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
-               INT(Conn_Interval*1.25),
-               FRACTIONAL_2DIGITS(Conn_Interval*1.25),
-               Peripheral_Latency,
-               Supervision_Timeout * 10
-                 );
+  APP_DBG_MSG("     - Connection Interval:   %d.%02d ms\n     - Connection latency:    %d\n     - Supervision Timeout: %d ms\n",
+              INT(Connection_Interval*1.25),
+              FRACTIONAL_2DIGITS(Connection_Interval*1.25),
+              Peripheral_Latency,
+              Supervision_Timeout * 10);
 
-   if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
-   {
-     /* Connection as client */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
-   }
-   else
-   {
-     /* Connection as server */
-     bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
-   }
-   bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
+  if (bleAppContext.Device_Connection_Status == APP_BLE_LP_CONNECTING)
+  {
+    /* Connection as client */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_CLIENT;
 
-   GATT_CLIENT_APP_Set_Conn_Handle(0, Connection_Handle);
+    notif.ConnOpcode = PEER_CONN_HANDLE_EVT;
+    notif.ConnHdl = Connection_Handle;
+    GATT_CLIENT_APP_Notification(&notif);
+  }
+  else
+  {
+    /* Connection as server */
+    bleAppContext.Device_Connection_Status = APP_BLE_CONNECTED_SERVER;
+  }
+  bleAppContext.BleApplicationContext_legacy.connectionHandle = Connection_Handle;
 
-   /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
+  /* USER CODE BEGIN HCI_EVT_LE_CONN_COMPLETE */
    
    if (bleAppContext.Device_Connection_Status == APP_BLE_CONNECTED_CLIENT)
    {
      /* Discovers all services, characteristics, and descriptors, and enables all notifications for a given GATT client. */
-     UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+     GATT_CLIENT_APP_Discover_services(Connection_Handle);
    }
    
    if (Role == HCI_ROLE_CENTRAL)
@@ -1091,29 +1106,13 @@ static void connection_complete_event(uint8_t Status,
   path_loss_zone = 3U;
   HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Path_Loss_LED_timer_Id, path_loss_interval[path_loss_zone]);
   
-   /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
+  /* USER CODE END HCI_EVT_LE_CONN_COMPLETE */
 
 }/* end hci_le_connection_complete_event() */
 
 /* USER CODE BEGIN EVT_VENDOR_2 */
 
 /* USER CODE END EVT_VENDOR_2 */
-
-APP_BLE_ConnStatus_t APP_BLE_Get_Client_Connection_Status(uint16_t Connection_Handle)
-{
-  APP_BLE_ConnStatus_t conn_status;
-
-  if (bleAppContext.BleApplicationContext_legacy.connectionHandle == Connection_Handle)
-  {
-    conn_status = bleAppContext.Device_Connection_Status;
-  }
-  else
-  {
-    conn_status = APP_BLE_IDLE;
-  }
-
-  return conn_status;
-}
 
 void APP_BLE_Procedure_Gap_General(ProcGapGeneralId_t ProcGapGeneralId)
 {

@@ -17,14 +17,14 @@ Connectivity, BLE, BLE protocol, BLE pairing, BLE profile, Static Stack
     
 ### __How to use it?__
 
-- To be able to run the demo, first program BLE_StaticStack_ota firmware (BLE_StaticStack_ota.hex from BLE_StaticStack_ota\\Binary folder) with STM32CubeProgrammer.
+- To be able to run the demo, first program BLE_StaticStack_ota firmware (BLE_StaticStack_ota.hex from Binary folder) with STM32CubeProgrammer.
 - Build BLE_p2pServer_StaticStack project with your preferred toolchain and load the image into target memory.
 - Reset the board to start the application.
 
 Refer to BLE_p2pServer_ota application for more info.
 A raw binary file of the application is needed to test Firmware upgrade with the smartphone app. If the used toolchain does not generate a raw binary file, it can be obtained by converting an Intel HEX file with the help of an external tool, like the arm-none-eabi-objcopy (e.g. arm-none-eabi-objcopy -I ihex -O binary BLE_p2pServer_StaticStack_ota.hex BLE_p2pServer_StaticStack_ota.bin).
 
-_Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_stack_sym.a from BLE_StaticStack_ota\\Binary directory, which contains the symbol table needed to correctly link the application to the BLE_StaticStack_ota.hex firmware present in Binary folder. If application does not use the precompiled BLE_StaticStack_ota.hex in Binary folder, make sure to use the correct ble_static_stack_sym.a file.
+_Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_stack_sym.a from Binary directory, which contains the symbol table needed to correctly link the application to the BLE_StaticStack_ota.hex firmware present in Binary folder. If application does not use the precompiled BLE_StaticStack_ota.hex in Binary folder, make sure to use the correct ble_static_stack_sym.a file.
 
 ### __Converting existing application with FUOTA support to use BLE Static Stack__
 
@@ -33,7 +33,7 @@ _Important_: BLE_p2pServer_StaticStack_ota project by default uses ble_static_st
 
 - Remove stm32wb0x_ble_stack.a and ble_stack_user_cfg.c from build list.
 - Add ble_static_stack_sym.a as a library. This is a file generated after BLE_StaticStack_ota is built.
-  - BLE_p2pServer_StaticStack_ota uses ble_static_stack_sym.a from BLE_StaticStack_ota\\Binary folder. If BLE_StaticStack_ota is rebuilt, make sure to point to the new ble_static_stack_sym.a in BLE_StaticStack_ota folder.
+  - BLE_p2pServer_StaticStack_ota uses ble_static_stack_sym.a from Binary folder. If BLE_StaticStack_ota is rebuilt, make sure to point to the new ble_static_stack_sym.a.
 - Add a copy of ble_static_stack_calls.c to the project. It can be found in BLE_p2pServer_StaticStack_ota\\STM32_BLE\\App.
 - Replace original linker script with the one used by BLE_p2pServer_StaticStack_ota, which contains instructions for the placement of STATIC_STACK_APP_CALL_TABLE section.
 - Take note of the following information from BLE_StaticStack_ota project:

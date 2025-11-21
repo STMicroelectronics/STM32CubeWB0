@@ -44,7 +44,6 @@ typedef enum
 
 /* Round to next multiple of 4. */
 #define ROUND4(a) ((a+3) & ~0x03)
-
 /* USER CODE END PTD */
 
 typedef enum
@@ -64,6 +63,7 @@ typedef struct
   OTA_APP_SendInformation_t     Conf_Indication_Status;
   /* USER CODE BEGIN Service3_APP_Context_t */
   uint32_t base_address;
+  uint16_t start_sector_index;
   uint8_t sectors;
   uint32_t write_value[ROUND4(CFG_BLE_ATT_MTU_MAX-3)/4];
   uint8_t  file_type;
@@ -115,6 +115,7 @@ static void OTA_Conf_SendIndication(void);
 
 /* USER CODE BEGIN PFP */
 static void Reboot(void);
+static void EraseTask(void);
 static void DeleteSlot( uint8_t page_idx );
 static void FM_WriteCallback (FM_FlashOp_Status_t Status);
 /* Flag for write status  */
@@ -194,126 +195,32 @@ void OTA_Notification(OTA_NotificationEvt_t *p_Notification)
             break;
 
           case OTA_USER_CONF_UPLOAD:
-            {
-              FM_Cmd_Status_t error = FM_ERROR;
-              
+            {              
               APP_DBG_MSG("OTA_USER_CONF_UPLOAD\n");
 
               OTA_APP_Context.file_type = User_Conf;
               OTA_APP_Context.base_address = USER_CFG_SLOT_START_SECTOR_INDEX * FLASH_PAGE_SIZE + FLASH_START_ADDR;
-              address_offset = 0;              
+              address_offset = 0;
+              OTA_APP_Context.start_sector_index = USER_CFG_SLOT_START_SECTOR_INDEX;
               OTA_APP_Context.sectors = CFG_USER_CFG_NB_SECTORS;              
               OTA_APP_Context.Conf_Indication_Status = OTA_APP_Ready_Pending;
               
-              /* Erase the sector */
-              /* Clear events before start testing */
-              UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-              
-              while(error != FM_OK)
-              {  
-                /* Flash manager erase */
-                if(OTA_APP_Context.sectors == 0)
-                  OTA_APP_Context.sectors = CFG_USER_CFG_NB_SECTORS;
-                error = FM_Erase((uint32_t)USER_CFG_SLOT_START_SECTOR_INDEX, 
-                                 (uint32_t)(OTA_APP_Context.sectors),
-                                 &FM_EraseStatusCallback);
-                
-                /* Check write op. */
-                if (error == FM_OK)
-                {
-                  /* Wait for write callback to be invoked */
-                  UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Clear events before start testing */
-                  UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Check status of write op. */
-                  if (FM_EraseStatus != FM_OPERATION_COMPLETE)
-                  {
-                    error = FM_ERROR;
-                    APP_DBG_MSG("FM_WriteStatus != FM_OPERATION_COMPLETE => FM_ERROR\n");
-                  }
-                }
-                else if(error == FM_BUSY)
-                {
-                  /* Wait for write callback to be invoked */
-                  UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Clear events before start testing */
-                  UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                }
-                else
-                {
-                  APP_DBG_MSG("FM_ERROR\n");
-                }
-              } /* while(error != FM_OK) */
-              
-              a_OTA_UpdateCharData[0] = OTA_READY_TO_RECEIVE_FILE;
-              msg_conf.p_Payload = a_OTA_UpdateCharData;
-              msg_conf.Length = 1;
-              OTA_NotifyValue(OTA_CONF, &msg_conf, OTA_APP_Context.ConnectionHandle);
+              UTIL_SEQ_SetTask(1U << CFG_TASK_OTA_ERASE_ID, CFG_SEQ_PRIO_0);
             }
             break;
 
           case OTA_APPLICATION_UPLOAD:
-            {
-              FM_Cmd_Status_t error = FM_ERROR;
-              
+            {              
               APP_DBG_MSG("OTA_APPLICATION_UPLOAD\n");
               
               OTA_APP_Context.file_type = Fw_App;
               OTA_APP_Context.base_address = (DOWNLOAD_SLOT_START_SECTOR_INDEX * FLASH_PAGE_SIZE) + FLASH_START_ADDR;              
-              address_offset = 0;              
+              address_offset = 0;
+              OTA_APP_Context.start_sector_index = DOWNLOAD_SLOT_START_SECTOR_INDEX;
               OTA_APP_Context.sectors = DOWNLOAD_SLOT_NB_SECTORS;              
               OTA_APP_Context.Conf_Indication_Status = OTA_APP_Ready_Pending;
               
-              /* Erase the sectors */
-              /* Clear events before start testing */
-              UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-              
-              while(error != FM_OK)
-              {  
-                /* Flash manager write */
-                if(OTA_APP_Context.sectors == 0)
-                  OTA_APP_Context.sectors = DOWNLOAD_SLOT_NB_SECTORS;
-                error = FM_Erase((uint32_t)((OTA_APP_Context.base_address - FLASH_START_ADDR) / FLASH_PAGE_SIZE), 
-                                 (uint32_t)(OTA_APP_Context.sectors),
-                                 &FM_EraseStatusCallback);
-                
-                /* Check write op. */
-                if (error == FM_OK)
-                {
-                  /* Wait for write callback to be invoked */
-                  UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Clear events before start testing */
-                  UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Check status of write op. */
-                  if (FM_EraseStatus != FM_OPERATION_COMPLETE)
-                  {
-                    error = FM_ERROR;
-                    APP_DBG_MSG("FM_WriteStatus != FM_OPERATION_COMPLETE => FM_ERROR\n");
-                  }
-                }
-                else if(error == FM_BUSY)
-                {
-                  /* Wait for write callback to be invoked */
-                  UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                  
-                  /* Clear events before start testing */
-                  UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
-                }
-                else
-                {
-                  APP_DBG_MSG("FM_ERROR\n");
-                }
-              } /* while(error != FM_OK) */
-              
-              msg_conf.Length = 1;
-              a_OTA_UpdateCharData[0] = OTA_READY_TO_RECEIVE_FILE;
-              msg_conf.p_Payload = a_OTA_UpdateCharData;
-              OTA_NotifyValue(OTA_CONF, &msg_conf, OTA_APP_Context.ConnectionHandle);
+              UTIL_SEQ_SetTask(1U << CFG_TASK_OTA_ERASE_ID, CFG_SEQ_PRIO_0);
             }
             break;
 
@@ -394,8 +301,6 @@ void OTA_Notification(OTA_NotificationEvt_t *p_Notification)
 
         /* Clear events before start testing */
         UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_WRITE_CALLBACK_EVT_RSP_ID);
-        
-        FD_SetStatus(FD_FLASHACCESS_RFTS_BYPASS, FD_FLASH_ENABLE);
 
         while(error != FM_OK)
         { 
@@ -436,8 +341,6 @@ void OTA_Notification(OTA_NotificationEvt_t *p_Notification)
             break;
           }
         } /* while(error != FM_OK) */
-        
-        FD_SetStatus(FD_FLASHACCESS_RFTS_BYPASS, FD_FLASH_DISABLE);
 
         /* Update write offset address for the next FLASH write */
         address_offset += size_left;
@@ -501,9 +404,12 @@ void OTA_APP_Init(void)
   OTA_Init();
 
   /* USER CODE BEGIN Service3_APP_Init */
+  APP_DBG_MSG("OTA - Maximum allowed application size: %d bytes (0x%0X)\n", (int)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE), (uint32_t)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE));
   reset_timer.callback = reset;
   
   UTIL_SEQ_RegTask( 1U << CFG_TASK_OTA_REBOOT_REQ_ID, UTIL_SEQ_RFU, Reboot);
+  UTIL_SEQ_RegTask(1U << CFG_TASK_OTA_ERASE_ID, UTIL_SEQ_RFU, EraseTask);
+  
   DeleteSlot( DOWNLOAD_SLOT_START_SECTOR_INDEX ); /* Erase download slot */
   FM_WriteStatus = FM_OPERATION_AVAILABLE;
   size_left = 0;
@@ -513,12 +419,6 @@ void OTA_APP_Init(void)
 }
 
 /* USER CODE BEGIN FD */
-
-void reset(void *tnode)
-{
-  NVIC_SystemReset();  
-}
-
 static void Reboot(void)
 {  
   APP_BLE_Procedure_Gap_General(PROC_GAP_GEN_CONN_TERMINATE);
@@ -535,6 +435,11 @@ static void Reboot(void)
   
   /* Do not reset immediately to give time to write potential bonding info.  */
   HAL_RADIO_TIMER_StartVirtualTimer(&reset_timer, 500);  
+}
+  
+void reset(void *tnode)
+{
+  NVIC_SystemReset();  
 }
 
 /**
@@ -587,6 +492,62 @@ static void DeleteSlot( uint8_t page_idx )
   }
   
   return;
+}
+
+static void EraseTask(void)
+{
+  OTA_Data_t msg_conf;
+  FM_Cmd_Status_t error = FM_ERROR;
+  
+  aci_l2cap_connection_parameter_update_req(OTA_APP_Context.ConnectionHandle, CONN_INT_MS(30), CONN_INT_MS(60), 0, CONN_SUP_TIMEOUT_MS(1000));
+  
+  /* Erase the sectors */
+  /* Clear events before start testing */
+  UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
+  
+  while(error != FM_OK)
+  {  
+    /* Flash manager write */
+    error = FM_Erase((uint32_t)OTA_APP_Context.start_sector_index, 
+                     (uint32_t)(OTA_APP_Context.sectors),
+                     &FM_EraseStatusCallback);
+    
+    /* Check write op. */
+    if (error == FM_OK)
+    {
+      /* Wait for write callback to be invoked */
+      UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
+      
+      /* Clear events before start testing */
+      UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
+      
+      /* Check status of write op. */
+      if (FM_EraseStatus != FM_OPERATION_COMPLETE)
+      {
+        error = FM_ERROR;
+        APP_DBG_MSG("FM_WriteStatus != FM_OPERATION_COMPLETE => FM_ERROR\n");
+      }
+    }
+    else if(error == FM_BUSY)
+    {
+      /* Wait for write callback to be invoked */
+      UTIL_SEQ_WaitEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
+      
+      /* Clear events before start testing */
+      UTIL_SEQ_ClrEvt ( 1 << CFG_IDLEEVT_FM_ERASE_CALLBACK_EVT_RSP_ID);
+    }
+    else
+    {
+      APP_DBG_MSG("FM_ERROR\n");
+    }
+  } /* while(error != FM_OK) */
+  
+  msg_conf.Length = 1;
+  a_OTA_UpdateCharData[0] = OTA_READY_TO_RECEIVE_FILE;
+  msg_conf.p_Payload = a_OTA_UpdateCharData;
+  OTA_NotifyValue(OTA_CONF, &msg_conf, OTA_APP_Context.ConnectionHandle);
+  
+  aci_l2cap_connection_parameter_update_req(OTA_APP_Context.ConnectionHandle, CONN_INT_MS(15), CONN_INT_MS(30), 0, CONN_SUP_TIMEOUT_MS(500));
 }
 
 static void FM_WriteCallback (FM_FlashOp_Status_t Status)

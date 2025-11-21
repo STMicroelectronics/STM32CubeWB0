@@ -36,16 +36,9 @@ extern "C" {
 /* Exported types ------------------------------------------------------------*/
 typedef enum
 {
-  GATT_CLIENT_APP_IDLE,
+  GATT_CLIENT_APP_DISCONNECTED,
   GATT_CLIENT_APP_CONNECTED,
-  GATT_CLIENT_APP_DISCONNECTING,
-  GATT_CLIENT_APP_DISCONN_COMPLETE,
   GATT_CLIENT_APP_DISCOVER_SERVICES,
-  GATT_CLIENT_APP_DISCOVER_CHARACS,
-  GATT_CLIENT_APP_DISCOVER_WRITE_DESC,
-  GATT_CLIENT_APP_DISCOVER_NOTIFICATION_CHAR_DESC,
-  GATT_CLIENT_APP_ENABLE_NOTIFICATION_DESC,
-  GATT_CLIENT_APP_DISABLE_NOTIFICATION_DESC,
   /* USER CODE BEGIN GATT_CLIENT_APP_State_t*/
 
   /* USER CODE END GATT_CLIENT_APP_State_t */
@@ -60,17 +53,6 @@ typedef enum
   /* USER CODE END GATT_CLIENT_APP_Conn_Opcode_t */
 }GATT_CLIENT_APP_Conn_Opcode_t;
 
-typedef enum
-{
-  PROC_GATT_DISC_ALL_PRIMARY_SERVICES,
-  PROC_GATT_DISC_ALL_CHARS,
-  PROC_GATT_DISC_ALL_DESCS,
-  PROC_GATT_ENABLE_ALL_NOTIFICATIONS,
-  /* USER CODE BEGIN ProcGattId_t*/
-
-  /* USER CODE END ProcGattId_t */
-}ProcGattId_t;
-
 typedef struct
 {
   GATT_CLIENT_APP_Conn_Opcode_t          ConnOpcode;
@@ -81,7 +63,7 @@ typedef struct
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
-#define GATT_CLT_MAX_NUM_SERVERS                           (4)
+#define CFG_BLE_NUM_CLIENT_CONTEXTS                           (15)
 /* USER CODE BEGIN EC */
 #define MC_PERIPHERAL_UUID_16BIT                                        (0xF130)
 #define LED_C_UUID_16BIT                                                (0xF131)
@@ -102,12 +84,8 @@ typedef struct
 
 /* Exported functions ---------------------------------------------*/
 void GATT_CLIENT_APP_Init(void);
-uint8_t GATT_CLIENT_APP_Procedure_Gatt(uint8_t index, ProcGattId_t GattProcId);
 void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Notif);
-tBleStatus GATT_CLIENT_APP_Set_Conn_Handle(uint8_t index, uint16_t connHdle);
-tBleStatus GATT_CLIENT_APP_Clear_Conn_Handle(uint8_t index);
-uint8_t GATT_CLIENT_APP_Get_State(uint8_t index);
-void GATT_CLIENT_APP_Discover_services(uint8_t index);
+void GATT_CLIENT_APP_Discover_services(uint16_t connection_handle);
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */

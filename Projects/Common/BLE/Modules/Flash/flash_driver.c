@@ -125,7 +125,7 @@ FD_FlashOp_Status_t FD_WriteData32(uint32_t Dest, uint32_t *Payload)
 
   DEBUG_GPIO_HIGH();
 
-  if(FD_Flash_Control_status & (1u << FD_FLASHACCESS_RFTS_BYPASS) || FD_TimeCheck(QUAD_WORD_WRITE_TIME_SYS))
+  if(FD_Flash_Control_status & (1u << FD_FLASHACCESS_RFTS_BYPASS) || FD_TimeCheck(WORD_WRITE_TIME_SYS))
   {
     if (HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, Dest, *Payload) == HAL_OK)
     {

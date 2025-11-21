@@ -58,8 +58,10 @@ TIM_HandleTypeDef htim2;
 /* USER CODE BEGIN PV */
 uint8_t channel = FREQUENCY_CHANNEL;
 uint8_t sendData[MAX_PACKET_LENGTH];
-uint16_t packet_counter = 0;
-uint16_t timeout_error_counter = 0;
+
+static uint16_t packet_counter = 0;
+static uint16_t timeout_error_counter = 0;
+static uint16_t crc_error_counter = 0;
 
 static uint32_t time_cumulate = 0;
 static uint32_t timer_reload;
@@ -148,7 +150,8 @@ int main(void)
   COM_Init.StopBits = COM_STOPBITS_1;
   BSP_COM_Init(COM1, &COM_Init);
   
-  if(DATA_PACKET_LEN > (MAX_PACKET_LENGTH-HEADER_LENGTH)) {
+  if(DATA_PACKET_LEN > (MAX_PACKET_LENGTH-HEADER_LENGTH)) 
+  {
     printf("DATA_PACKET_LEN too big %d\r\n", DATA_PACKET_LEN);
     while(1);
   }
@@ -156,10 +159,13 @@ int main(void)
   /* Build packet */
   sendData[0] = 0x02;
   sendData[1] = DATA_PACKET_LEN;   /* Length position is fixed */
-  for(volatile uint16_t j=0; j<DATA_PACKET_LEN; j++) {
+  for(volatile uint16_t j=0; j<DATA_PACKET_LEN; j++) 
+  {
     sendData[2+j] = 0xAE;
   }
-
+  
+  sendData[6] = 1;
+  
   /* Channel map configuration */
   uint8_t map[5]= {0xFF,0xFF,0xFF,0xFF,0xFF};
   HAL_RADIO_SetChannelMap(STATE_MACHINE_0, &map[0]);
@@ -193,15 +199,17 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    if(packet_counter == MAX_NUM_PACKET) {
+    if(packet_counter == MAX_NUM_PACKET)
+    {
       BSP_LED_Off(LD1);
-      if(time_cumulate!=0) {
-        printf("%d TX packets. %d PCKT LEN. Average time: %d.%02d ms. Data throughput: %d.%01d kbps.\r\n", packet_counter, DATA_PACKET_LEN,PRINT_INT(time_cumulate/1000.0/packet_counter),PRINT_FLOAT(time_cumulate/1000.0/packet_counter),PRINT_INT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate),PRINT_FLOAT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate));
+      if(time_cumulate != 0) 
+      {
+        printf("%d TX packets. %d Lost packets. %d Ack Error. %d PCKT LEN. Average time: %d.%02d ms. Data throughput: %d.%01d kbps.\r\n", packet_counter, timeout_error_counter, crc_error_counter, DATA_PACKET_LEN,PRINT_INT(time_cumulate/1000.0/packet_counter),PRINT_FLOAT(time_cumulate/1000.0/packet_counter),PRINT_INT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate),PRINT_FLOAT((packet_counter*DATA_PACKET_LEN*8)*1000.0/time_cumulate));
       }
       packet_counter = 0;
       timeout_error_counter = 0;
-      //crc_error_counter = 0;
-      sendData[6] = 0;
+      crc_error_counter = 0;
+      sendData[6] = 1;
       sendNewPacket = TRUE;
       time_cumulate = 0;
       for(volatile uint32_t i = 0; i<0xFFFFF; i++);
@@ -423,28 +431,34 @@ static uint8_t dataRoutineNull(ActionPacket* current_action_packet, ActionPacket
 uint8_t TxCallback(ActionPacket* p, ActionPacket* next)
 { 
   /* received a packet */
-  if((p->status & BLUE_STATUSREG_PREVTRANSMIT) == 0){
+  if((p->status & BLUE_STATUSREG_PREVTRANSMIT) == 0)
+  {
 
-    if((p->status & BLUE_INTERRUPT1REG_RCVOK) != 0) {
-      
-    }
-    else if((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0) {
-      timeout_error_counter = timeout_error_counter + 1;
-      BSP_LED_Toggle(LD3);
-    }
-    else if((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0) {
-    }
-    
     uint32_t time2 = htim2.Instance->CNT;
     uint32_t diff = (PERIOD_VALUE - time2) + timer_reload*PERIOD_VALUE;
     time_cumulate += diff;
     
+    sendData[6] += 1;
     if(packet_counter != MAX_NUM_PACKET)
     {
       htim2.Instance->CNT = PERIOD_VALUE;
       timer_reload = 0;
     }
     
+    if((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0)
+    {
+      timeout_error_counter = timeout_error_counter + 1;
+      BSP_LED_Toggle(LD3);
+      HAL_RADIO_TIMER_SetRadioCloseTimeout();
+    }
+    else if((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0)
+    {
+      crc_error_counter += 1;
+    }else if((p->status & BLUE_INTERRUPT1REG_RCVOK) != 0) 
+    {
+      
+    }
+
   }
   /* Transmit complete */
   else if((p->status & BLUE_INTERRUPT1REG_DONE) != 0)
@@ -457,7 +471,21 @@ uint8_t TxCallback(ActionPacket* p, ActionPacket* next)
 
 static uint8_t CondRoutineAck(ActionPacket* p)
 {
-  packet_counter++;  
+  packet_counter++;
+  
+  if((p->status & BLUE_STATUSREG_PREVTRANSMIT) == 0)
+  {
+
+    if(((p->status & BLUE_INTERRUPT1REG_RCVOK) != 0) || ((p->status & BLUE_INTERRUPT1REG_RCVCRCERR) != 0))
+    {
+      aPacket[2].ActionTag = TXRX;
+    }
+    else if((p->status & BLUE_INTERRUPT1REG_RCVTIMEOUT) != 0)
+    {
+      aPacket[2].ActionTag = RELATIVE | TIMER_WAKEUP | TXRX;
+    }
+  }
+  
   if(packet_counter == MAX_NUM_PACKET)
   {
     return FALSE;
@@ -487,7 +515,7 @@ uint8_t BIDIRECTIONAL_TX_Sequence(uint8_t channel,
   
   if(returnValue == SUCCESS_0) {
     aPacket[0].StateMachineNo = STATE_MACHINE_0;
-    aPacket[0].ActionTag = RELATIVE | TIMER_WAKEUP | TXRX | PLL_TRIG;
+    aPacket[0].ActionTag = RELATIVE | TXRX | PLL_TRIG;
     aPacket[0].WakeupTime = TX_WAKEUP_TIME;
     aPacket[0].MaxReceiveLength = 0; /* does not affect for Tx */
     aPacket[0].data = txBuffer;
@@ -497,7 +525,7 @@ uint8_t BIDIRECTIONAL_TX_Sequence(uint8_t channel,
     aPacket[0].dataRoutine = dataRoutineNull;
     
     aPacket[1].StateMachineNo = STATE_MACHINE_0;   
-    aPacket[1].ActionTag = 0;   
+    aPacket[1].ActionTag = 0;
     aPacket[1].WakeupTime = RX_TIMEOUT_ACK;
     aPacket[1].MaxReceiveLength = receive_length; 
     aPacket[1].data = rxBuffer; 
@@ -519,8 +547,11 @@ uint8_t BIDIRECTIONAL_TX_Sequence(uint8_t channel,
     BLUEGLOB->TIMER12INITDELAYCAL = 46;
     BLUEGLOB->TIMER2INITDELAYNOCAL = 4;
     
+    HAL_RADIO_SetBackToBackTime(90);
     HAL_RADIO_SetReservedArea(&aPacket[0]);
+    HAL_RADIO_SetBackToBackTime(100);
     HAL_RADIO_SetReservedArea(&aPacket[1]);
+    HAL_RADIO_SetBackToBackTime(90);
     HAL_RADIO_SetReservedArea(&aPacket[2]);
     returnValue = HAL_RADIO_MakeActionPacketPending(&aPacket[0]); 
 

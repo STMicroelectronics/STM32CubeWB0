@@ -125,6 +125,7 @@ typedef enum
 void ModulesInit(void);
 void BLE_Init(void);
 void APP_BLE_Init(void);
+
 /* USER CODE BEGIN EF */
 void BLEStack_Process_Schedule(void);
 /* USER CODE END EF */

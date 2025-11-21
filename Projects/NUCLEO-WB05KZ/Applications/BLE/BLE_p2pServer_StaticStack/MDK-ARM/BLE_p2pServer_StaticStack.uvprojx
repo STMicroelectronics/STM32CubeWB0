@@ -770,7 +770,7 @@
             <File>
               <FileName>ble_static_stack_sym.a</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\BLE_StaticStack\Binary\ble_static_stack_sym.a</FilePath>
+              <FilePath>..\Binary\ble_static_stack_sym.a</FilePath>
             </File>
           </Files>
         </Group>

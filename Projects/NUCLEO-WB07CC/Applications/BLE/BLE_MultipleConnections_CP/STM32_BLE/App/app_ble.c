@@ -292,6 +292,7 @@ void BLE_Init(void)
     .NumOfBrcBIS = CFG_BLE_NUM_BRC_BIS_MAX,
     .NumOfCIG = CFG_BLE_NUM_CIG_MAX,
     .NumOfCIS = CFG_BLE_NUM_CIS_MAX,
+    .ExtraLLProcedureContexts = CFG_BLE_EXTRA_LL_PROCEDURE_CONTEXTS,
     .isr0_fifo_size = CFG_BLE_ISR0_FIFO_SIZE,
     .isr1_fifo_size = CFG_BLE_ISR1_FIFO_SIZE,
     .user_fifo_size = CFG_BLE_USER_FIFO_SIZE
@@ -356,7 +357,6 @@ void BLE_Init(void)
   */
   role = 0U;
   role |= GAP_CENTRAL_ROLE;
-
 #if CFG_BLE_PRIVACY_ENABLED
   privacy_type = 0x02;
 #endif
@@ -445,6 +445,7 @@ void BLE_Init(void)
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMin  = CFG_ENCRYPTION_KEY_SIZE_MIN;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.encryptionKeySizeMax  = CFG_ENCRYPTION_KEY_SIZE_MAX;
   bleAppContext.BleApplicationContext_legacy.bleSecurityParam.bonding_mode          = CFG_BONDING_MODE;
+
   /* USER CODE BEGIN Ble_Hci_Gap_Gatt_Init_1*/
   fill_advData(&a_AdvData[0], sizeof(a_AdvData), bd_address);
   /* USER CODE END Ble_Hci_Gap_Gatt_Init_1*/
@@ -538,6 +539,12 @@ void HAL_RADIO_TxRxCallback(uint32_t flags)
   NVM_Process_Schedule();
 }
 
+/* Function called from RADIO_RRM_IRQHandler() context. */
+void HAL_RADIO_RRMCallback(uint32_t ble_irq_status)
+{
+  BLE_STACK_RRMHandler(ble_irq_status);
+}
+
 void BLE_STACK_ProcessRequest(void)
 {
   BLEStack_Process_Schedule();
@@ -619,8 +626,8 @@ void APP_BLE_Init(void)
   /* For Central */
   UTIL_SEQ_RegTask(1U << CFG_TASK_CONNECTION_REQUEST, UTIL_SEQ_RFU, Connect_Request);
   UTIL_SEQ_RegTask(1U << CFG_TASK_AUTO_CONNECTION_REQUEST, UTIL_SEQ_RFU, Start_Auto_Connection);
-  
-  
+    
+
   Start_Advertise_Non_Discovery_Mode();  
   
   Start_Auto_Connection(); 
@@ -1180,7 +1187,8 @@ static void connection_complete_event(uint8_t Status,
       bleAppContext.Device_Connection_Status_Central = APP_BLE_CONNECTED_CLIENT;
       
       APP_DBG_MSG("HCI_EVT_LE_CONN_COMPLETE \n");
-      UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
+      
+      GATT_CLIENT_APP_Discover_services(Connection_Handle);
       
       /* Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function. */
       APP_DBG_MSG("Ste the event CFG_IDLEEVT_CONNECTION_COMPLETE for the Connect_Request() function.\n");
@@ -1981,7 +1989,7 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
     bleAppContext.Device_Connection_Status_Central = APP_BLE_LP_CONNECTING_AUTO_CONNECTION;
     APP_DBG_MSG("==>> (FILTER) aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - Success\n");
   }
-  
+
   if(bleAppContext.Device_Connection_Status_Central == APP_BLE_IDLE)
   {
     APP_DBG_MSG("==>> Start_Auto_Connection - Loop restart\n");

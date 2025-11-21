@@ -57,6 +57,7 @@ void RADIO_TIMER_CPU_WKUP_IRQHandler(void);
 void RADIO_TIMER_ERROR_IRQHandler(void);
 void RADIO_TXRX_IRQHandler(void);
 void RADIO_TXRX_SEQ_IRQHandler(void);
+void RADIO_RRM_IRQHandler(void);
 /* USER CODE BEGIN EFP */
 void GPIOB_IRQHandler(void);
 void GPIOA_IRQHandler(void);

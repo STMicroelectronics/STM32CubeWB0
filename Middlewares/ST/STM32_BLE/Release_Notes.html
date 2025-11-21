@@ -24,6 +24,9 @@
   </style>
   <link rel="stylesheet" href="../../../_htmresc/mini-st_2020.css" />
   <link rel="icon" type="image/x-icon" href="../../../_htmresc/favicon.png"/>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
 </head>
 <body>
 <div class="row">
@@ -91,11 +94,128 @@ folder.</p>
 <section id="update-history" class="col-sm-12 col-lg-8">
 <h1>Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section130" checked aria-hidden="true">
+<input type="checkbox" id="collapse-section140" checked aria-hidden="true">
+<label for="collapse-section140" aria-hidden="true"><strong>V1.4.0 /
+29-October-2025</strong></label>
+<div>
+<h2 id="main-changes">Main Changes</h2>
+<p>ST Bluetooth LE stack v4.1 release:</p>
+<ul>
+<li>New features/updates (compared to Bluetooth LE stack v4.0d):
+<ul>
+<li>ID 1464350: Added new scheduler with enhanced management of radio
+tasks.</li>
+<li>ID 1198355: Added possibility to queue multiple LL procedures
+requested by the Host.</li>
+<li>ID 1418534: Increase size of list for scan duplicate filtering from
+4 to 16 entries.</li>
+<li>ID 1495158: Change name of log module functions to avoid conflicts
+with Zephyr RTOS.</li>
+</ul></li>
+<li>Solved issues (compared to Bluetooth LE stack v4.0d):
+<ul>
+<li>ID 1455362: After a disconnection, GATT events were generated for
+that link after the Disconnection Complete event was raised.</li>
+<li>ID 1461489: Library may get stuck while trying to establish a
+connection from PAwR.</li>
+<li>ID 1495743: Removed requirement of BLEPLAT_Nvm functions from
+controller-only library</li>
+<li>ID 1497309: MaxConnEventLength parameter configured at Stack
+initialization is not effective</li>
+<li>ID 1492804: Central connects to wrong peripheral when controller
+privacy is used</li>
+<li>ID 1484922: HCI_LE_Test_End command doesn’t report Num_Packets = 0
+when used for a transmitter test</li>
+<li>ID 1480591: LE Channel Selection Algorithm event must be generated
+only if the connection is established in extended mode and the CSA #2
+feature is supported (TSE 27407 in Core Oct2025)</li>
+<li>ID 1466201: L2CAP does not properly handle malformed signaling PDUs
+(TSE 17703 in TCRL-2025-1)</li>
+<li>ID 1427399: High packet loss rate when using response slot 0 in
+PAwR.</li>
+<li>ID 1425403: Advertising data not transmitted in PAwR scenarios with
+1 subevent only</li>
+<li>ID 1311731: Non-compliant T_IFS (less than 150 microseconds) value
+measured in different PDUs (fix in
+BLEPLAT_CNTR_GetTimer2TimeoutForIfs)</li>
+<li>ID 1313986: LE Set Random Address may return Invalid HCI Command
+Parameters (0x12) when used together with extended advertising
+commands.</li>
+<li>ID 1258605: HCI commands starting LL procedures may return “LL busy”
+error when LE Power Control is active.</li>
+<li>ID 1247513: PAwR limitations: last response slot of a subevent must
+end 150 us before the start of the next subevent (affecting both
+synchronizer and advertiser); controller privacy not supported on the
+synchronizer side.</li>
+<li>ID 1197644: Non-optimal pre-scheduler allocation under 10 ms of
+connection interval</li>
+<li>ID 1023038: Direct_Address_Type field of
+HCI_LE_Extended_Advertising_Report event may assume invalid values (rare
+occurrence)</li>
+</ul></li>
+<li>Known limitations:
+<ul>
+<li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
+command shall be avoided during intense radio activities.</li>
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+than the correct value.</li>
+<li>ID 1074817: Different advertising filter policies are allowed among
+different adverting sets. It should be forbidden according to GAP
+specifications.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
+<li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
+a GATT characteristic.</li>
+<li>ID 1213293: The Advertiser_Address shall be checked in according to
+Advertiser_Address_Type value for some HCI commands</li>
+<li>ID 1221480: The Path loss estimated with and without Power Control
+may be very different.</li>
+<li>ID 1277942: Pairing may fail when a device is not in the bonding
+table but it is present in the resolving list.</li>
+<li>ID 1282732: Interpacket spacing in transmitter test mode is not
+compliant with spec.</li>
+<li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
+Sync Ind PDU.</li>
+<li>ID 1338337: High packet loss rate for BIS when using LE Coded
+PHY.</li>
+<li>ID 1353736: PADV may fail to start if disable advertising command is
+given immediately after ext adv start command.</li>
+<li>ID 1357243: Possible not compliance on CIS anchor spacing in
+interleaved mode.</li>
+<li>ID 1381769: CIS disconnection may not be performed if LL control
+procedures are ongoing.</li>
+<li>ID 1384820: CIS Central wrong subevent timings.</li>
+<li>ID 1435606: Wrong time calculation when specifying long advertising
+intervals.</li>
+<li>ID 1447834: Sync Lost event may happen with some specific PAwR
+configuration.</li>
+<li>ID 1460670: HCI_LE_Periodic_Advertising_Set_Info_Transfer fails with
+“Command disallowed” status if sent immediately after PADV is
+enabled.</li>
+<li>ID 1464675: Potential issue in time accuracy for 2M PHY (in
+BLEPLAT_CNTR_DemodDelaySt()).</li>
+<li>ID 1469531: Extended advertising packet on primary channel is
+transmitted corrupted if transmission occurs soon after a PAwR reception
+phase</li>
+<li>ID 1496947: A connection complete event (immediately followed by a
+disconnection) could be rarely raised with a peer address different from
+the one specified in the Create Connection command.</li>
+<li>ID 1497130 - Synchronization is not restarted correctly after
+receiving a wrong CTE type from an advertiser on the periodic list</li>
+<li>ID 1498753: Some CIS/CEN tests may fail due to timer accuracy</li>
+<li>ID 1498978: HCI_LE_Path_Loss_Threshold event not raised after Path
+Loss Reporting is enabled</li>
+<li>ID 1499039: Wrong RSSI reported if no packets are received</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section130" aria-hidden="true">
 <label for="collapse-section130" aria-hidden="true"><strong>V1.3.0 /
 04-June-2025</strong></label>
 <div>
-<h2 id="main-changes">Main Changes</h2>
+<h2 id="main-changes-1">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0d release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0c):
@@ -107,8 +227,6 @@ interrupt context.</li>
 <ul>
 <li>ID 1397260: Connection from PAwR cannot be stablished when privacy
 is used.</li>
-<li>ID 1164880: Some requirements for the Access Address generation are
-not implemented.</li>
 <li>ID 1357406: Multiple ACL connections allowed with same peer devices
 when privacy is used.</li>
 <li>ID 1358692: CIS creation is not performed if LE Power Control
@@ -138,6 +256,8 @@ than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different adverting sets. It should be forbidden according to GAP
 specifications.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
 <li>ID 1166170: Not possible to specify Mode 1 Level 4 requirements for
 a GATT characteristic.</li>
 <li>ID 1197644: Non-optimal pre-scheduler allocation under 10 ms of
@@ -187,7 +307,7 @@ configuration.</li>
 <label for="collapse-section120" aria-hidden="true"><strong>V1.2.0 /
 05-February-2025</strong></label>
 <div>
-<h2 id="main-changes-1">Main Changes</h2>
+<h2 id="main-changes-2">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0c release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0b):
@@ -298,7 +418,7 @@ are allowed between two LE device addresses when privacy is used.</li>
 <label for="collapse-section110" aria-hidden="true"><strong>V1.1.0 /
 30-October-2024</strong></label>
 <div>
-<h2 id="main-changes-2">Main Changes</h2>
+<h2 id="main-changes-3">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0b release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0):
@@ -406,7 +526,7 @@ advertising, the PADV may not start.</li>
 <label for="collapse-section100" aria-hidden="true"><strong>V1.0.0 /
 05-June-2024</strong></label>
 <div>
-<h2 id="main-changes-3">Main Changes</h2>
+<h2 id="main-changes-4">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0 release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v3.x)

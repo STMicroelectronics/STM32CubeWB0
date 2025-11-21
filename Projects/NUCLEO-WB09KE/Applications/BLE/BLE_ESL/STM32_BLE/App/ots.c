@@ -111,8 +111,8 @@ static OTS_Context_t OTS_Context;
 
 /* Private function prototypes -----------------------------------------------*/
 
-static void parseOACPFrame(aci_gatt_srv_write_event_rp0 *event);
-static void parseOLCPFrame(aci_gatt_srv_write_event_rp0 *event);
+static uint8_t parseOACPFrame(aci_gatt_srv_write_event_rp0 *event);
+static uint8_t parseOLCPFrame(aci_gatt_srv_write_event_rp0 *event);
 
 /* Functions Definition ------------------------------------------------------*/
 
@@ -167,7 +167,7 @@ static const ble_gatt_chr_def_t ots_chars[] = {
   },
   {
     .properties = BLE_GATT_SRV_CHAR_PROP_WRITE|BLE_GATT_SRV_CHAR_PROP_INDICATE,
-    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ,
+    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ|BLE_GATT_SRV_PERM_ENCRY_WRITE,
     .min_key_size = 16,
     .uuid = BLE_UUID_INIT_16(OBJECT_ACTION_CONTROL_POINT_UUID),
     .val_buffer_p = NULL,
@@ -178,7 +178,7 @@ static const ble_gatt_chr_def_t ots_chars[] = {
   },
   {
     .properties = BLE_GATT_SRV_CHAR_PROP_WRITE|BLE_GATT_SRV_CHAR_PROP_INDICATE,
-    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ,
+    .permissions = BLE_GATT_SRV_PERM_ENCRY_READ|BLE_GATT_SRV_PERM_ENCRY_WRITE,
     .min_key_size = 16,
     .uuid = BLE_UUID_INIT_16(OBJECT_LIST_CONTROL_POINT_UUID),
     .val_buffer_p = NULL,
@@ -342,6 +342,11 @@ static BLEEVT_EvtAckStatus_t OTS_EventHandler(aci_blecore_event *p_evt)
             att_error = BLE_ATT_ERR_CCCD_IMPROPERLY_CONFIGURED;
           }
         }
+        
+        if(att_error == 0)
+        {
+          att_error = parseOACPFrame(p_write);
+        }
 
         if (p_write->Resp_Needed == 1U)
         {          
@@ -352,8 +357,6 @@ static BLEEVT_EvtAckStatus_t OTS_EventHandler(aci_blecore_event *p_evt)
                               0,
                               NULL);
         }
-        
-        parseOACPFrame(p_write);        
       }
       else if(p_write->Attribute_Handle == (OTS_Context.ObjListCPCharHdle  + CHARACTERISTIC_VALUE_ATTRIBUTE_OFFSET))
       {
@@ -385,6 +388,11 @@ static BLEEVT_EvtAckStatus_t OTS_EventHandler(aci_blecore_event *p_evt)
             att_error = BLE_ATT_ERR_CCCD_IMPROPERLY_CONFIGURED;
           }
         }
+        
+        if(att_error == 0)
+        {
+          att_error = parseOLCPFrame(p_write);
+        }
 
         if (p_write->Resp_Needed == 1U)
         {
@@ -395,8 +403,6 @@ static BLEEVT_EvtAckStatus_t OTS_EventHandler(aci_blecore_event *p_evt)
                               0,
                               NULL);
         }
-        
-        parseOLCPFrame(p_write);        
       }
       
       break;/* ACI_GATT_SRV_WRITE_VSEVT_CODE */
@@ -482,7 +488,7 @@ void OTS_Init(void)
   return;
 }
 
-static void parseOACPFrame(aci_gatt_srv_write_event_rp0 *event)
+static uint8_t parseOACPFrame(aci_gatt_srv_write_event_rp0 *event)
 {
   uint8_t op_code;
   uint8_t resp[3];
@@ -504,7 +510,10 @@ static void parseOACPFrame(aci_gatt_srv_write_event_rp0 *event)
       uint32_t offset, length;
       uint8_t mode;
       
-      //TODO: check length
+      if(event->Data_Length != 10)
+      {
+        return BLE_ATT_ERR_INVAL_ATTR_VALUE_LEN;
+      }
       
       offset = LE_TO_HOST_32(&event->Data[1]);
       length = LE_TO_HOST_32(&event->Data[5]);
@@ -526,14 +535,22 @@ static void parseOACPFrame(aci_gatt_srv_write_event_rp0 *event)
   }
   
   aci_gatt_srv_notify(event->Connection_Handle, event->CID, event->Attribute_Handle, GATT_INDICATION, resp_len, resp);
+  
+  return BLE_ATT_ERR_NONE;
 }
 
-static void parseOLCPFrame(aci_gatt_srv_write_event_rp0 *event)
+static uint8_t parseOLCPFrame(aci_gatt_srv_write_event_rp0 *event)
 {
   uint8_t op_code;
   uint8_t resp[3];
   uint8_t resp_len;
   uint8_t ret = OLCP_RESULT_SUCCESS;
+  
+  if(event->Data_Length != 1)
+  {
+    /* Other commands are not supported. */
+    return BLE_ATT_ERR_INVAL_ATTR_VALUE_LEN;
+  }
   
   op_code = event->Data[0];
   
@@ -547,5 +564,7 @@ static void parseOLCPFrame(aci_gatt_srv_write_event_rp0 *event)
   resp_len += 1;
   
   aci_gatt_srv_notify(event->Connection_Handle, event->CID, event->Attribute_Handle, GATT_INDICATION, resp_len, resp);
+  
+  return BLE_ATT_ERR_NONE;
 }
 

@@ -239,15 +239,20 @@ void RADIO_TXRX_SEQ_IRQHandler(void)
   /* USER CODE END RADIO_TXRX_SEQ_IRQn 1 */
 }
 
-/* USER CODE BEGIN 1 */
-void GPIOA_IRQHandler(void)
+/**
+  * @brief This function handles RADIO_RRM global interrupt.
+  */
+void RADIO_RRM_IRQHandler(void)
 {
-  BSP_PB_IRQHandler(B1_GPIO_PORT, B1_PIN);
+  /* USER CODE BEGIN RADIO_RRM_IRQn 0 */
+
+  /* USER CODE END RADIO_RRM_IRQn 0 */
+  HAL_RADIO_RRM_IRQHandler();
+  /* USER CODE BEGIN RADIO_RRM_IRQn 1 */
+
+  /* USER CODE END RADIO_RRM_IRQn 1 */
 }
 
-void GPIOB_IRQHandler(void)
-{
-  BSP_PB_IRQHandler(B2_GPIO_PORT, B2_PIN);
-  BSP_PB_IRQHandler(B3_GPIO_PORT, B3_PIN);
-}
+/* USER CODE BEGIN 1 */
+
 /* USER CODE END 1 */
