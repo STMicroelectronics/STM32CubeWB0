@@ -41,7 +41,7 @@ typedef enum
   GATT_CLIENT_APP_DISCONNECTED,
   GATT_CLIENT_APP_CONNECTED,
   GATT_CLIENT_APP_DISCOVER_SERVICES,
-  /* USER CODE BEGIN GATT_CLIENT_APP_State_t*/
+  /* USER CODE BEGIN GATT_CLIENT_APP_State_t */
 
   /* USER CODE END GATT_CLIENT_APP_State_t */
 }GATT_CLIENT_APP_State_t;
@@ -50,7 +50,7 @@ typedef enum
 {
   PEER_CONN_HANDLE_EVT,
   PEER_DISCON_HANDLE_EVT,
-  /* USER CODE BEGIN GATT_CLIENT_APP_Conn_Opcode_t*/
+  /* USER CODE BEGIN GATT_CLIENT_APP_Conn_Opcode_t */
 
   /* USER CODE END GATT_CLIENT_APP_Conn_Opcode_t */
 }GATT_CLIENT_APP_Conn_Opcode_t;
@@ -109,7 +109,7 @@ typedef struct
 
 /* USER CODE END EM */
 
-/* Exported functions ---------------------------------------------*/
+/* Exported functions prototypes ---------------------------------------------*/
 void GATT_CLIENT_APP_Init(void);
 void GATT_CLIENT_APP_Notification(GATT_CLIENT_APP_ConnHandle_Notif_evt_t *p_Notif);
 void GATT_CLIENT_APP_DiscoverServices(uint16_t connection_handle);

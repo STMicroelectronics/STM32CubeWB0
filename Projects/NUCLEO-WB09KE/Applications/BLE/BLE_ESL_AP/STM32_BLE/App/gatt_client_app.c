@@ -1677,7 +1677,6 @@ tBleStatus GATT_CLIENT_APP_ReadChar(uint16_t ValueHdl, uint8_t **data_p, uint16_
   *data_p = a_ClientContext[0].read_char;
   *data_length_p = a_ClientContext[0].read_char_len;
   
-  
   return ret;
 }
 

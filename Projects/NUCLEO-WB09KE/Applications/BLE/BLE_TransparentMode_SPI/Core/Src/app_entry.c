@@ -84,7 +84,7 @@ static void Button_TriggerActions(void *arg);
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-extern uint8_t tone_started;
+
 /* USER CODE END EV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -147,7 +147,7 @@ static PowerSaveLevels App_PowerSaveLevel_Check(void)
   {
     return POWER_SAVE_LEVEL_RUNNING;
   }
-
+  
   if(SPI_STATE_CHECK(SPI_PROT_CONFIGURED_EVENT_PEND_STATE) || SPI_STATE_CHECK(SPI_PROT_WAITING_DATA_STATE))
   {    
     output_level = POWER_SAVE_LEVEL_CPU_HALT;
@@ -197,6 +197,7 @@ void MX_APPE_Process(void)
 
   /* USER CODE END MX_APPE_Process_2 */
 }
+
 void UTIL_SEQ_PreIdle( void )
 {
 #if (CFG_LPM_SUPPORTED == 1)

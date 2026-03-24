@@ -556,7 +556,7 @@ void SPI_FIFO_Flush(void)
   __HAL_RCC_DMA_FORCE_RESET();
   __HAL_RCC_DMA_RELEASE_RESET();
   
-  MX_SPI1_Init();
+  MX_SPI3_Init();
   
   command_fifo_dma_len = 0;
 }

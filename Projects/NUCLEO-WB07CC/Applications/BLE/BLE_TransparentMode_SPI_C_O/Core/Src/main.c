@@ -66,6 +66,37 @@ static void MX_PKA_Init(void);
 
 /**
   * @brief  The application entry point.
+  * @note
+   ******************************************************************************
+   ******************************************************************************
+   * 
+   * The TransparentMode_SPI_for_Updater starts with an offset of 4 KB in Flash memory (2 pages).
+   * The 2 initial pages are used by the TransparentMode_SPI_Updater project.
+   * 
+   * The memory layout is the following:
+   * 
+   * -- FLASH_END ---------------------
+   *             
+   *   TransparentMode_SPI_for_Updater
+   * 
+   * -- 0x10041000 --------------------
+   * 
+   *   TransparentMode_SPI_Updater
+   * 
+   * -- 0x10040000 --------------------
+   *
+   * The TransparentMode_SPI_Updater allows to access the Flash memory through ACI_HAL commands.
+   * The TransparentMode_SPI_Updater can be activated in the following way:
+   *  1) Activation by using ACI_HAL_UPDATER_START
+   *  2) Activation by using TM_SPI_MOSI_PIN (high level at start up).
+   *     Note: if the TM_SPI_MOSI_PIN is used and is high at start up, this will cause the 
+   *     start of the TransparentMode_SPI_Updater. 
+   * 
+   *  Any change of relevant pins must be done in the shared file 
+   *  in Core\Inc\transparent_mode_config.h
+   *
+   ****************************************************************************
+   ****************************************************************************
   * @retval int
   */
 int main(void)
@@ -100,7 +131,7 @@ int main(void)
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
   MX_PKA_Init();
-  MX_SPI1_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -271,51 +302,75 @@ static void MX_RADIO_TIMER_Init(void)
 }
 
 /**
-  * @brief SPI1 Initialization Function
+  * @brief SPI3 Initialization Function
   * @param None
   * @retval None
   */
-void MX_SPI1_Init(void)
+void MX_SPI3_Init(void)
 {
 
-  /* USER CODE BEGIN SPI1_Init 0 */
+  /* USER CODE BEGIN SPI3_Init 0 */
 
-  /* USER CODE END SPI1_Init 0 */
+  /* USER CODE END SPI3_Init 0 */
 
   LL_SPI_InitTypeDef SPI_InitStruct = {0};
 
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI1);
+  TM_SPI_CLK();
 
-  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
-  /**SPI1 GPIO Configuration
-  PA15   ------> SPI1_MOSI
-  PA14   ------> SPI1_MISO
-  PA13   ------> SPI1_SCK
-  PA11   ------> SPI1_NSS
+  TM_GPIO_CLK();
+  /**SPI3 GPIO Configuration
+  PB3   ------> SPI3_SCK
+  PA8   ------> SPI3_MISO
+  PA9   ------> SPI3_NSS
+  PA11   ------> SPI3_MOSI
   */
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_15|LL_GPIO_PIN_14|LL_GPIO_PIN_13;
+  GPIO_InitStruct.Pin = TM_SPI_SCK_PIN;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_2;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = TM_AF_SCK_PIN;
+  LL_GPIO_Init(TM_SPI_SCK_GPIO_PORT, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_11;
+  GPIO_InitStruct.Pin = TM_SPI_MOSI_PIN;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = TM_AF_MOSI_PIN;
+  LL_GPIO_Init(TM_SPI_MOSI_GPIO_PORT, &GPIO_InitStruct);
 
-  /* SPI1 DMA Init */
+  GPIO_InitStruct.Pin = TM_SPI_MISO_PIN;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = TM_AF_MISO_PIN;
+  LL_GPIO_Init(TM_SPI_MISO_GPIO_PORT, &GPIO_InitStruct);
 
-  /* SPI1_TX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
+  GPIO_InitStruct.Pin = TM_SPI_CS_PIN;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = TM_AF_CS_PIN;
+  LL_GPIO_Init(TM_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
+  
+  if (LL_PWR_IsEnabledPUPDCfg())
+  {
+    LL_PWR_SetNoPullB(TM_SPI_SCK_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MISO_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_CS_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MOSI_PWR_PIN);
+  }
+
+  /* SPI3 DMA Init */
+
+  /* SPI3_TX Init */
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, DMA_REQUEST_SPI3_TX);
 
   LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
 
@@ -331,8 +386,8 @@ void MX_SPI1_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MDATAALIGN_BYTE);
 
-  /* SPI1_RX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
+  /* SPI3_RX Init */
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, DMA_REQUEST_SPI3_RX);
 
   LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
 
@@ -348,10 +403,10 @@ void MX_SPI1_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_BYTE);
 
-  /* USER CODE BEGIN SPI1_Init 1 */
+  /* USER CODE BEGIN SPI3_Init 1 */
 
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
+  /* USER CODE END SPI3_Init 1 */
+  /* SPI3 parameter configuration*/
   SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
   SPI_InitStruct.Mode = LL_SPI_MODE_SLAVE;
   SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
@@ -361,14 +416,14 @@ void MX_SPI1_Init(void)
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
   SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
   SPI_InitStruct.CRCPoly = 7;
-  LL_SPI_Init(SPI1, &SPI_InitStruct);
-  LL_SPI_SetStandard(SPI1, LL_SPI_PROTOCOL_MOTOROLA);
-  LL_SPI_DisableNSSPulseMgt(SPI1);
-  /* USER CODE BEGIN SPI1_Init 2 */
-  LL_SPI_Enable(SPI1);  
-  LL_SPI_EnableDMAReq_TX(SPI1);
-  LL_SPI_EnableDMAReq_RX(SPI1);
-  /* USER CODE END SPI1_Init 2 */
+  LL_SPI_Init(TM_SPI, &SPI_InitStruct);
+  LL_SPI_SetStandard(TM_SPI, LL_SPI_PROTOCOL_MOTOROLA);
+  LL_SPI_DisableNSSPulseMgt(TM_SPI);
+  /* USER CODE BEGIN SPI3_Init 2 */
+  LL_SPI_Enable(TM_SPI);  
+  LL_SPI_EnableDMAReq_TX(TM_SPI);
+  LL_SPI_EnableDMAReq_RX(TM_SPI);
+  /* USER CODE END SPI3_Init 2 */
 
 }
 
@@ -400,18 +455,18 @@ static void MX_GPIO_Init(void)
 /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(IRQ_GPIO_Port, IRQ_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : IRQ_Pin */
-  GPIO_InitStruct.Pin = IRQ_Pin;
+  GPIO_InitStruct.Pin = TM_SPI_IRQ_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(IRQ_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TM_SPI_IRQ_GPIO_PORT, &GPIO_InitStruct);
 
   /*RT DEBUG GPIO_Init */
   RT_DEBUG_GPIO_Init();

@@ -64,10 +64,7 @@ static void MX_PKA_Init(void);
 
 /* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
+
 int main(void)
 {
 
@@ -287,31 +284,54 @@ void MX_SPI3_Init(void)
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI3);
+  TM_SPI_CLK();
 
-  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOB);
-  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOA);
+  TM_GPIO_CLK();
   /**SPI3 GPIO Configuration
   PB3   ------> SPI3_SCK
   PA8   ------> SPI3_MISO
   PA9   ------> SPI3_NSS
   PA11   ------> SPI3_MOSI
   */
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_3;
+  GPIO_InitStruct.Pin = TM_SPI_SCK_PIN;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_4;
-  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = TM_AF_SCK_PIN;
+  LL_GPIO_Init(TM_SPI_SCK_GPIO_PORT, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_8|LL_GPIO_PIN_9|LL_GPIO_PIN_11;
+  GPIO_InitStruct.Pin = TM_SPI_MOSI_PIN;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_3;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = TM_AF_MOSI_PIN;
+  LL_GPIO_Init(TM_SPI_MOSI_GPIO_PORT, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = TM_SPI_MISO_PIN;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = TM_AF_MISO_PIN;
+  LL_GPIO_Init(TM_SPI_MISO_GPIO_PORT, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = TM_SPI_CS_PIN;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Alternate = TM_AF_CS_PIN;
+  LL_GPIO_Init(TM_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
+  
+  if (LL_PWR_IsEnabledPUPDCfg())
+  {
+    LL_PWR_SetNoPullB(TM_SPI_SCK_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MISO_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_CS_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MOSI_PWR_PIN);
+  }
 
   /* SPI3 DMA Init */
 
@@ -362,13 +382,13 @@ void MX_SPI3_Init(void)
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
   SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
   SPI_InitStruct.CRCPoly = 7;
-  LL_SPI_Init(SPI3, &SPI_InitStruct);
-  LL_SPI_SetStandard(SPI3, LL_SPI_PROTOCOL_MOTOROLA);
-  LL_SPI_DisableNSSPulseMgt(SPI3);
+  LL_SPI_Init(TM_SPI, &SPI_InitStruct);
+  LL_SPI_SetStandard(TM_SPI, LL_SPI_PROTOCOL_MOTOROLA);
+  LL_SPI_DisableNSSPulseMgt(TM_SPI);
   /* USER CODE BEGIN SPI3_Init 2 */
-  LL_SPI_Enable(SPI3);  
-  LL_SPI_EnableDMAReq_TX(SPI3);
-  LL_SPI_EnableDMAReq_RX(SPI3);
+  LL_SPI_Enable(TM_SPI);  
+  LL_SPI_EnableDMAReq_TX(TM_SPI);
+  LL_SPI_EnableDMAReq_RX(TM_SPI);
   /* USER CODE END SPI3_Init 2 */
 
 }
@@ -405,14 +425,14 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(IRQ_GPIO_Port, IRQ_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : IRQ_Pin */
-  GPIO_InitStruct.Pin = IRQ_Pin;
+  GPIO_InitStruct.Pin = TM_SPI_IRQ_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-  HAL_GPIO_Init(IRQ_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(TM_SPI_IRQ_GPIO_PORT, &GPIO_InitStruct);
 
   /*RT DEBUG GPIO_Init */
   RT_DEBUG_GPIO_Init();
@@ -452,6 +472,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number

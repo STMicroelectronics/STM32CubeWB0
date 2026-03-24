@@ -358,6 +358,14 @@ void MX_SPI3_Init(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   GPIO_InitStruct.Alternate = TM_AF_CS_PIN;
   LL_GPIO_Init(TM_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
+  
+  if (LL_PWR_IsEnabledPUPDCfg())
+  {
+    LL_PWR_SetNoPullB(TM_SPI_SCK_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MISO_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_CS_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MOSI_PWR_PIN);
+  }
 
   /* SPI3 DMA Init */
 
@@ -498,6 +506,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number

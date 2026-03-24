@@ -46,6 +46,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32wb0x_nucleo.h"
+#include "transparent_mode_config.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -65,31 +66,20 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void MX_SPI1_Init(void);
+void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN EFP */
 
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define MOSI_Pin GPIO_PIN_15
-#define MOSI_GPIO_Port GPIOA
-#define MISO_Pin GPIO_PIN_14
-#define MISO_GPIO_Port GPIOA
-#define SCK_Pin GPIO_PIN_13
-#define SCK_GPIO_Port GPIOA
-#define CS_Pin GPIO_PIN_11
-#define CS_GPIO_Port GPIOA
-#define IRQ_Pin GPIO_PIN_10
-#define IRQ_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 #define CS_IRQn                 GPIOA_IRQn
 #define CS_IRQHandler           GPIOA_IRQHandler
-#define CS_EXTI_LINE            LL_EXTI_LINE_PA11
-#define CS_WAKEUP_PIN           PWR_WAKEUP_PA11
+#define CS_EXTI_LINE            LL_EXTI_LINE_PA9
+#define CS_WAKEUP_PIN           PWR_WAKEUP_PA9
 
-#define SPI                     SPI1
 #define DMA_CH_SPI_TX           LL_DMA_CHANNEL_3
 #define DMA_CH_SPI_RX           LL_DMA_CHANNEL_1
 /* USER CODE END Private defines */

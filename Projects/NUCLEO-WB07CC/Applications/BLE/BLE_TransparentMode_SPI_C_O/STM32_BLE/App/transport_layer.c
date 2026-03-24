@@ -278,8 +278,8 @@ static void transport_layer_send_data(uint8_t *data, uint16_t data_length)
   buff_dma[0] = 0xFF;
   memcpy(&buff_dma[1], data, data_length+SPI_HEADER_LEN);
   
-  LL_SPI_ReceiveData16(SPI);
-  LL_SPI_ReceiveData16(SPI);
+  LL_SPI_ReceiveData16(TM_SPI);
+  LL_SPI_ReceiveData16(TM_SPI);
   
   DEBUG_NOTES(SEND_DATA);
   
@@ -313,7 +313,7 @@ void transport_layer_tick(void)
     LL_DMA_EnableChannel(DMA1, DMA_CH_SPI_TX);
     SPI_STATE_TRANSACTION(SPI_PROT_WAITING_HEADER_STATE);
     /* Give authorization to send data. */
-    LL_GPIO_SetOutputPin(IRQ_GPIO_Port, IRQ_Pin);
+    LL_GPIO_SetOutputPin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN);
     DEBUG_NOTES(IRQ_RISE);
   }
   /* Event queue */
@@ -327,7 +327,7 @@ void transport_layer_tick(void)
         transport_layer_send_data(ptr, size);
       header_timeout = 0;
       /* Signal data availability. */
-      LL_GPIO_SetOutputPin(IRQ_GPIO_Port, IRQ_Pin);
+      LL_GPIO_SetOutputPin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN);
       DEBUG_NOTES(IRQ_RISE);
     }
   }
@@ -346,7 +346,7 @@ void transport_layer_tick(void)
     {
       SPI_STATE_TRANSACTION(SPI_PROT_WAITING_DATA_STATE);
       /* Host has begun to send data. Reset signal that we used to give authorization to send data. */
-      LL_GPIO_ResetOutputPin(IRQ_GPIO_Port, IRQ_Pin);
+      LL_GPIO_ResetOutputPin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN);
       DEBUG_NOTES(IRQ_FALL);
       break;
     }
@@ -358,7 +358,7 @@ void transport_layer_tick(void)
       DEBUG_NOTES(HEADER_NOT_RECEIVED);
       
       SPI_STATE_TRANSACTION(SPI_PROT_TRANS_COMPLETE_STATE);
-      LL_GPIO_ResetOutputPin(IRQ_GPIO_Port, IRQ_Pin);    /* Release SPI communication request */
+      LL_GPIO_ResetOutputPin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN);    /* Release SPI communication request */
       DEBUG_NOTES(IRQ_FALL);
       
       if(restore_flag)
@@ -530,17 +530,17 @@ void DMA_Rearm(uint32_t dma_channel, uint32_t buffer, uint32_t size)
   /* Disable DMA Channel */
   LL_DMA_DisableChannel(DMA1, dma_channel);
   
-  LL_SPI_ReceiveData16(SPI);
-  LL_SPI_ReceiveData16(SPI);
+  LL_SPI_ReceiveData16(TM_SPI);
+  LL_SPI_ReceiveData16(TM_SPI);
   
   /* Rearm the DMA transfer */
   if (dma_channel == DMA_CH_SPI_TX)
   {
-    LL_DMA_ConfigAddresses(DMA1, dma_channel, buffer, LL_SPI_DMA_GetRegAddr(SPI), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+    LL_DMA_ConfigAddresses(DMA1, dma_channel, buffer, LL_SPI_DMA_GetRegAddr(TM_SPI), LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
   }
   else 
   {
-    LL_DMA_ConfigAddresses(DMA1, dma_channel, LL_SPI_DMA_GetRegAddr(SPI), buffer, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+    LL_DMA_ConfigAddresses(DMA1, dma_channel, LL_SPI_DMA_GetRegAddr(TM_SPI), buffer, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
   }
   
   LL_DMA_SetDataLength(DMA1, dma_channel, size);
@@ -551,12 +551,12 @@ void DMA_Rearm(uint32_t dma_channel, uint32_t buffer, uint32_t size)
 
 void SPI_FIFO_Flush(void)
 {
-  LL_SPI_DeInit(SPI);
+  LL_SPI_DeInit(TM_SPI);
   
   __HAL_RCC_DMA_FORCE_RESET();
   __HAL_RCC_DMA_RELEASE_RESET();
   
-  MX_SPI1_Init();
+  MX_SPI3_Init();
   
   command_fifo_dma_len = 0;
 }
@@ -567,9 +567,9 @@ void TL_CSHandler(void)
      Temporary workaround for a bug in stm32_lpm_if.c: value of CS line is checked because
      TL_CSHandler may be called either by HAL_PWR_WKUPx_Callback() or by CS_IRQHandler().
      Call to LL_GPIO_IsInputPinSet may be removed when fixed.  */
-  if(LL_EXTI_IsEnabledRisingTrig(CS_EXTI_LINE) && LL_GPIO_IsInputPinSet(CS_GPIO_Port, CS_Pin) == 1)
+  if(LL_EXTI_IsEnabledRisingTrig(CS_EXTI_LINE) && LL_GPIO_IsInputPinSet(TM_SPI_CS_GPIO_PORT, TM_SPI_CS_PIN) == 1)
   {
-    LL_GPIO_ResetOutputPin(IRQ_GPIO_Port, IRQ_Pin);
+    LL_GPIO_ResetOutputPin(TM_SPI_IRQ_GPIO_PORT, TM_SPI_IRQ_PIN);
     DEBUG_NOTES(IRQ_FALL);
     
     DEBUG_NOTES(GPIO_CS_RISING);
@@ -584,7 +584,7 @@ void TL_CSHandler(void)
       tmp_spi_dma_len = (command_fifo_dma_len - LL_DMA_GetDataLength(DMA1, DMA_CH_SPI_RX));
       advance_spi_dma(tmp_spi_dma_len);
       
-      if(LL_SPI_GetTxFIFOLevel(SPI) != LL_SPI_TX_FIFO_EMPTY)
+      if(LL_SPI_GetTxFIFOLevel(TM_SPI) != LL_SPI_TX_FIFO_EMPTY)
       {
         SPI_FIFO_Flush();
         DEBUG_NOTES(TXFIFO_NE);
@@ -592,7 +592,7 @@ void TL_CSHandler(void)
     }
   }
   /* CS pin falling edge - start SPI communication */
-  else if( LL_GPIO_IsInputPinSet(CS_GPIO_Port, CS_Pin) == 0)
+  else if( LL_GPIO_IsInputPinSet(TM_SPI_CS_GPIO_PORT, TM_SPI_CS_PIN) == 0)
   {
     DEBUG_NOTES(GPIO_CS_FALLING);
     LL_EXTI_EnableRisingTrig(CS_EXTI_LINE);

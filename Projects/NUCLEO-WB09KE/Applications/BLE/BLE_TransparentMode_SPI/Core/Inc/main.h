@@ -46,6 +46,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32wb0x_nucleo.h"
+#include "transparent_mode_config.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -72,16 +73,6 @@ void MX_SPI3_Init(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SCK_Pin GPIO_PIN_3
-#define SCK_GPIO_Port GPIOB
-#define MISO_Pin GPIO_PIN_8
-#define MISO_GPIO_Port GPIOA
-#define CS_Pin GPIO_PIN_9
-#define CS_GPIO_Port GPIOA
-#define IRQ_Pin GPIO_PIN_10
-#define IRQ_GPIO_Port GPIOA
-#define MOSI_Pin GPIO_PIN_11
-#define MOSI_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 #define CS_IRQn                 GPIOA_IRQn
@@ -89,7 +80,6 @@ void MX_SPI3_Init(void);
 #define CS_EXTI_LINE            LL_EXTI_LINE_PA9
 #define CS_WAKEUP_PIN           PWR_WAKEUP_PA9
 
-#define SPI                     SPI3
 #define DMA_CH_SPI_TX           LL_DMA_CHANNEL_3
 #define DMA_CH_SPI_RX           LL_DMA_CHANNEL_1
 /* USER CODE END Private defines */

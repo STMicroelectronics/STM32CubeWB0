@@ -131,7 +131,7 @@ int main(void)
   MX_RADIO_Init();
   MX_RADIO_TIMER_Init();
   MX_PKA_Init();
-  MX_SPI1_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -302,16 +302,16 @@ static void MX_RADIO_TIMER_Init(void)
 }
 
 /**
-  * @brief SPI1 Initialization Function
+  * @brief SPI3 Initialization Function
   * @param None
   * @retval None
   */
-void MX_SPI1_Init(void)
+void MX_SPI3_Init(void)
 {
 
-  /* USER CODE BEGIN SPI1_Init 0 */
+  /* USER CODE BEGIN SPI3_Init 0 */
 
-  /* USER CODE END SPI1_Init 0 */
+  /* USER CODE END SPI3_Init 0 */
 
   LL_SPI_InitTypeDef SPI_InitStruct = {0};
 
@@ -321,11 +321,11 @@ void MX_SPI1_Init(void)
   TM_SPI_CLK();
 
   TM_GPIO_CLK();
-  /**SPI1 GPIO Configuration
-  PA15   ------> SPI1_MOSI
-  PA14   ------> SPI1_MISO
-  PA13   ------> SPI1_SCK
-  PA11   ------> SPI1_NSS
+  /**SPI3 GPIO Configuration
+  PB3   ------> SPI3_SCK
+  PA8   ------> SPI3_MISO
+  PA9   ------> SPI3_NSS
+  PA11   ------> SPI3_MOSI
   */
   GPIO_InitStruct.Pin = TM_SPI_SCK_PIN;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
@@ -359,10 +359,18 @@ void MX_SPI1_Init(void)
   GPIO_InitStruct.Alternate = TM_AF_CS_PIN;
   LL_GPIO_Init(TM_SPI_CS_GPIO_PORT, &GPIO_InitStruct);
   
-  /* SPI1 DMA Init */
+  if (LL_PWR_IsEnabledPUPDCfg())
+  {
+    LL_PWR_SetNoPullB(TM_SPI_SCK_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MISO_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_CS_PWR_PIN);
+    LL_PWR_SetNoPullA(TM_SPI_MOSI_PWR_PIN);
+  }
 
-  /* SPI1_TX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
+  /* SPI3 DMA Init */
+
+  /* SPI3_TX Init */
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, DMA_REQUEST_SPI3_TX);
 
   LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
 
@@ -378,8 +386,8 @@ void MX_SPI1_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MDATAALIGN_BYTE);
 
-  /* SPI1_RX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
+  /* SPI3_RX Init */
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, DMA_REQUEST_SPI3_RX);
 
   LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
 
@@ -395,10 +403,10 @@ void MX_SPI1_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_BYTE);
 
-  /* USER CODE BEGIN SPI1_Init 1 */
+  /* USER CODE BEGIN SPI3_Init 1 */
 
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
+  /* USER CODE END SPI3_Init 1 */
+  /* SPI3 parameter configuration*/
   SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
   SPI_InitStruct.Mode = LL_SPI_MODE_SLAVE;
   SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_8BIT;
@@ -411,11 +419,11 @@ void MX_SPI1_Init(void)
   LL_SPI_Init(TM_SPI, &SPI_InitStruct);
   LL_SPI_SetStandard(TM_SPI, LL_SPI_PROTOCOL_MOTOROLA);
   LL_SPI_DisableNSSPulseMgt(TM_SPI);
-  /* USER CODE BEGIN SPI1_Init 2 */
+  /* USER CODE BEGIN SPI3_Init 2 */
   LL_SPI_Enable(TM_SPI);  
   LL_SPI_EnableDMAReq_TX(TM_SPI);
   LL_SPI_EnableDMAReq_RX(TM_SPI);
-  /* USER CODE END SPI1_Init 2 */
+  /* USER CODE END SPI3_Init 2 */
 
 }
 
@@ -498,6 +506,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
+
 #ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number

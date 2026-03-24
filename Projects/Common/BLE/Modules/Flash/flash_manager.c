@@ -112,7 +112,7 @@ FM_Cmd_Status_t FM_Write(uint32_t *Src, uint32_t *Dest, int32_t Size, FM_Callbac
   FM_Cmd_Status_t status;
 
   if (((uint32_t)Dest < FLASH_START_ADDR) || ((uint32_t)Dest > (FLASH_START_ADDR + FLASH_SIZE))
-                                    || (((uint32_t)Dest + Size) > (FLASH_START_ADDR + FLASH_SIZE)))
+                                    || (((uint32_t)Dest + (Size << 2)) > (FLASH_START_ADDR + FLASH_SIZE)))
   {/* Destination address not part of the flash */
     return FM_ERROR;
   }

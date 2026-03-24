@@ -107,7 +107,6 @@ void ESL_DEVICE_LEDControlCmdCB(uint8_t led_index, uint8_t led_RGB_Brigthness, u
   APP_DBG_MSG("LED Repeats:  0x%04x [Repeat type: %d - Repeat duration: 0x%04x]\n", 
               led_repeat, repeat_type, repeat_duration);
   
-  
   if(repeat_duration == 0)
   { 
     /* Special Value:

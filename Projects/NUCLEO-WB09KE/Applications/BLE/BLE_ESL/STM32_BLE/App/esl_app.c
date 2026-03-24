@@ -222,7 +222,7 @@ void ESL_APP_Init(void)
      ESL shall transition to the Unassociated state */
   ESL_APP_Context.Unassociate_timer_Id.callback = ESL_APP_UnassociatedStateTimerCB;
   
-  ESL_APP_Context.Disconnection_timer_Id.callback = disconnection_delay;    
+  ESL_APP_Context.Disconnection_timer_Id.callback = disconnection_delay;
 }
 
 void ESL_APP_ConnectionComplete(uint16_t connection_handle, uint16_t sync_handle, uint8_t Peer_Address_Type, uint8_t Peer_Address[6])

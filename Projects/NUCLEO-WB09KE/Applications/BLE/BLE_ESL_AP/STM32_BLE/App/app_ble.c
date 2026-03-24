@@ -969,7 +969,7 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
             if(status ==0 || status == 1)
             {
               APP_DBG_MSG("Remove bond\n");
-              aci_gap_remove_bonded_device(bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr); 
+              aci_gap_remove_bonded_device(bleAppContext.deviceServerBdAddrType, bleAppContext.a_deviceServerBdAddr);
             }
           }
           

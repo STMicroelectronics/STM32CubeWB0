@@ -71,7 +71,7 @@ typedef struct
   uint32_t OLCPFeautures;
   uint8_t CP_response_length;
   uint8_t CP_response[7];
-  bool features_discovered; 
+  bool features_discovered;
   bool truncate;
   OTPEvent_t event;
   VTIMER_HandleType timer;

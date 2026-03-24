@@ -288,7 +288,7 @@
 /**
  * Amount of RAM used to store advertising data (bytes)
  */
- #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (800)
+ #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (700)
 
 /**
  * Size of buffer shared between GATT_NWK library (used for GATT database and client

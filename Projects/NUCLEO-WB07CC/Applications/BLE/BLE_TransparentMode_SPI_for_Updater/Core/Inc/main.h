@@ -66,7 +66,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void MX_SPI1_Init(void);
+void MX_SPI3_Init(void);
 
 /* USER CODE BEGIN EFP */
 
@@ -77,8 +77,8 @@ void MX_SPI1_Init(void);
 /* USER CODE BEGIN Private defines */
 #define CS_IRQn                 GPIOA_IRQn
 #define CS_IRQHandler           GPIOA_IRQHandler
-#define CS_EXTI_LINE            LL_EXTI_LINE_PA11
-#define CS_WAKEUP_PIN           PWR_WAKEUP_PA11
+#define CS_EXTI_LINE            LL_EXTI_LINE_PA9
+#define CS_WAKEUP_PIN           PWR_WAKEUP_PA9
 
 #define DMA_CH_SPI_TX           LL_DMA_CHANNEL_3
 #define DMA_CH_SPI_RX           LL_DMA_CHANNEL_1

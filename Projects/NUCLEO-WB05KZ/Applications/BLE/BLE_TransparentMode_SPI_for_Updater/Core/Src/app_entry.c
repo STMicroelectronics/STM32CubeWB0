@@ -84,7 +84,7 @@ static void Button_TriggerActions(void *arg);
 /* External variables --------------------------------------------------------*/
 
 /* USER CODE BEGIN EV */
-extern uint8_t tone_started;
+
 /* USER CODE END EV */
 
 /* Functions Definition ------------------------------------------------------*/
@@ -197,6 +197,7 @@ void MX_APPE_Process(void)
 
   /* USER CODE END MX_APPE_Process_2 */
 }
+
 void UTIL_SEQ_PreIdle( void )
 {
 #if (CFG_LPM_SUPPORTED == 1)

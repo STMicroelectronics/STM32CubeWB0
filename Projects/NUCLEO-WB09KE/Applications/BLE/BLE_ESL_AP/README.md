@@ -27,8 +27,8 @@ The following AT commands can be used to send standard ESL commands (see Electro
 - *AT+REFRESH=\<group_id\>,\<esl_id\>,\<display_index\>*: Refresh Display 
 - *AT+IMG=\<group_id\>,\<esl_id\>,\<display_index\>,\<image_index\>*: Display Image
 - *AT+IMGTIM=\<group_id\>,\<esl_id\>,\<display_index\>,\<image_index\>,\<absolute_time\>*: Display Timed Image
-- *AT+LED=\<group_id\>,\<esl_id\>,\<led_index\>,\<led_component\>,\<pattern\>,\<off_period\>,\<on_period\>,\<repeat\>*: LED Control
-- *AT+LEDTIM=\<group_id\>,\<esl_id\>,\<led_index\>,\<led_component\>,\<pattern\>,\<off_period\>,\<on_period\>,\<repeat\>,\<absolute_time\>*: LED Timed Control
+- *AT+LED=\<group_id\>,\<esl_id\>,\<led_index\>,\<led_component_hex\>,\<pattern_hex\>,\<off_period\>,\<on_period\>,\<repeat_type\>,\<repeat_duration\>*: LED Control
+- *AT+LEDTIM=\<group_id\>,\<esl_id\>,\<led_index\>,\<led_component_hex\>,\<pattern_hex\>,\<off_period\>,\<on_period\>,\<repeat_type\>,\<repeat_duration\>,\<absolute_time\>*: LED Timed Control
 
 In addition to the previous list of AT commands, the following AT commands can be used to send proprietary ESL commands:
 

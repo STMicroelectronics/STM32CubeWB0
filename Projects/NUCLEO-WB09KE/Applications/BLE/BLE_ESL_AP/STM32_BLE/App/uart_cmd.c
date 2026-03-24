@@ -877,8 +877,8 @@ static int parse_cmd(void)
     printf("  - AT+PING=<group_id>,<esl_id>: Ping\n");
     printf("  - AT+UNASSOC=<group_id>,<esl_id>: Unassociate from AP\n");
     printf("  - AT+SRVRST=<group_id>,<esl_id>: Service Reset\n");
-    printf("  - AT+FRST=<group_id>,<esl_id>: Factory Reset\n");
-    printf("  - AT+UPDCMP=<group_id>,<esl_id>: Update Complete\n");
+    printf("  - AT+FRST: Factory Reset (connected ESL)\n");
+    printf("  - AT+UPDCMP: Update Complete (connected ESL)\n");
     printf("  - AT+SENS=<group_id>,<esl_id>,<sensor_index>: Read Sensor Data\n");
     printf("  - AT+REFRESH=<group_id>,<esl_id>,<display_index>: Refresh Display\n");
     printf("  - AT+IMG=<group_id>,<esl_id>,<display_index>,<image_index>: Display Image\n");
