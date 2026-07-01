@@ -97,6 +97,7 @@ static uint8_t freertos_power_save(PowerSaveLevels level)
     dummy[i] = 0;
     __NOP();
   }
+  UNUSED(dummy);
   
   PowerSaveLevels stack_powerSave_level, app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
   

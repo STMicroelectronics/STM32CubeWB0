@@ -395,7 +395,7 @@ uint8_t OTA_Tick()
   }
   else if(ota_state_machine_g == OTA_SIZE) 
   {
-    PRINTF("OTA_SIZE %d\r\n", image_size);
+    PRINTF("OTA_SIZE %d\r\n", (int)image_size);
 
     /* frame setting */
     tx_buffer[0] = HEADER_SIZE;
@@ -485,7 +485,7 @@ uint8_t OTA_Tick()
   else if(ota_state_machine_g == OTA_COMPLETE) 
   {
     printf("OTA_COMPLETE\r\n");
-    PRINTF("image %d\r\n",image_size);
+    PRINTF("image %d\r\n", (int)image_size);
     BSP_LED_Off(LD1);
     BSP_LED_Off(LD2);
     ota_state_machine_g = OTA_CONNECTION;

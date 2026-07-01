@@ -298,7 +298,7 @@ void BLE_Init(void)
   /**
    * Set TX Power.
    */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -790,9 +790,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
 
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1302,7 +1302,7 @@ static void Start_Advertising(void)
                                                  0 /* No scan request notifications */);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> aci_gap_set_advertising_configuration - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_advertising_configuration - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1314,7 +1314,7 @@ static void Start_Advertising(void)
   
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> aci_gap_set_advertising_data Failed, result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_advertising_data Failed, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1323,7 +1323,7 @@ static void Start_Advertising(void)
   
   status = aci_gap_set_scan_response_data(ADVERTISING_HANDLE, sizeof(peripheral_local_name), peripheral_local_name);
   if (status != BLE_STATUS_SUCCESS) {
-    APP_DBG_MSG("aci_gap_set_scan_response_data() Failed, result: 0x%02X\n", status);
+    APP_DBG_MSG("aci_gap_set_scan_response_data() Failed, result: 0x%02X\n", (unsigned int)status);
   }else{
     APP_DBG_MSG("==>> Success: aci_gap_set_scan_response_data\n");
   }
@@ -1332,7 +1332,7 @@ static void Start_Advertising(void)
   status = aci_gap_set_advertising_enable(ENABLE, 1, &Advertising_Set_Parameters);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> aci_gap_set_advertising_enable Failed, result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_advertising_enable Failed, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1516,7 +1516,7 @@ __USED void Terminate_Connection_After_Bonding(void)
     uint32_t status = aci_gap_terminate(bleAppContext.BleApplicationContext_legacy.connectionHandle, BLE_ERROR_TERMINATED_REMOTE_USER);
     if (status != BLE_STATUS_SUCCESS)
     {
-       APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
+       APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", (unsigned int)status);
     }
     else
     {

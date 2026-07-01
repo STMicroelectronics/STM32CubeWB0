@@ -155,12 +155,12 @@
  * Maximum number of Antenna IDs in the antenna pattern used in CTE connection
  * oriented mode.
  */
-#define CFG_BLE_NUM_CTE_ANTENNA_IDS_MAX                 (8)
+#define CFG_BLE_NUM_CTE_ANTENNA_IDS_MAX                 (0)
 
 /**
  * Maximum number of IQ samples in the buffer used in CTE connection oriented mode.
  */
-#define CFG_BLE_NUM_CTE_IQ_SAMPLES_MAX                  (82)
+#define CFG_BLE_NUM_CTE_IQ_SAMPLES_MAX                  (0)
 
 /**
  * Maximum number of slots for synchronizing to a Broadcast Isochronous Group.
@@ -288,7 +288,7 @@
 /**
  * Amount of RAM used to store advertising data (bytes)
  */
- #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (800)
+ #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (700)
 
 /**
  * Size of buffer shared between GATT_NWK library (used for GATT database and client
@@ -313,7 +313,7 @@
 #define CFG_BLE_L2CAP_COS_ENABLED                         (0U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_ENABLED           (1U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED        (0U)
-#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (1U)
+#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (0U)
 #define CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED          (0U)
 #define CFG_BLE_CONNECTION_ENABLED                        (1U)
 #define CFG_BLE_CONTROLLER_CHAN_CLASS_ENABLED             (0U)

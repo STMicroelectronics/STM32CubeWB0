@@ -1382,7 +1382,7 @@ uint8_t GATT_CLIENT_APP_ConfigureESL(void)
   
   /* ESL Current Absolute Time characteristic */  
   uint32_t absoluteTime = TIMEREF_GetCurrentAbsTime();
-  APP_DBG_MSG("Writing Absolute time (%d)\n", absoluteTime);  
+  APP_DBG_MSG("Writing Absolute time (%u)\n", (unsigned int)absoluteTime);
   ret = aci_gatt_clt_write(a_ClientContext[index].connHdl,
                            BLE_GATT_UNENHANCED_ATT_L2CAP_CID,
                            a_ClientContext[index].ESLCurrAbsTimeValueHdl,

@@ -917,12 +917,12 @@ static void client_discover_all(void)
   {
     if(a_ClientContext[index].state == GATT_CLIENT_APP_DISCOVER_SERVICES)
     {
+      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+
       gatt_procedure(index, PROC_GATT_DISC_ALL_PRIMARY_SERVICES);
       gatt_procedure(index, PROC_GATT_DISC_ALL_CHARS);
       gatt_procedure(index, PROC_GATT_DISC_ALL_DESCS);
       gatt_procedure(index, PROC_GATT_ENABLE_ALL_NOTIFICATIONS);
-
-      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
 
       /* Check if in the meantime another server has been connected. */
       UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);

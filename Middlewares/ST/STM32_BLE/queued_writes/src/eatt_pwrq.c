@@ -300,7 +300,7 @@ static tBleStatus EATT_pwrq_get_entry(uint16_t conn_handle,
                                               entry_p->pwr_size);
     }
 
-    return BLE_STATUS_ERROR;
+    return BLE_ERROR_UNKNOWN_CONNECTION_ID;
 }
 
 static void EATT_pwrq_cp32align_blk_left_move(uint32_t *dest_p,

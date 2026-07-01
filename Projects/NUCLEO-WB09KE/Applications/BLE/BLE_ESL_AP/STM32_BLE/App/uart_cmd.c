@@ -277,12 +277,12 @@ static int objectFoundCB(const char * name, uint16_t name_length)
 
 static int parse_cmd(void)
 {
-  uint32_t group_id, esl_id;
+  unsigned int group_id, esl_id;
   int ret;
   
   if(strncasecmp((char *)CommandString, "ATE", 3) == 0)
   {
-    uint32_t echo = 1;
+    unsigned int echo = 1;
  
     sscanf((char*)CommandString + 3, "%x", &echo);
     if(echo > 1)
@@ -363,7 +363,7 @@ static int parse_cmd(void)
     {
       return 1;
     }
-  }    
+  }
   else if(strncasecmp((char *)CommandString, "AT+UPDCMP", 10) == 0)
   {    
     if(ESL_AP_CmdUpdateComplete() == 0)
@@ -397,7 +397,7 @@ static int parse_cmd(void)
   }   
   else if(strncasecmp((char *)CommandString, "AT+REFRESH=", 11) == 0)
   {
-    uint32_t display_index;
+    unsigned int display_index;
     
     ret = sscanf((char*)CommandString + 11, "%x,%x,%u",  &group_id, &esl_id, &display_index);
     if(ret != 3 || group_id >= MAX_GROUPS)
@@ -418,7 +418,7 @@ static int parse_cmd(void)
   }     
   else if(strncasecmp((char *)CommandString, "AT+IMG=", 7) == 0)
   {
-    uint32_t image_index, display_index;
+    unsigned int image_index, display_index;
     
     ret = sscanf((char*)CommandString + 7, "%x,%x,%u,%u", &group_id, &esl_id, &display_index, &image_index);
     if(ret != 4 || group_id >= MAX_GROUPS)
@@ -439,8 +439,8 @@ static int parse_cmd(void)
   }
   else if(strncasecmp((char *)CommandString, "AT+IMGTIM=", 10) == 0)
   {
-    uint32_t display_index, image_index;
-    uint32_t abs_time;
+    unsigned int display_index, image_index;
+    unsigned int abs_time;
     
     ret = sscanf((char*)CommandString + 10, "%x,%x,%u,%u,%u", &group_id, &esl_id, &display_index, &image_index, &abs_time);
     if(ret != 5 || group_id >= MAX_GROUPS)
@@ -461,11 +461,11 @@ static int parse_cmd(void)
   }   
   else if (strncasecmp((char *)CommandString, "AT+LED=", 7) == 0)
   {
-    uint32_t led_index, led_component, off_period, on_period;
+    unsigned int led_index, led_component, off_period, on_period;
     uint64_t pattern;
-    uint32_t repeat_type, repeat_duration;
+    unsigned int repeat_type, repeat_duration;
     
-    ret = sscanf((char*)CommandString + 7, "%x,%x,%u,%x,%llx,%u,%u,%u,%x", &group_id, &esl_id, &led_index, &led_component, &pattern, &off_period, &on_period, &repeat_type, &repeat_duration);
+    ret = sscanf((char*)CommandString + 7, "%x,%x,%u,%x,%llx,%u,%u,%u,%u", &group_id, &esl_id, &led_index, &led_component, &pattern, &off_period, &on_period, &repeat_type, &repeat_duration);
     if(ret != 9 || group_id >= MAX_GROUPS || repeat_type > 1 || repeat_duration > 0x7FFF)    
     {
       return 1;
@@ -484,12 +484,12 @@ static int parse_cmd(void)
   }  
   else if(strncasecmp((char *)CommandString, "AT+LEDTIM=", 10) == 0)
   {    
-    uint32_t led_index, led_component, off_period, on_period;
+    unsigned int led_index, led_component, off_period, on_period;
     uint64_t pattern;
-    uint32_t repeat_type, repeat_duration;
-    uint32_t abs_time;
+    unsigned int repeat_type, repeat_duration;
+    unsigned int abs_time;
     
-    ret = sscanf((char*)CommandString + 10, "%x,%x,%u,%x,%llx,%u,%u,%u,%x,%u", &group_id, &esl_id, &led_index, &led_component, &pattern, &off_period, &on_period, &repeat_type, &repeat_duration, &abs_time);
+    ret = sscanf((char*)CommandString + 10, "%x,%x,%u,%x,%llx,%u,%u,%u,%u,%u", &group_id, &esl_id, &led_index, &led_component, &pattern, &off_period, &on_period, &repeat_type, &repeat_duration, &abs_time);
     if(ret != 10 || group_id >= MAX_GROUPS || repeat_type > 1 || repeat_duration > 0x7FFF)    
     {
       return 1;
@@ -529,7 +529,7 @@ static int parse_cmd(void)
   }
   else if (strncasecmp((char *)CommandString, "AT+PRICE=", 9) == 0)
   {
-    uint32_t val_int, val_fract;
+    unsigned int val_int, val_fract;
     
     ret = sscanf((char*)CommandString + 9, "%x,%x,%u.%u", &group_id, &esl_id, &val_int, &val_fract);
     if(ret != 4 || group_id >= MAX_GROUPS || val_int > 999 || val_fract > 99)
@@ -655,10 +655,10 @@ static int parse_cmd(void)
   // Command to read current absolute time 
   else if(strncasecmp((char *)CommandString, "AT+ABSTIME?", 10) == 0)
   {
-    uint32_t abs_time;
+    unsigned int abs_time;
     
     abs_time = TIMEREF_GetCurrentAbsTime();
-    printf("+ABSTIME: %d\n", abs_time);
+    printf("+ABSTIME: %u\n", abs_time);
     
     return 0;
   } 
@@ -672,10 +672,10 @@ static int parse_cmd(void)
   // Command for connection to ESL with 
   else if(strncasecmp((char *)CommandString, "AT+ADD=", 7) == 0)
   {    
-    uint32_t addr_type;
+    unsigned int addr_type;
     uint64_t address;
     
-    ret = sscanf((char*)CommandString + 7, "%d,%llx,%x,%x",&addr_type, &address, &group_id, &esl_id);
+    ret = sscanf((char*)CommandString + 7, "%u,%llx,%x,%x",&addr_type, &address, &group_id, &esl_id);
     if(ret != 4 || group_id >= MAX_GROUPS)
     {
       return 1;
@@ -798,9 +798,9 @@ static int parse_cmd(void)
         printf("%02X ", metadata.type[i]);
       }
       printf("\n");
-      printf("Curr Size: %d\n", metadata.curr_size);
-      printf("Alloc Size: %d\n", metadata.alloc_size);
-      printf("Prop: 0x%08X\n", metadata.properties);
+      printf("Curr Size: %u\n", (unsigned int)metadata.curr_size);
+      printf("Alloc Size: %u\n", (unsigned int)metadata.alloc_size);
+      printf("Prop: 0x%08X\n", (unsigned int)metadata.properties);
       printf("ID: 0x");
       for(int i = OBJECT_ID_SIZE - 1; i >= 0; i--)
       {
@@ -817,9 +817,9 @@ static int parse_cmd(void)
   }
   else if(strncasecmp((char *)CommandString, "AT+OTPSTART=", 12) == 0)
   {
-    uint32_t truncate;
+    unsigned int truncate;
     
-    ret = sscanf((char*)CommandString + 12, "%u",&truncate);
+    ret = sscanf((char*)CommandString + 12, "%u", &truncate);
     if(ret != 1 || truncate > 1)
     {
       return 1;

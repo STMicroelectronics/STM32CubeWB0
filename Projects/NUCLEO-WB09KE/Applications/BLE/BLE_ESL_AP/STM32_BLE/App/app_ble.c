@@ -290,7 +290,7 @@ void BLE_Init(void)
   /**
    * Set TX Power.
    */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -747,10 +747,10 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
         }
         break;
       /* USER CODE BEGIN EVT_LE_META_EVENT_1 */
-      case HCI_LE_READ_REMOTE_FEATURES_COMPLETE_SUBEVT_CODE:
+      case HCI_LE_READ_REMOTE_FEATURES_PAGE_0_COMPLETE_SUBEVT_CODE:
         {
-          hci_le_read_remote_features_complete_event_rp0 *p_read_remote_features_complete;
-          p_read_remote_features_complete = (hci_le_read_remote_features_complete_event_rp0 *) p_meta_evt->data;
+          hci_le_read_remote_features_page_0_complete_event_rp0 *p_read_remote_features_complete;
+          p_read_remote_features_complete = (hci_le_read_remote_features_page_0_complete_event_rp0 *) p_meta_evt->data;
           (void)p_read_remote_features_complete;
           
           APP_DBG_MSG("LE_Features: ");
@@ -902,9 +902,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
 
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1528,7 +1528,7 @@ void connection_setup(void)
    tBleStatus ret;
    
    UTIL_SEQ_ClrEvt(1 << CFG_IDLEEVT_READ_REMOTE_FEATURES_COMPLETE);
-   ret = hci_le_read_remote_features(bleAppContext.BleApplicationContext_legacy.connectionHandle);
+   ret = hci_le_read_remote_features_page_0(bleAppContext.BleApplicationContext_legacy.connectionHandle);
    APP_DBG_MSG("hci_le_read_remote_features - result: 0x%02X\n", ret);
    if (ret == BLE_ERROR_CONTROLLER_BUSY)
    {

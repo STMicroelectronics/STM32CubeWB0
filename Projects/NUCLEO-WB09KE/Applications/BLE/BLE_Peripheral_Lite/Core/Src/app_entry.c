@@ -276,6 +276,7 @@ static void deepstopTimer(void)
      dummy[i] = 0;
      __NOP();
    }
+   UNUSED(dummy);
 
    /* Low Power sequence */
    PWR_EnterStopMode();
@@ -301,6 +302,7 @@ static void deepstop(void)
      dummy[i] = 0;
      __NOP();
    }
+   UNUSED(dummy);
 
   /* Low Power sequence */
    PWR_EnterOffMode();

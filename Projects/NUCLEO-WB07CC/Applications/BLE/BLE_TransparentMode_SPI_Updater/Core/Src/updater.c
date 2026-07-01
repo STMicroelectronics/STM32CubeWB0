@@ -457,7 +457,6 @@ void updater(uint8_t reset_event)
   volatile uint8_t event_pending = 0;
   volatile uint8_t reset_pending = 0;
   uint16_t event_buffer_len = 0;
-  volatile uint16_t hci_pckt_len = 0;
 //  uint8_t aci_header_size;
   
 #ifdef SPI_INTERFACE  
@@ -477,6 +476,7 @@ void updater(uint8_t reset_event)
   uint16_t collected_payload_len = 0;
   uint16_t payload_len;
   uint16_t header_len;
+  volatile uint16_t hci_pckt_len = 0;
   
   uint8_t dma_state = DMA_IDLE;
   

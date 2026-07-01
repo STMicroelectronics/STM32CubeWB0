@@ -578,7 +578,7 @@ uint8_t OTA_Tick()
   {
     PRINTF("OTA_COMPLETE\r\n");
 
-    PRINTF("image %d\r\n",image_size);
+    PRINTF("image %d\r\n", (int)image_size);
     ota_state_machine_g = OTA_CONNECTION;
     last_frame = 0;
     seq_num = 0;

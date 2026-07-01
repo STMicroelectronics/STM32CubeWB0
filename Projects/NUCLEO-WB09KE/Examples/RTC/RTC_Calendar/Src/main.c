@@ -221,33 +221,33 @@ static void MX_RTC_Init(void)
   if (HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0) != 0x32F2)
   {
     /* Configure RTC Calendar */
-  /* USER CODE END Check_RTC_BKUP */
-
-  /** Initialize RTC and set the Time and Date
-  */
-  sTime.Hours = 0x2;
-  sTime.Minutes = 0x0;
-  sTime.Seconds = 0x0;
-  sTime.SubSeconds = 0x0;
-  sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  sTime.StoreOperation = RTC_STOREOPERATION_RESET;
-  if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_APRIL;
-  sDate.Date = 0x16;
-  sDate.Year = 0x18;
-
-  if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN RTC_Init 2 */
-
-  /* Writes a data in a RTC Backup data Register0 */
-  HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
+    /* USER CODE END Check_RTC_BKUP */
+    
+    /** Initialize RTC and set the Time and Date
+    */
+    sTime.Hours = 0x2;
+    sTime.Minutes = 0x0;
+    sTime.Seconds = 0x0;
+    sTime.SubSeconds = 0x0;
+    sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+    sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+    if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+    {
+      Error_Handler();
+    }
+    sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+    sDate.Month = RTC_MONTH_APRIL;
+    sDate.Date = 0x16;
+    sDate.Year = 0x18;
+    
+    if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+    {
+      Error_Handler();
+    }
+    /* USER CODE BEGIN RTC_Init 2 */
+    
+    /* Writes a data in a RTC Backup data Register0 */
+    HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
   }
   else
   {
@@ -314,6 +314,7 @@ static void RTC_CalendarShow(uint8_t *showtime, uint8_t *showdate)
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
 void Error_Handler(void)

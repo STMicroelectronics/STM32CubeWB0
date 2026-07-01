@@ -194,7 +194,7 @@ int main(void)
       fifo_get_elem_size(&print_fifo, 4, (uint8_t*)&timestamp);
       
       printf("\n\r[%d] Timestamp: %d.%03d ms - ", rcv_count, PRINT_INT((timestamp*625/256000.0)), PRINT_FLOAT((timestamp*625/256000.0)));
-      printf("channel: %d, RSSI: %d dBm\n\r", CHANNEL, rssi_val);
+      printf("channel: %d, RSSI: %d dBm\n\r", CHANNEL, (int)rssi_val);
       printf("Frame[%d]: ", frameToPrint[1]);
       for(uint8_t i= 0; i<frameToPrint[1] - MIC_FIELD_LEN; i++)
       {
@@ -488,6 +488,7 @@ uint8_t fifo_get_elem_size(circular_fifo_t *fifo, uint8_t size, uint8_t *elem)
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
 void Error_Handler(void)
@@ -503,8 +504,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

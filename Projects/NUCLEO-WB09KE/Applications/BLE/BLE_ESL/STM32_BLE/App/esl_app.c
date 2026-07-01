@@ -386,7 +386,7 @@ void ESL_APP_SetCurrentAbsoluteTime(uint32_t curr_absolute_time)
     TIMEREF_SetAbsoluteTime(curr_absolute_time);
     ESL_APP_Context.config_state_flags |= CONFIG_STATE_FLAG_ABSOLUTE_TIME;
     
-    APP_DBG_MSG("*** SET CurrentAbsTime: %d\n", TIMEREF_GetCurrentAbsTime());
+    APP_DBG_MSG("*** SET CurrentAbsTime: %d\n", (int)TIMEREF_GetCurrentAbsTime());
   }
 }
 
@@ -976,7 +976,7 @@ void ESL_APP_ControlPointReceived(uint8_t *p_cmd, uint8_t size)
   {
     /* If, after receipt of the Factory Reset cmd and prior to disconnection from
        the AP, the ESL receives any other cmd from the AP written to the ECP char,
-       then the other cmd shall be rejected with the error code: ”Unspecified Error” */
+       then the other cmd shall be rejected with the error code: Unspecified Error */
     if ((ESL_APP_Context.bFactoryReset) && (ESL_APP_Context.connected))
     {
       esl_payload_resp[resp_idx] = ESL_RESP_ERROR;
@@ -1222,7 +1222,7 @@ static int parse_cmd(void)
   } 
   else if(strncasecmp((char *)CommandString, "ABSTIME", 7) == 0)
   {
-    APP_DBG_MSG("--> Get Current Absolute Time: %d\n", TIMEREF_GetCurrentAbsTime());
+    APP_DBG_MSG("--> Get Current Absolute Time: %d\n", (int)TIMEREF_GetCurrentAbsTime());
     return 0;
   } 
   else if(strncasecmp((char *)CommandString, "SRVNEEDED", 9) == 0)
@@ -1378,8 +1378,8 @@ static uint8_t LEDTimedControlCmdCB(uint8_t led_index, uint8_t led_RGB_Brigthnes
   curr_abs_time = TIMEREF_GetCurrentAbsTime();
   delay = abs_time - curr_abs_time;
   
-  APP_DBG_MSG("Current time: %d\n", curr_abs_time); 
-  APP_DBG_MSG("Requested time: %d\n", abs_time);
+  APP_DBG_MSG("Current time: %d\n", (int)curr_abs_time);
+  APP_DBG_MSG("Requested time: %d\n", (int)abs_time);
   
   if (delay > MAX_TIMED_CMD_DELAY_MS) 
   {
@@ -1507,8 +1507,8 @@ static uint8_t displayTimedImageCmdCB(uint8_t display_index, uint8_t image_index
   curr_abs_time = TIMEREF_GetCurrentAbsTime();
   delay = abs_time - curr_abs_time;
   
-  APP_DBG_MSG("Current time: %d\n", curr_abs_time); 
-  APP_DBG_MSG("Requested time: %d\n", abs_time);
+  APP_DBG_MSG("Current time: %d\n", (int)curr_abs_time);
+  APP_DBG_MSG("Requested time: %d\n", (int)abs_time);
 
   if (delay > MAX_TIMED_CMD_DELAY_MS) 
   {

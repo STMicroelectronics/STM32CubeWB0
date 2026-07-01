@@ -288,7 +288,7 @@
 /**
  * Amount of RAM used to store advertising data (bytes)
  */
- #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (800)
+ #define CFG_BLE_ADV_NWK_BUFFER_SIZE                    (700)
 
 /**
  * Size of buffer shared between GATT_NWK library (used for GATT database and client
@@ -307,13 +307,13 @@
 #define CFG_BLE_CONTROLLER_SCAN_ENABLED                   (1U)
 #define CFG_BLE_CONTROLLER_PRIVACY_ENABLED                (0U)
 #define CFG_BLE_SECURE_CONNECTIONS_ENABLED                (1U)
-#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (0U)
+#define CFG_BLE_CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED  (1U)
 #define CFG_BLE_CONTROLLER_2M_CODED_PHY_ENABLED           (0U)
 #define CFG_BLE_CONTROLLER_EXT_ADV_SCAN_ENABLED           (1U)
 #define CFG_BLE_L2CAP_COS_ENABLED                         (0U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_ENABLED           (1U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED        (0U)
-#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (1U)
+#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (0U)
 #define CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED          (0U)
 #define CFG_BLE_CONNECTION_ENABLED                        (1U)
 #define CFG_BLE_CONTROLLER_CHAN_CLASS_ENABLED             (0U)

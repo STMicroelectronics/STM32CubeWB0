@@ -31,12 +31,6 @@ typedef void (*fct_t)(void);
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define REBOOT_ON_FW_APP          (0x00)
-#define REBOOT_ON_BLE_OTA_APP     (0x01)
-#define REBOOT_ON_CPU2_UPGRADE    (0x02)
-
-/* Compute start address where the User Configuration shall be located */
-#define USER_CFG_SLOT_START_SECTOR_INDEX      (FLASH_PAGE_NUMBER - CFG_NVM_STATIC_NB_SECTORS - CFG_USER_CFG_NB_SECTORS)
 
 /* Compute size in Page of Download and Active slots */
 #define DOWNLOAD_ACTIVE_NB_SECTORS            (FLASH_PAGE_NUMBER - CFG_NVM_STATIC_NB_SECTORS - CFG_USER_CFG_NB_SECTORS)
@@ -48,42 +42,24 @@ typedef void (*fct_t)(void);
 #define DOWNLOAD_SLOT_START_SECTOR_INDEX      (APP_SLOT_PAGE_SIZE + CFG_ACTIVE_SLOT_START_SECTOR_INDEX)
 
 /**
-* AD Element - DEV ID
-*/
-#define CFG_DEV_ID_OTA_FW_UPDATE                (0x86)
-
-/**
-* AD Element - Group B Feature
-*/
-/* LSB - First Byte */
-#define CFG_FEATURE_OTA_SW                      (0x08)
-
-/* LSB - Second Byte */
-#define CFG_FEATURE_OTA_REBOOT                  (0x20)
-
-/**
  * Define the NVM and STATIC size in sector
  */
 #define CFG_NVM_STATIC_NB_SECTORS                       (2)
+
 /**
  * Define the User Configuration size in sector
  */
-#define CFG_USER_CFG_NB_SECTORS                            (0)
-/**
- * Define the start address where the User Configuration shall be located
- */
-#define CFG_USER_CFG_SLOT_START_SECTOR_INDEX             (FLASH_PAGE_NUMBER - CFG_NVM_STATIC_NB_SECTORS - CFG_USER_CFG_NB_SECTORS)
+#define CFG_USER_CFG_NB_SECTORS                         (0)
+
 /**
  * Define the start address where the application shall be located
  */
-#define CFG_ACTIVE_SLOT_START_SECTOR_INDEX          (2)
+#define CFG_ACTIVE_SLOT_START_SECTOR_INDEX              (2)
 
 /**
  * Define mapping of OTA messages in SRAM
  */
-#define CFG_OTA_REBOOT_VAL_MSG            RAM_VR.OTAActivation[0]
-#define CFG_OTA_START_SECTOR_IDX_VAL_MSG  RAM_VR.OTAActivation[1]
-#define CFG_OTA_NBR_OF_SECTOR_VAL_MSG     RAM_VR.OTAActivation[2]
+#define CFG_OTA_INSTALL_APP_FLAG            RAM_VR.OTAActivation[1]
 
 /* USER CODE END PD */
 
@@ -106,10 +82,9 @@ static void MX_GPIO_Init(void);
 
 static void JumpFwApp( void );
 static void BootModeCheck( void );
-static void JumpSelectionOnPowerUp( void );
 static void DeleteSlot( uint8_t page_idx );
 static void MoveToActiveSlot( uint8_t page_idx );
-
+static uint8_t CheckFwAppValidity( uint8_t page_idx );
 
 /* USER CODE END PFP */
 
@@ -151,7 +126,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  BootModeCheck(); 
+  BootModeCheck();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -235,12 +210,67 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /**
+ * Check the Boot mode request
+ * Depending on the result, the CPU may either jump to an existing application in the user flash
+ * or keep on running the code to start the OTA loader
+ */
+static void BootModeCheck( void )
+{
+  if(RAM_VR.ResetReason & LL_RCC_CSR_SFTRSTF)
+  {
+    /**
+     * Check Boot Mode from flag in RAM
+     */
+    if(CFG_OTA_INSTALL_APP_FLAG != 0)
+    {      
+      if(CheckFwAppValidity(DOWNLOAD_SLOT_START_SECTOR_INDEX) != 0)
+      {
+        /**
+         * The user has requested to replace application with the content inside download slot.
+         */
+        DeleteSlot( CFG_ACTIVE_SLOT_START_SECTOR_INDEX );     /* Erase active slot */
+        MoveToActiveSlot(DOWNLOAD_SLOT_START_SECTOR_INDEX);         /* Move download slot to active slot */
+        if(CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) != 0)
+        {
+          DeleteSlot( DOWNLOAD_SLOT_START_SECTOR_INDEX ); /* Erase download slot */
+        }
+      }
+      
+      /**
+       * Jump now on the application. No return from here.
+       */
+      JumpFwApp();
+    }
+  }
+  
+  /**
+   * At power on, variable content is random. Initialize it.
+   */
+  CFG_OTA_INSTALL_APP_FLAG = 0;
+
+  /**
+   * Check if there is a FW App
+   */
+  if(CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) != 0)
+  {
+    /**
+     * A valid application is available
+     * Jump now on the application
+     */
+    JumpFwApp();
+  }
+  else
+  {
+    while(1);
+  }
+
+  return;
+}
+
+/**
  * Return 0 if FW App not valid
  * Return 1 if Fw App valid
  */
-static uint8_t  CheckFwAppValidity( uint8_t page_idx );
-
-
 static uint8_t CheckFwAppValidity( uint8_t page_idx )
 {
   uint8_t status;
@@ -330,8 +360,8 @@ static void DeleteSlot( uint8_t page_idx )
      * Something has been wrong as there is no case we should delete the BLE_BootMngr application
      * Reboot on the active firmware application
      */
-    CFG_OTA_REBOOT_VAL_MSG = REBOOT_ON_FW_APP;
-    NVIC_SystemReset(); /* it waits until reset */
+    CFG_OTA_INSTALL_APP_FLAG = 0;
+    NVIC_SystemReset();
   }
 
   if ((page_idx + NbrOfPageToBeErased - 1) > last_page_idx)
@@ -385,149 +415,12 @@ static void MoveToActiveSlot( uint8_t page_idx )
     }
   }
 }
-      
-/**
- * Check the Boot mode request
- * Depending on the result, the CPU may either jump to an existing application in the user flash
- * or keep on running the code to start the OTA loader
- */
-static void BootModeCheck( void )
-{
-  if(RAM_VR.ResetReason & LL_RCC_CSR_SFTRSTF)
-  {
-    /**
-     * The SRAM1 content is kept on Software Reset.
-     * In the Ble_Ota application, the first address of the SRAM1 indicates which kind of action has been requested
-     */
-
-    /**
-     * Check Boot Mode from SRAM1
-     */
-    if((CFG_OTA_REBOOT_VAL_MSG == REBOOT_ON_FW_APP) && (CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) != 0))
-    {
-      uint8_t download_slot_start_sector = CFG_OTA_START_SECTOR_IDX_VAL_MSG;
-      
-      if((download_slot_start_sector >= FLASH_PAGE_NUMBER) || 
-         ((download_slot_start_sector < CFG_ACTIVE_SLOT_START_SECTOR_INDEX)))
-      {
-        /* CFG_OTA_START_SECTOR_IDX_VAL_MSG not correctly initialized */
-        download_slot_start_sector = DOWNLOAD_SLOT_START_SECTOR_INDEX;
-        CFG_OTA_START_SECTOR_IDX_VAL_MSG = DOWNLOAD_SLOT_START_SECTOR_INDEX;
-      }
-      
-      if(CheckFwAppValidity(download_slot_start_sector) != 0)
-      {
-        /**
-         * The user has requested to start on the firmware application and it has been checked
-         * a valid application is ready in the download slot
-         */
-        DeleteSlot( CFG_ACTIVE_SLOT_START_SECTOR_INDEX );     /* Erase active slot */
-        MoveToActiveSlot(download_slot_start_sector);                           /* Move download slot to active slot */
-        if(CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) != 0)
-        {
-          DeleteSlot( DOWNLOAD_SLOT_START_SECTOR_INDEX ); /* Erase download slot */
-        }
-      }
-      
-      /**
-       * Jump now on the application
-       */
-      JumpFwApp();
-    }
-    else if((CFG_OTA_REBOOT_VAL_MSG == REBOOT_ON_FW_APP) && (CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) == 0))
-    {
-      /**
-       * The user has requested to start on the firmware application but there is no valid application
-       * Erase all sectors specified by byte1 and byte1 in SRAM1 to download a new App.
-       */
-      CFG_OTA_REBOOT_VAL_MSG = REBOOT_ON_BLE_OTA_APP;     /* Request to reboot on BLE_Ota application */
-      CFG_OTA_START_SECTOR_IDX_VAL_MSG = CFG_ACTIVE_SLOT_START_SECTOR_INDEX;
-      CFG_OTA_NBR_OF_SECTOR_VAL_MSG = 0xFF;
-    }
-    else if(CFG_OTA_REBOOT_VAL_MSG == REBOOT_ON_BLE_OTA_APP)
-    {
-      /**
-       * It has been requested to reboot on BLE_Ota application to download data
-       * Erase download slot to download a new App.
-       */
-      DeleteSlot( DOWNLOAD_SLOT_START_SECTOR_INDEX );     /* Erase download slot */
-      JumpFwApp();                                            /* Jump to OTA application */
-    }
-    else if(CFG_OTA_REBOOT_VAL_MSG == REBOOT_ON_CPU2_UPGRADE)
-    {
-      /**
-       * It has been requested to reboot on BLE_Ota application to keep running the firmware upgrade process
-       *
-       */
-    }
-    else
-    {
-      /**
-       * There should be no use case to be there because the device already starts from power up
-       * and the SRAM1 is then filled with the value define by the user
-       * However, it could be that a reset occurs just after a power up and in that case, the Ble_Ota
-       * will be running but the sectors to download a new App may not be erased
-       */
-      JumpSelectionOnPowerUp( );
-    }
-  }
-  else
-  {
-    /**
-     * On Power up, the content of SRAM1 is random
-     * The only thing that could be done is to jump on either the firmware application
-     * or the Ble_Ota application
-     */
-    JumpSelectionOnPowerUp( );
-  }
-
-  /**
-   * Return to the startup file and run the Ble_Ota application
-   */
-  return;
-}
-
-static void JumpSelectionOnPowerUp( void )
-{
-  /**
-   * Check if there is a FW App
-   */
-  if(CheckFwAppValidity(CFG_ACTIVE_SLOT_START_SECTOR_INDEX) != 0)
-  {
-    /**
-     * The SRAM1 is random
-     * Initialize SRAM1 to indicate we requested to reboot of firmware application
-     */
-    CFG_OTA_REBOOT_VAL_MSG = REBOOT_ON_FW_APP;
-
-    /**
-     * A valid application is available
-     * Jump now on the application
-     */
-    JumpFwApp();
-  }
-  else
-  {
-    /**
-     * The SRAM1 is random
-     * Initialize SRAM1 to indicate we requested to reboot of BLE_Ota application
-     */
-    CFG_OTA_REBOOT_VAL_MSG = REBOOT_ON_BLE_OTA_APP;
-
-    /**
-     * There is no valid application available
-     * Erase all sectors specified by byte1 and byte1 in SRAM1 to download a new App.
-     */
-    CFG_OTA_START_SECTOR_IDX_VAL_MSG = CFG_ACTIVE_SLOT_START_SECTOR_INDEX;
-    CFG_OTA_NBR_OF_SECTOR_VAL_MSG = 0xFF;
-  }
-  return;
-}
 
 /* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
 void Error_Handler(void)

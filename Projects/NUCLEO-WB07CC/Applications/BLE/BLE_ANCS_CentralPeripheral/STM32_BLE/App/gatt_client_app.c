@@ -795,7 +795,7 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
               APP_DBG_MSG("               EventFlags          0x%02X\n", ancs_notification_list[index].evFlag);
               APP_DBG_MSG("               CategoryID          0x%02X\n", ancs_notification_list[index].catID);
               APP_DBG_MSG("               CategoryCount       0x%02X\n", ancs_notification_list[index].catCount);
-              APP_DBG_MSG("               UID           0x%08X\n", ancs_notification_list[index].notifUID);
+              APP_DBG_MSG("               UID           0x%08X\n", (unsigned int)ancs_notification_list[index].notifUID);
 
               UTIL_SEQ_SetTask(1U << CFG_TASK_NOTIFICATION_ANCS, CFG_SEQ_PRIO_0);
 
@@ -819,7 +819,7 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
             if(ancs_notification_list[index].notifUID == notification_uid)
             {
               APP_DBG_MSG("Notification MODIFIED\n");
-              APP_DBG_MSG("notification_uid = 0x%08X\n", notification_uid);
+              APP_DBG_MSG("notification_uid = 0x%08X\n", (unsigned int)notification_uid);
               ancs_notification_list[index].status = TO_UPDATE;
               UTIL_SEQ_SetTask(1U << CFG_TASK_NOTIFICATION_ANCS, CFG_SEQ_PRIO_0);
             }
@@ -837,7 +837,7 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
             if(ancs_notification_list[index].notifUID == notification_uid)
             {
               APP_DBG_MSG("Notification REMOVED\n");
-              APP_DBG_MSG("notification_uid = 0x%08X\n", notification_uid);
+              APP_DBG_MSG("notification_uid = 0x%08X\n", (unsigned int)notification_uid);
               ancs_notification_list[index].used = UNUSED;
             }
           }
@@ -852,14 +852,14 @@ __USED static void gatt_Notification(GATT_CLIENT_APP_Notification_evt_t *p_Notif
     case ANCS_GET_NOTIFICATION_ATTRIBUTES_RECEIVED_EVT:
     {
       uint32_t notification_uid = (uint32_t)p_Notif->DataTransfered.p_Payload[1] | ((uint32_t)p_Notif->DataTransfered.p_Payload[2] << 8) | ((uint32_t)p_Notif->DataTransfered.p_Payload[3] << 16) | ((uint32_t)p_Notif->DataTransfered.p_Payload[4] << 24);
-      APP_DBG_MSG("notification_uid = 0x%08X\n", notification_uid);
+      APP_DBG_MSG("notification_uid = 0x%08X\n", (unsigned int)notification_uid);
       for(uint8_t index=0; index<MAX_ANCS_NOTIFICATION; index++)
       {
         if(ancs_notification_list[index].notifUID == notification_uid)
         {
           uint16_t dim = 0;
           uint16_t i = 0;
-          APP_DBG_MSG("ancs_notification_list[%d].notifUID = 0x%08X\n", index, ancs_notification_list[index].notifUID);
+          APP_DBG_MSG("ancs_notification_list[%d].notifUID = 0x%08X\n", index, (unsigned int)ancs_notification_list[index].notifUID);
           /* NotificationAttributeIDAppIdentifier  */
           if(p_Notif->DataTransfered.p_Payload[5] == NotificationAttributeIDAppIdentifier)
           {
@@ -1379,12 +1379,12 @@ static void client_discover_all(void)
   {
     if(a_ClientContext[index].state == GATT_CLIENT_APP_DISCOVER_SERVICES)
     {
+      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+
       gatt_procedure(index, PROC_GATT_DISC_ALL_PRIMARY_SERVICES);
       gatt_procedure(index, PROC_GATT_DISC_ALL_CHARS);
       gatt_procedure(index, PROC_GATT_DISC_ALL_DESCS);
       gatt_procedure(index, PROC_GATT_ENABLE_ALL_NOTIFICATIONS);
-
-      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
 
       /* Check if in the meantime another server has been connected. */
       UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
@@ -1704,7 +1704,7 @@ static void notification_ancs(void)
           APP_DBG_MSG("               EventFlags          0x%02X\n", ancs_notification_list[index].evFlag);
           APP_DBG_MSG("               CategoryID          0x%02X\n", ancs_notification_list[index].catID);
           APP_DBG_MSG("               CategoryCount       0x%02X\n", ancs_notification_list[index].catCount);
-          APP_DBG_MSG("               UID           0x%08X\n", ancs_notification_list[index].notifUID);
+          APP_DBG_MSG("               UID           0x%08X\n", (unsigned int)ancs_notification_list[index].notifUID);
 
           /* This application will show all data related to the notification just received. */
           gatt_ShowANCSPacket(&ancs_notification_list[index]);
@@ -1943,7 +1943,7 @@ void printANCSNotification(ANCS_NotificationList_type *notification)
     APP_DBG_MSG("  Event Flags: %d\n", notification->evFlag);
     APP_DBG_MSG("  Category ID: %d\n", notification->catID);
     APP_DBG_MSG("  Category Count: %d\n", notification->catCount);
-    APP_DBG_MSG("  Notification UID: 0x%08X\n", notification->notifUID);
+    APP_DBG_MSG("  Notification UID: 0x%08X\n", (unsigned int)notification->notifUID);
 
     APP_DBG_MSG("  Notification Data:\n");
     APP_DBG_MSG("    App Identifier: ");
@@ -2016,8 +2016,8 @@ void GATT_Button1Action(void)
       current_notification_uid = ancs_notification_list[index_current_notification].notifUID;
       printANCSNotification(&ancs_notification_list[index_current_notification]);
       APP_DBG_MSG("Press push button 1 to show next notification.\n");
-      APP_DBG_MSG("Press push button 2 to perform the Positive Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idPositiveActionLabel ,current_notification_uid);
-      APP_DBG_MSG("Press push button 3 to perform the Negative Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idNegativeActionLabel, current_notification_uid);
+      APP_DBG_MSG("Press push button 2 to perform the Positive Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idPositiveActionLabel, (unsigned int)current_notification_uid);
+      APP_DBG_MSG("Press push button 3 to perform the Negative Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idNegativeActionLabel, (unsigned int)current_notification_uid);
       break;
     }
     
@@ -2041,7 +2041,7 @@ void GATT_Button2Action(void)
   {
     if(ancs_notification_list[index_current_notification].notifUID == current_notification_uid)
     {
-      APP_DBG_MSG("Positive Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idPositiveActionLabel , current_notification_uid);
+      APP_DBG_MSG("Positive Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idPositiveActionLabel , (unsigned int)current_notification_uid);
       uint8_t notificationAction[1 + 4 + 1] = {0};
       
       notificationAction[0] = CommandIDPerformNotificationAction;
@@ -2080,7 +2080,7 @@ void GATT_Button3Action(void)
   {
     if(ancs_notification_list[index_current_notification].notifUID == current_notification_uid)
     {
-      APP_DBG_MSG("Negative Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idNegativeActionLabel , current_notification_uid);
+      APP_DBG_MSG("Negative Action [%s] on the 0x%08X UID.\n", ancs_notification_list[index_current_notification].notifData.idNegativeActionLabel , (unsigned int)current_notification_uid);
       uint8_t notificationAction[1 + 4 + 1] = {0};
       
       notificationAction[0] = CommandIDPerformNotificationAction;

@@ -404,7 +404,7 @@ void OTA_APP_Init(void)
   OTA_Init();
 
   /* USER CODE BEGIN Service2_APP_Init */
-  APP_DBG_MSG("OTA - Maximum allowed application size: %d bytes (0x%0X)\n", (int)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE), (uint32_t)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE));
+  APP_DBG_MSG("OTA - Maximum allowed application size: %d bytes (0x%0X)\n", (int)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE), (unsigned int)(APP_SLOT_NB_SECTORS * FLASH_PAGE_SIZE));
   reset_timer.callback = reset;
   
   UTIL_SEQ_RegTask( 1U << CFG_TASK_OTA_REBOOT_REQ_ID, UTIL_SEQ_RFU, Reboot);
@@ -423,15 +423,8 @@ static void Reboot(void)
 {  
   APP_BLE_Procedure_Gap_General(PROC_GAP_GEN_CONN_TERMINATE);
   
-  /**
-  * Reboot on FW Application
-  */
-  CFG_OTA_REBOOT_VAL_MSG_ADDR = REBOOT_ON_FW_APP;
-  
-  /**
-  * Give the download sector
-  */
-  CFG_OTA_START_SECTOR_IDX_VAL_MSG_ADDR = (OTA_APP_Context.base_address - FLASH_START_ADDR) / FLASH_PAGE_SIZE;
+  /* Request FW install */
+  CFG_OTA_INSTALL_APP_FLAG = 1;
   
   /* Do not reset immediately to give time to write potential bonding info.  */
   HAL_RADIO_TIMER_StartVirtualTimer(&reset_timer, 500);  
@@ -473,8 +466,7 @@ static void DeleteSlot( uint8_t page_idx )
      * Something has been wrong as there is no case we should delete the BLE_BootMngr application
      * Reboot on the active firmware application
      */
-    CFG_OTA_REBOOT_VAL_MSG_ADDR = REBOOT_ON_FW_APP;
-    NVIC_SystemReset(); /* it waits until reset */
+    NVIC_SystemReset();
   }
 
   if ((page_idx + NbrOfPageToBeErased - 1) > last_page_idx)

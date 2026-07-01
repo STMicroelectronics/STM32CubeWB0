@@ -106,9 +106,10 @@ uint32_t MX_APPE_Init(void *p_param)
   HAL_RADIO_SetTxPower(0x18);
   /* USER CODE END APPE_Init_1 */
   
-  
+#if (CFG_LPM_SUPPORTED == 1)  
   /* Low Power Manager Init */
   UTIL_LPM_Init();  
+#endif
   
   /* USER CODE BEGIN APPE_Init_2 */
   
@@ -191,6 +192,7 @@ void MX_APPE_Idle(void)
     dummy[i] = 0;
     __NOP();
   }
+  UNUSED(dummy);
   
   app_powerSave_level = App_PowerSaveLevel_Check();
   

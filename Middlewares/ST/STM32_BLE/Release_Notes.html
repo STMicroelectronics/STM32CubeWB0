@@ -41,8 +41,7 @@ src="../../../_htmresc/st_logo_2020.png" alt="ST logo" /></a>
 </center>
 <h1 id="purpose">Purpose</h1>
 <p>STM32_BLE Middleware for ST Bluetooth LE stack v4.x.</p>
-<p>The following Bluetooth LE specification v5.4 features are
-supported:</p>
+<p>The following Bluetooth LE specification features are supported:</p>
 <ul>
 <li>Advertising</li>
 <li>Scanning</li>
@@ -50,7 +49,7 @@ supported:</p>
 <li>GATT Client / Server</li>
 <li>Host and Controller Privacy</li>
 <li>LE Encryption</li>
-<li>Direction Findings (AoA, AoD)</li>
+<li>Direction Finding (AoA, AoD)</li>
 <li>LE Data Packet Length Extension</li>
 <li>LE Legacy and Secure Connections</li>
 <li>2Mbit PHY</li>
@@ -77,10 +76,10 @@ supported:</p>
 <li>Link statistics</li>
 <li>ATT Maximum Transmission Unit (MTU) size is 1020 octets.</li>
 <li>L2CAP Maximum Payload Size (MPS) size is 1024 octets.</li>
+<li>Monitoring Advertisers (v4.2 or later)</li>
 <li>MISRA-C:2012 compliance</li>
-<li>Bluetooth LE stack modular configurations allowing to optimize
-Bluetooth LE stack memory footprints based on user application
-scenario</li>
+<li>Bluetooth LE stack modular configurations to optimize memory
+footprints based on user application scenario</li>
 <li>Single Bluetooth LE stack v4.x binary image (stm32wb0x_ble_stack.a)
 which can be used for all the supported toolchains</li>
 <li>Dedicated Bluetooth LE stack v4.x binary image
@@ -88,17 +87,105 @@ which can be used for all the supported toolchains</li>
 configuration</li>
 </ul>
 <p>The list of Bluetooth LE commands is documented in the
-STM32WB0_BLE_Wireless_Interface document on STM32_BLE\stack\doc
-folder.</p>
+STM32WB0_BLE_Wireless_Interface document in stack/doc folder.</p>
 </div>
 <section id="update-history" class="col-sm-12 col-lg-8">
 <h1>Update History</h1>
 <div class="collapse">
-<input type="checkbox" id="collapse-section141" checked aria-hidden="true">
+<input type="checkbox" id="collapse-section150" checked aria-hidden="true">
+<label for="collapse-section150" aria-hidden="true"><strong>V1.5.0 /
+05-June-2026</strong></label>
+<div>
+<h2 id="main-changes">Main Changes</h2>
+<p>ST Bluetooth LE stack v4.2 release (aligned with Bluetooth Core
+Specification v6.2 and validated by internal tests):</p>
+<ul>
+<li>New features/updates (compared to Bluetooth LE stack v4.1a):
+<ul>
+<li>ID 1349888: LL Extended Feature Set</li>
+<li>ID 1349886: Monitoring Advertisers</li>
+<li>ID 1527738: Prescheduling improvements for multiple connections</li>
+<li>ID 1567428: Add possibility to use a non-standard minimum connection
+interval below 7.5 ms (down to 5 ms). Minimum proprietary connection
+interval can be specified with ACI HAL Write Config Data command with
+Offset=0x50 and Length=2, in 1.25 ms units.</li>
+</ul></li>
+<li>Solved issues (compared to Bluetooth LE stack v4.1a):
+<ul>
+<li>ID 1166170: Support of Mode 1 Level 4 requirements for a GATT
+characteristic.</li>
+<li>ID 1282732: Interpacket spacing in transmitter test mode is not
+compliant with spec.</li>
+<li>ID 1447834: Sync Lost event may happen with some specific PAwR
+configuration.</li>
+<li>ID 1459924: Create connection command rejected when issued from PAwR
+over 2M PHY.</li>
+<li>ID 1496947: A connection complete event (immediately followed by a
+disconnection) could be rarely raised with a peer address different from
+the one specified in the Create Connection command.</li>
+<li>ID 1498978: HCI_LE_Path_Loss_Threshold event not raised after Path
+Loss Reporting is enabled.</li>
+<li>ID 1499039: Wrong RSSI reported if no packets are received</li>
+<li>ID 1515016: Unexpected stop of scanning procedure.</li>
+<li>ID 1519400: ACI_HAL_GET_LINK_STATUS command may not report all
+advertising handles.</li>
+<li>ID 1538522: GATT module not checking the validity of Connection
+Handle when starting procedures.</li>
+<li>ID 1538596: ATT_EXCHANGE_MTU_REQ could be sent more than once during
+a connection.</li>
+<li>ID 1571789: Device could send long control PDUs before a Feature
+Exchange procedure.</li>
+<li>ID 1581163: Removed default public address. Null address is now
+returned by HCI Read BD_ADDR command if no public address is set.</li>
+<li>ID 1582209: PAwR synchronizer does not update the channel map when
+indicated by the advertiser.</li>
+<li>ID 1584724: Peripheral latency may be applied even before the
+connection is established.</li>
+</ul></li>
+<li>Known limitations:
+<ul>
+<li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
+command shall be avoided during intense radio activities.</li>
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
+than the correct value.</li>
+<li>ID 1074817: Different advertising filter policies are allowed among
+different advertising sets. It should be forbidden according to GAP
+specifications.</li>
+<li>ID 1164880: Some requirements for the Access Address generation are
+not implemented.</li>
+<li>ID 1213293: The Advertiser_Address shall be checked according to
+Advertiser_Address_Type value for some HCI commands.</li>
+<li>ID 1221480: The Path loss estimated with and without Power Control
+may be very different.</li>
+<li>ID 1277942: Pairing may fail when a device is not in the bonding
+table but it is present in the resolving list.</li>
+<li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
+Sync Ind PDU.</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
+<li>ID 1435606: Wrong time calculation when specifying long advertising
+intervals.</li>
+<li>ID 1464675: Potential issue in time accuracy for 2M PHY (in
+BLEPLAT_CNTR_DemodDelaySt()).</li>
+<li>ID 1469531: Extended advertising packet on primary channel is
+transmitted in a corrupted form if transmission occurs soon after a PAwR
+reception phase.</li>
+<li>ID 1528364: Pairing can fail (with timeout) while device is
+continuously transmitting bursts of data packets
+(e.g. notifications).</li>
+<li>ID 1591263: Hardware Error event raised when PAwR is stopped after a
+response PDU is received and during the RX phase.</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div class="collapse">
+<input type="checkbox" id="collapse-section141" aria-hidden="true">
 <label for="collapse-section141" aria-hidden="true"><strong>V1.4.1 /
 06-March-2026</strong></label>
 <div>
-<h2 id="main-changes">Main Changes</h2>
+<h2 id="main-changes-1">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.1a release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.1):
@@ -147,7 +234,7 @@ missing activation of timer for reception.</li>
 <ul>
 <li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
 command shall be avoided during intense radio activities.</li>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP
@@ -166,8 +253,9 @@ table but it is present in the resolving list.</li>
 compliant with spec.</li>
 <li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
 Sync Ind PDU.</li>
-<li>ID 1353736: PADV may fail to start if disable advertising command is
-given immediately after ext adv start command.</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
 <li>ID 1435606: Wrong time calculation when specifying long advertising
 intervals.</li>
 <li>ID 1464675: Potential issue in time accuracy for 2M PHY (in
@@ -187,7 +275,7 @@ Path Loss Reporting is enabled.</li>
 <label for="collapse-section140" aria-hidden="true"><strong>V1.4.0 /
 29-October-2025</strong></label>
 <div>
-<h2 id="main-changes-1">Main Changes</h2>
+<h2 id="main-changes-2">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.1 release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0d):
@@ -246,7 +334,7 @@ occurrence)</li>
 <ul>
 <li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
 command shall be avoided during intense radio activities.</li>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP
@@ -267,8 +355,9 @@ compliant with spec.</li>
 Sync Ind PDU.</li>
 <li>ID 1338337: High packet loss rate for BIS when using LE Coded
 PHY.</li>
-<li>ID 1353736: PADV may fail to start if the disable advertising
-command is given immediately after the ext adv start command.</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
 <li>ID 1357243: Possible non-compliance with CIS anchor spacing in
 interleaved mode.</li>
 <li>ID 1381769: CIS disconnection may not be performed if LL control
@@ -304,7 +393,7 @@ Path Loss Reporting is enabled</li>
 <label for="collapse-section130" aria-hidden="true"><strong>V1.3.0 /
 04-June-2025</strong></label>
 <div>
-<h2 id="main-changes-2">Main Changes</h2>
+<h2 id="main-changes-3">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0d release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0c):
@@ -340,7 +429,7 @@ failure.</li>
 <ul>
 <li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
 command shall be avoided during intense radio activities.</li>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP
@@ -374,8 +463,9 @@ commands.</li>
 Sync Ind PDU.</li>
 <li>ID 1338337: High packet loss rate for BIS when using LE Coded
 PHY.</li>
-<li>ID 1353736: PADV may fail to start if the disable advertising
-command is given immediately after the ext adv start command.</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
 <li>ID 1357243: Possible non-compliance with CIS anchor spacing in
 interleaved mode.</li>
 <li>ID 1381769: CIS disconnection may not be performed if LL control
@@ -396,7 +486,7 @@ configuration.</li>
 <label for="collapse-section120" aria-hidden="true"><strong>V1.2.0 /
 05-February-2025</strong></label>
 <div>
-<h2 id="main-changes-3">Main Changes</h2>
+<h2 id="main-changes-4">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0c release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0b):
@@ -451,7 +541,7 @@ set</li>
 <li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
 command shall be avoided during intense radio activities (also when a
 connection is active).</li>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP
@@ -481,15 +571,13 @@ not called promptly</li>
 end 150 us before the start of the next subevent (this affects both
 synchronizer and advertiser); controller privacy is not supported on the
 synchronizer side.</li>
-<li>ID 1353736: If command to stop extended advertising associated to a
-PAVD train is given immediately after the command to start extended
-advertising, the PADV may not start.</li>
 <li>ID 1317265: Periodic Synchronizer establishes sync even with invalid
 Sync Ind PDU</li>
 <li>ID 1338337: Higher packet loss rate for BIS when using LE Coded
 PHY</li>
-<li>ID 1353736: PADV may fail to start if the disable advertising
-command is given immediately after the ext adv start command</li>
+<li>ID 1353736: If command to stop extended advertising associated to a
+PAVD train is given immediately after the command to start extended
+advertising, the PADV may not start.</li>
 <li>ID 1357243: Possible non-compliance with CIS anchor spacing in
 interleaved mode</li>
 <li>ID 1358692: CIS creation is not performed if Power Control and Path
@@ -507,7 +595,7 @@ are allowed between two LE device addresses when privacy is used.</li>
 <label for="collapse-section110" aria-hidden="true"><strong>V1.1.0 /
 30-October-2024</strong></label>
 <div>
-<h2 id="main-changes-4">Main Changes</h2>
+<h2 id="main-changes-5">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0b release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v4.0):
@@ -570,7 +658,7 @@ Sync error.</li>
 <li>ID 600131: Erasing the SDB through the aci_gap_clear_security_db
 command shall be avoided during intense radio activities (also when a
 connection is active).</li>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP
@@ -615,7 +703,7 @@ advertising, the PADV may not start.</li>
 <label for="collapse-section100" aria-hidden="true"><strong>V1.0.0 /
 05-June-2024</strong></label>
 <div>
-<h2 id="main-changes-5">Main Changes</h2>
+<h2 id="main-changes-6">Main Changes</h2>
 <p>ST Bluetooth LE stack v4.0 release:</p>
 <ul>
 <li>New features/updates (compared to Bluetooth LE stack v3.x)
@@ -713,7 +801,7 @@ tests</li>
 </ul></li>
 <li>Known limitations:
 <ul>
-<li>ID 974202: Wrong data reported when ExtendedHeaderLength are less
+<li>ID 974202: Wrong data reported when ExtendedHeaderLength is less
 than the correct value.</li>
 <li>ID 1074817: Different advertising filter policies are allowed among
 different advertising sets. It should be forbidden according to GAP

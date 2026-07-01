@@ -175,6 +175,7 @@ void MX_APPE_Idle(void)
     dummy[i] = 0;
     __NOP();
   }
+  UNUSED(dummy);
   
   app_powerSave_level = App_PowerSaveLevel_Check();
   

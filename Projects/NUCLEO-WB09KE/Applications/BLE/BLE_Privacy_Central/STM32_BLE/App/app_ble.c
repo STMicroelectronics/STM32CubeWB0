@@ -289,7 +289,7 @@ void BLE_Init(void)
   /**
    * Set TX Power.
    */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -816,9 +816,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
 
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1327,7 +1327,7 @@ static void General_Connection_Establishment(void)
   uint32_t status = aci_gap_set_scan_configuration(DUPLICATE_FILTER_DISABLED, 0x00, LE_1M_PHY_BIT, HCI_SCAN_TYPE_ACTIVE, 0x200, 0x200);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("aci_gap_set_scan_configuration - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("aci_gap_set_scan_configuration - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1344,17 +1344,17 @@ static void General_Connection_Establishment(void)
   
   if (status == BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Success , result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
-    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , status: 0x%02X\n", status);
+    APP_DBG_MSG("==>> aci_gap_set_connection_configuration Failed , status: 0x%02X\n", (unsigned int)status);
   }  
 
   status = aci_gap_start_procedure (GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC,LE_1M_PHY_BIT,0,0);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("aci_gap_start_procedure - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("aci_gap_start_procedure - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1378,7 +1378,7 @@ static void Terminate_Scanning(void)
   uint32_t status = aci_gap_terminate_proc(GAP_GENERAL_CONNECTION_ESTABLISHMENT_PROC);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("aci_gap_terminate_gap_proc - fail, result: 0x%02X\n",status);
+    APP_DBG_MSG("aci_gap_terminate_gap_proc - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1451,7 +1451,7 @@ void APPE_Button3Action(void)
     uint32_t status = aci_gap_terminate(bleAppContext.BleApplicationContext_legacy.connectionHandle, 0x13);
     if (status != BLE_STATUS_SUCCESS)
     {
-       APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
+       APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", (unsigned int)status);
     }
     else
     {

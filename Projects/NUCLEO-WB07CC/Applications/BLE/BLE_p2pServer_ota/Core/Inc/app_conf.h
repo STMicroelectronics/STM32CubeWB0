@@ -118,9 +118,7 @@
 /**
  * Define mapping of OTA messages in SRAM
  */
-#define CFG_OTA_REBOOT_VAL_MSG_ADDR            RAM_VR.OTAActivation[0]
-#define CFG_OTA_START_SECTOR_IDX_VAL_MSG_ADDR  RAM_VR.OTAActivation[1]
-#define CFG_OTA_NBR_OF_SECTOR_VAL_MSG_ADDR     RAM_VR.OTAActivation[2]
+#define CFG_OTA_INSTALL_APP_FLAG                        RAM_VR.OTAActivation[1]
 
 /* USER CODE END Specific_Parameters */
 

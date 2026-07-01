@@ -212,6 +212,11 @@ tBleStatus hci_le_set_periodic_advertising_subevent_data(uint8_t Advertising_Han
     return BLE_ERROR_UNKNOWN_ADVERTISING_IDENTIFIER;
   }
 
+  if ((Num_Subevents == 0) || (Num_Subevents > 0x0F))
+  {
+    return BLE_ERROR_INVALID_HCI_CMD_PARAMS;
+  }
+
   if(pawr_buff_subevent_num_available() < Num_Subevents)
   {
     /* This happens is host has given more data than what requested by the Controller.  */
@@ -548,7 +553,7 @@ static tBleStatus allocate_and_set_data_ext(uint8_t Advertising_Handle,
 #endif
   uint8_t status = BLE_ERROR_UNKNOWN_HCI_COMMAND;
   uint16_t old_buff_len;
-  uint8_t extend;
+  uint8_t extend = FALSE;
 
   if(Advertising_Handle == LEGACY_ADV_HANDLE && layer != LL){
     return BLE_ERROR_INVALID_HCI_CMD_PARAMS; // This should not happen

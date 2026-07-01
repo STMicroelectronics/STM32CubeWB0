@@ -144,8 +144,8 @@ uint8_t OTP_CLIENT_DiscoverFeatures(void)
     OTPClientContext.OACPFeautures = LE_TO_HOST_32(data_p);
     OTPClientContext.OLCPFeautures = LE_TO_HOST_32(data_p + 4);
     
-    APP_DBG_MSG("OACP Features 0x%08X\n", OTPClientContext.OACPFeautures);
-    APP_DBG_MSG("OLCP Features 0x%08X\n", OTPClientContext.OLCPFeautures);
+    APP_DBG_MSG("OACP Features 0x%08X\n", (unsigned int)OTPClientContext.OACPFeautures);
+    APP_DBG_MSG("OLCP Features 0x%08X\n", (unsigned int)OTPClientContext.OLCPFeautures);
   }
   
   OTPClientContext.state = OTP_CLIENT_STATE_IDLE;
@@ -589,17 +589,19 @@ int OTP_CLIENT_WriteObj(const uint8_t *obj_data, uint16_t obj_data_length)
   curr_size = LE_TO_HOST_32(att_data_p);
   alloc_size = LE_TO_HOST_32(att_data_p + 4);
   
-  APP_DBG_MSG("Curr size: %d Alloc size: %d\n", curr_size, alloc_size);
+  APP_DBG_MSG("Curr size: %u Alloc size: %u\n", (unsigned int)curr_size, (unsigned int)alloc_size);
   
   if((obj_data_length > alloc_size) &
      ((obj_prop & OBJ_PROP_APPEND) == 0))
   {
+    /* Not possible to append data. */
     return -3;
   }
   
   if((obj_data_length < curr_size) & !OTPClientContext.truncate &
      ((obj_prop & OBJ_PROP_PATCH) == 0))
   {
+    /* Not possible to patch data. */
     return -3;
   }
   

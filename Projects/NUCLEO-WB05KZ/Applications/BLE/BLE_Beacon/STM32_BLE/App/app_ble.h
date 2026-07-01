@@ -51,6 +51,7 @@ extern "C" {
 /* USER CODE END EV */
 
 /* Exported macro ------------------------------------------------------------*/
+
 /* USER CODE BEGIN EM */
 
 /* USER CODE END EM */

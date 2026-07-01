@@ -4821,7 +4821,7 @@ tBleStatus hci_le_read_buffer_size_v2(uint16_t* HC_LE_ACL_Data_Packet_Length,
 tBleStatus hci_le_create_big_test(uint8_t big_handle,
                                   uint8_t advertising_handle,
                                   uint8_t num_bis,
-                                  uint8_t* sdu_interval_us,
+                                  uint8_t sdu_interval_us[3],
                                   uint16_t iso_interval_1_25ms,
                                   uint8_t nse,
                                   uint16_t max_sdu,
@@ -4833,7 +4833,7 @@ tBleStatus hci_le_create_big_test(uint8_t big_handle,
                                   uint8_t irc,
                                   uint8_t pto,
                                   uint8_t encryption,
-                                  uint8_t* broadcast_code_ext)
+                                  uint8_t broadcast_code_ext[16])
 {
     return hci_le_create_big_test_api(big_handle,
                                       advertising_handle,
@@ -4863,7 +4863,7 @@ tBleStatus hci_le_create_big_test(uint8_t big_handle,
 tBleStatus hci_le_big_create_sync(uint8_t BIG_Handle,
                                   uint16_t Sync_Handle,
                                   uint8_t Encryption,
-                                  uint8_t* Broadcast_Code,
+                                  uint8_t Broadcast_Code[16],
                                   uint8_t MSE,
                                   uint16_t BIG_Sync_Timeout,
                                   uint8_t Num_BIS,
@@ -4915,7 +4915,7 @@ tBleStatus hci_le_big_terminate_sync(uint8_t Big_handle)
 tBleStatus hci_le_create_big(uint8_t big_handle,
                              uint8_t advertising_handle,
                              uint8_t num_bis,
-                             uint8_t* sdu_interval_us,
+                             uint8_t sdu_interval_us[3],
                              uint16_t max_sdu,
                              uint16_t Max_Transport_Latency,
                              uint8_t RTN,
@@ -4923,7 +4923,7 @@ tBleStatus hci_le_create_big(uint8_t big_handle,
                              uint8_t packing_interleaved,
                              uint8_t framing,
                              uint8_t encryption,
-                             uint8_t* broadcast_code_ext)
+                             uint8_t broadcast_code_ext[16])
 {
     return hci_le_create_big_api(big_handle,
                                  advertising_handle,
@@ -4973,7 +4973,7 @@ tBleStatus hci_write_afh_channel_assessment_mode(uint8_t AFH_Channel_Assessment_
      ||\
      (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1)\
     )
-tBleStatus hci_le_set_host_channel_classification(uint8_t Channel_Map[LLC_MIN_NUM_DATA_CHAN_MAP_BYTES])
+tBleStatus hci_le_set_host_channel_classification(uint8_t Channel_Map[5])
 {
     return hci_le_set_host_channel_classification_api(Channel_Map);
 }
@@ -5163,6 +5163,17 @@ tBleStatus hci_write_connection_accept_timeout(uint16_t Connection_Accept_Timeou
 
 #if (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) ||\
     (CONNECTION_ENABLED == 1)
+tBleStatus hci_le_set_host_feature_v2(uint16_t Bit_Number,
+                                      uint8_t Bit_Value)
+{
+    return hci_le_set_host_feature_v2_api(Bit_Number,
+                                          Bit_Value);
+}
+#endif /* (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) ||\
+          (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1) ||\
+    (CONNECTION_ENABLED == 1)
 tBleStatus hci_le_set_host_feature(uint8_t Bit_Number,
                                    uint8_t Bit_Value)
 {
@@ -5180,9 +5191,18 @@ tBleStatus hci_read_remote_version_information(uint16_t Connection_Handle)
 #endif /* (CONNECTION_ENABLED == 1) */
 
 #if (CONNECTION_ENABLED == 1)
-tBleStatus hci_le_read_remote_features(uint16_t Connection_Handle)
+tBleStatus hci_le_read_remote_features_page_0(uint16_t Connection_Handle)
 {
-    return hci_le_read_remote_features_api(Connection_Handle);
+    return hci_le_read_remote_features_page_0_api(Connection_Handle);
+}
+#endif /* (CONNECTION_ENABLED == 1) */
+
+#if (CONNECTION_ENABLED == 1)
+tBleStatus hci_le_read_all_remote_features(uint16_t Connection_Handle,
+                                           uint8_t Pages_Requested)
+{
+    return hci_le_read_all_remote_features_api(Connection_Handle,
+                                               Pages_Requested);
 }
 #endif /* (CONNECTION_ENABLED == 1) */
 
@@ -5208,7 +5228,7 @@ tBleStatus hci_read_rssi(uint16_t Connection_Handle,
 
 #if (CONNECTION_ENABLED == 1)
 tBleStatus hci_le_read_channel_map(uint16_t Connection_Handle,
-                                   uint8_t LE_Channel_Map[LLC_MIN_NUM_DATA_CHAN_MAP_BYTES])
+                                   uint8_t LE_Channel_Map[5])
 {
     return hci_le_read_channel_map_api(Connection_Handle,
                                        LE_Channel_Map);
@@ -5734,8 +5754,8 @@ tBleStatus hci_le_iso_test_end(uint16_t Connection_Handle,
 tBleStatus hci_le_setup_iso_data_path(uint16_t Connection_Handle,
                                       uint8_t Data_Path_Direction,
                                       uint8_t Data_Path_ID,
-                                      uint8_t* CODEC_ID,
-                                      uint8_t* Controller_Delay,
+                                      uint8_t CODEC_ID[5],
+                                      uint8_t Controller_Delay[3],
                                       uint8_t Codec_Configuration_Length,
                                       uint8_t* Codec_Configuration)
 {
@@ -5816,7 +5836,7 @@ tBleStatus hci_le_read_iso_link_quality(uint16_t connection_handle,
 tBleStatus hci_le_read_iso_tx_sync(uint16_t connection_handle,
                                    uint16_t* packet_sequence_number,
                                    uint32_t* timestamp,
-                                   uint8_t* timeoffset)
+                                   uint8_t timeoffset[3])
 {
     return hci_le_read_iso_tx_sync_api(connection_handle,
                                        packet_sequence_number,
@@ -5900,6 +5920,51 @@ tBleStatus hci_le_read_maximum_data_length(uint16_t* Supported_Max_Tx_Octets,
 }
 #endif /* (CONTROLLER_DATA_LENGTH_EXTENSION_ENABLED == 1) &&\
           (CONNECTION_ENABLED == 1) */
+
+#if (CONTROLLER_SCAN_ENABLED == 1)
+tBleStatus hci_le_add_device_to_monitored_advertisers_list(uint8_t Address_Type,
+                                                           uint8_t Address[6],
+                                                           int8_t RSSI_Low_Threshold,
+                                                           int8_t RSSI_High_Threshold,
+                                                           uint8_t Timeout)
+{
+    return hci_le_add_device_to_monitored_advertisers_list_api(Address_Type,
+                                                               Address,
+                                                               RSSI_Low_Threshold,
+                                                               RSSI_High_Threshold,
+                                                               Timeout);
+}
+#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
+
+#if (CONTROLLER_SCAN_ENABLED == 1)
+tBleStatus hci_le_clear_monitored_advertisers_list(void)
+{
+    return hci_le_clear_monitored_advertisers_list_api();
+}
+#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
+
+#if (CONTROLLER_SCAN_ENABLED == 1)
+tBleStatus hci_le_enable_monitoring_advertisers(uint8_t Enable)
+{
+    return hci_le_enable_monitoring_advertisers_api(Enable);
+}
+#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
+
+#if (CONTROLLER_SCAN_ENABLED == 1)
+tBleStatus hci_le_read_monitored_advertisers_list_size(uint8_t* Number)
+{
+    return hci_le_read_monitored_advertisers_list_size_api(Number);
+}
+#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
+
+#if (CONTROLLER_SCAN_ENABLED == 1)
+tBleStatus hci_le_remove_device_from_monitored_advertisers_list(uint8_t Address_Type,
+                                                                uint8_t Address[6])
+{
+    return hci_le_remove_device_from_monitored_advertisers_list_api(Address_Type,
+                                                                    Address);
+}
+#endif /* (CONTROLLER_SCAN_ENABLED == 1) */
 
 #if ((CONTROLLER_PERIODIC_ADV_ENABLED == 1) &&\
     (CONTROLLER_EXT_ADV_SCAN_ENABLED == 1))

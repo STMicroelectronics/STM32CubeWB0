@@ -581,7 +581,7 @@ static void HTS_APP_IntermediateTemperature(void)
 
   if(HTS_APP_Context.Int_Notification_Status == Int_NOTIFICATION_ON)
   {
-    APP_DBG_MSG("HTS_APP_IntermediateTemperature: %d \n", HTS_APP_Context.IntermediateTemperatureChar.MeasurementValue);
+    APP_DBG_MSG("HTS_APP_IntermediateTemperature: %d \n", (int)HTS_APP_Context.IntermediateTemperatureChar.MeasurementValue);
     /**
      * Flags update
      */
@@ -721,7 +721,7 @@ static void HTS_APP_Store(void)
     }
   }
   APP_DBG_MSG ("Stored measurement %d, index of first measure saved: %d\n", 
-               HTS_Measurement[HTS_CurrentIndex].MeasurementValue, HTS_OldIndex);  
+               (int)HTS_Measurement[HTS_CurrentIndex].MeasurementValue, HTS_OldIndex);
   memcpy(&HTS_Measurement[HTS_CurrentIndex], 
          &(HTS_APP_Context.TemperatureMeasurementChar), 
          sizeof(HTS_TemperatureValue_t)); 

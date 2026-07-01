@@ -553,7 +553,7 @@ static tBleStatus allocate_and_set_data_ext(uint8_t Advertising_Handle,
 #endif
   uint8_t status = BLE_ERROR_UNKNOWN_HCI_COMMAND;
   uint16_t old_buff_len;
-  uint8_t extend;
+  uint8_t extend = FALSE;
 
   if(Advertising_Handle == LEGACY_ADV_HANDLE && layer != LL){
     return BLE_ERROR_INVALID_HCI_CMD_PARAMS; // This should not happen
@@ -805,3 +805,4 @@ tBleStatus aci_gap_decrypt_adv_data_nwk(uint8_t session_key[16],
 
 #endif
 
+/******************* (C) COPYRIGHT 2020 STMicroelectronics *****END OF FILE****/

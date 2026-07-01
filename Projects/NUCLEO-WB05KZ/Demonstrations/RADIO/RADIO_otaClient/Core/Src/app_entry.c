@@ -113,7 +113,7 @@ uint32_t MX_APPE_Init(void *p_param)
 /* USER CODE BEGIN APPE_Init_2 */
   OTA_Init();
   BSP_LED_On(LD1);
-  printf("\r\nOTA manager client (version: %s)\r\nNext free address location is: 0x%00000000X\r\n", RADIO_OTA_MANAGER_VERSION_STRING, APP_WITH_OTA_SERVICE_ADDRESS);
+  printf("\r\nOTA manager client (version: %s)\r\nNext free address location is: 0x%08X\r\n", RADIO_OTA_MANAGER_VERSION_STRING, APP_WITH_OTA_SERVICE_ADDRESS);
 /* USER CODE END APPE_Init_2 */
    return 0;
 }
@@ -184,6 +184,7 @@ void MX_APPE_Idle(void)
     dummy[i] = 0;
     __NOP();
   }
+  UNUSED(dummy);
   
   app_powerSave_level = App_PowerSaveLevel_Check();
   

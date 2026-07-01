@@ -329,7 +329,7 @@ void BLE_Init(void)
   /**
   * Set TX Power.
   */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -920,9 +920,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1942,7 +1942,7 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
     status = aci_gap_configure_filter_accept_and_resolving_list(0x01);
     if (status != BLE_STATUS_SUCCESS)
     {
-      APP_DBG_MSG("  Fail   : (FILTER) aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", status);
+      APP_DBG_MSG("  Fail   : (FILTER) aci_gap_configure_filter_accept_and_resolving_list command, result: 0x%02X\n", (unsigned int)status);
     }
     else
     {
@@ -1953,7 +1953,7 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
   status = aci_gap_set_scan_configuration(DUPLICATE_FILTER_ENABLED, 0x00, LE_1M_PHY_BIT, HCI_SCAN_TYPE_ACTIVE, paramA, paramB);
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("(FILTER) aci_gap_set_scan_configuration - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("(FILTER) aci_gap_set_scan_configuration - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
@@ -1970,11 +1970,11 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
   
   if (status == BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Success , result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Success , result: 0x%02X\n", (unsigned int)status);
   }
   else
   {
-    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Failed , result: 0x%02X\n", status);
+    APP_DBG_MSG("==>> (FILTER) aci_gap_set_connection_configuration Failed , result: 0x%02X\n", (unsigned int)status);
   }  
   
   /* Start the auto connection establishment procedure */
@@ -1982,7 +1982,7 @@ uint32_t status, paramA = SCAN_INT_MS(500), paramB = SCAN_WIN_MS(250);
   
   if (status != BLE_STATUS_SUCCESS)
   {
-    APP_DBG_MSG("(FILTER) aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - fail, result: 0x%02X\n", status);
+    APP_DBG_MSG("(FILTER) aci_gap_start_procedure GAP_AUTO_CONNECTION_ESTABLISHMENT_PROC - fail, result: 0x%02X\n", (unsigned int)status);
   }
   else
   {

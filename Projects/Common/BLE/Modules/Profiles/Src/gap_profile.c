@@ -37,6 +37,15 @@
 #define CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC   0
 #endif
 
+#ifndef CFG_BLE_GAP_RESOLVABLE_PRIVATE_ADDRESS_ONLY_CHARACTERISTIC
+#define CFG_BLE_GAP_RESOLVABLE_PRIVATE_ADDRESS_ONLY_CHARACTERISTIC   0
+#endif
+
+#ifndef CFG_BLE_GAP_LE_GATT_SECURITY_LEVELS_CHARACTERISTIC
+#define CFG_BLE_GAP_LE_GATT_SECURITY_LEVELS_CHARACTERISTIC   0
+#endif
+
+
 #if (CFG_BLE_NETWORK_PROC_MODE == 1)
 #include "aci_gatt_nwk.h"
 #endif
@@ -121,6 +130,43 @@ static const ble_gatt_val_buffer_def_t gap_central_address_resolution_val_buff =
  *@}
  */
 
+BLE_GATT_SRV_CCCD_DECLARE(encrypted_data_key_material, CFG_BLE_NUM_RADIO_TASKS, BLE_GATT_SRV_PERM_AUTHEN_WRITE,
+                          BLE_GATT_SRV_OP_MODIFIED_EVT_ENABLE_FLAG);
+
+/**
+ *@defgroup Resolvable Private Address Only Characteristic value.
+ *@{
+ */
+/**
+ * Characteristic value buffer.
+ */
+static uint8_t gap_resolvable_private_address_only_buff[GAP_CHR_RPA_ONLY_LEN] = { 0U };
+static const ble_gatt_val_buffer_def_t gap_resolvable_private_address_only_val_buff = {
+    .buffer_len = GAP_CHR_RPA_ONLY_LEN,
+    .buffer_p = gap_resolvable_private_address_only_buff,
+};
+/**
+ *@}
+ */
+
+/**
+ *@defgroup LE GATT Security Levels Characteristic value.
+ *@{
+ */
+/**
+ * Characteristic value buffer.
+ */
+static uint8_t gap_le_gatt_security_levels_buff[GAP_CHR_LE_GATT_SECURITY_LEVELS_LEN] = { 0x01, 0x04 };
+static const ble_gatt_val_buffer_def_t gap_le_gatt_security_levels_buff_val_buff = {
+    .buffer_len = GAP_CHR_LE_GATT_SECURITY_LEVELS_LEN,
+    .buffer_p = gap_le_gatt_security_levels_buff,
+};
+
+
+/**
+ *@}
+ */
+
 static ble_gatt_chr_def_t gap_chrs[] = {
     { /**< Device Name Characteristic. */
         .properties = BLE_GATT_SRV_CHAR_PROP_READ,
@@ -152,6 +198,22 @@ static ble_gatt_chr_def_t gap_chrs[] = {
         .min_key_size = 7U,
         .uuid = BLE_UUID_INIT_16(BLE_GATT_SRV_ENCRYPTED_DATA_KEY_MATERIAL_UUID),
         .val_buffer_p = NULL,
+        .descrs = {
+            .descrs_p = &BLE_GATT_SRV_CCCD_DEF_NAME(encrypted_data_key_material),
+            .descr_count = 1U,
+        },  
+    }, { /**< Resolvable Private Address Only Characteristic. */
+        .properties = BLE_GATT_SRV_CHAR_PROP_READ,
+        .permissions = BLE_GATT_SRV_PERM_NONE,
+        .min_key_size = 7U,
+        .uuid = BLE_UUID_INIT_16(BLE_GATT_SRV_RESOLVABLE_PRIVATE_ADDRESS_ONLY_UUID),
+        .val_buffer_p = (ble_gatt_val_buffer_def_t *)&gap_resolvable_private_address_only_val_buff,
+    }, { /**< LE GATT Security Levels Characteristic. */
+        .properties = BLE_GATT_SRV_CHAR_PROP_READ,
+        .permissions = BLE_GATT_SRV_PERM_NONE,
+        .min_key_size = 7U,
+        .uuid = BLE_UUID_INIT_16(BLE_GATT_SRV_LE_GATT_SECURITY_LEVELS_UUID),
+        .val_buffer_p = (ble_gatt_val_buffer_def_t *)&gap_le_gatt_security_levels_buff_val_buff,
     }
 };
 
@@ -223,6 +285,16 @@ tBleStatus aci_gap_profile_init(uint8_t Role,
       {
         return ret;
       }
+#if (CFG_BLE_GAP_RESOLVABLE_PRIVATE_ADDRESS_ONLY_CHARACTERISTIC == 1)
+      /**
+      * Register Resolvable Private Address Only Characteristic.
+      */
+      ret = aci_gatt_srv_add_char(&gap_chrs[5U], gap_srvc_handle);
+      if (ret != BLE_STATUS_SUCCESS)
+      {
+        return ret;
+      }
+#endif /* CFG_BLE_GAP_RESOLVABLE_PRIVATE_ADDRESS_ONLY_CHARACTERISTIC */
     }
     
 #if (CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC == 1)
@@ -285,7 +357,18 @@ tBleStatus aci_gap_profile_init(uint8_t Role,
     }
     
 #endif /* CFG_BLE_GAP_ENCRYPTED_KEY_MATERIAL_CHARACTERISTIC */
-    
+
+#if (CFG_BLE_GAP_LE_GATT_SECURITY_LEVELS_CHARACTERISTIC == 1)
+    /**
+     * Register LE GATT Security Levels Characteristic.
+     */
+    ret = aci_gatt_srv_add_char(&gap_chrs[6U], gap_srvc_handle);
+    if (ret != BLE_STATUS_SUCCESS)
+    {
+      return ret;
+    }
+#endif /* CFG_BLE_GAP_LE_GATT_SECURITY_LEVELS_CHARACTERISTIC */
+
     /**
     * Set default device name.
     */
@@ -322,6 +405,15 @@ tBleStatus Gap_profile_set_pref_conn_par(uint16_t offset,
     uint16_t handle = aci_gatt_srv_get_char_decl_handle(&gap_chrs[2U]) + 1U;
 
     return Gap_profile_set_char_value(handle, offset, length, pref_conn_param_p);
+}
+
+tBleStatus Gap_profile_set_le_gatt_security_level(uint16_t offset,
+                                                  uint16_t length,
+                                                  uint8_t *value_p)
+{
+    uint16_t handle = aci_gatt_srv_get_char_decl_handle(&gap_chrs[6U]) + 1U;
+
+    return Gap_profile_set_char_value(handle, offset, length, value_p);
 }
 
 tBleStatus Gap_profile_set_char_value(uint16_t attr_h,

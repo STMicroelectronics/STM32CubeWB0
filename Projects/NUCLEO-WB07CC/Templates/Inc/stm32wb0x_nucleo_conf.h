@@ -2,7 +2,7 @@
   ******************************************************************************
   * @file    stm32wb0x_nucleo_conf.h
   * @author  MCD Application Team
-  * @brief   STM32WBAXX nucleo board configuration file.
+  * @brief   STM32WB0x nucleo board configuration file.
   ******************************************************************************
   * @attention
   *

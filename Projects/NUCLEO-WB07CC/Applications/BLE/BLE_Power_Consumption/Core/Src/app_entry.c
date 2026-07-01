@@ -452,6 +452,7 @@ void UTIL_SEQ_Idle( void )
     dummy[i] = 0;
     __NOP();
   }
+  UNUSED(dummy);
 
   PowerSaveLevels app_powerSave_level, vtimer_powerSave_level, final_level, pka_level;
 

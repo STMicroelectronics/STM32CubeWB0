@@ -733,7 +733,7 @@ static void configRadioWakeupTimer(uint32_t timeout)
   {
     LL_RADIO_TIMER_GetLSIFrequency(RADIO_CTRL);
     freq = LL_RADIO_TIMER_GetLSIFrequency(RADIO_CTRL);
-    printf("LSI frequency = %d Hz\r\n", freq);
+    printf("LSI frequency = %d Hz\r\n", (int)freq);
   }
   
   /* Wait until UART is not busy */

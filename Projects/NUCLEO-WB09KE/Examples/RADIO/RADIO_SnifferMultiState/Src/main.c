@@ -208,7 +208,7 @@ int main(void)
       fifo_get_elem_size(&print_fifo, 1, (uint8_t*)&actual_ch);
 
       printf("\n\r[%d] Timestamp: %d.%03d ms - ", rcv_count, PRINT_INT((timestamp*625/256000.0)), PRINT_FLOAT((timestamp*625/256000.0)));
-      printf("RSSI: %d dBm, channel: %d\n\r", rssi_val, actual_ch);
+      printf("RSSI: %d dBm, channel: %d\n\r", (int)rssi_val, (int)actual_ch);
       printf("Frame[%d]: ", frameToPrint[1]);
       for(uint8_t i= 0; i<frameToPrint[1]+1; i++)
       {
@@ -562,7 +562,7 @@ int sniffer_init(uint8_t StateMachineNo)
   }
   HAL_RADIO_SetReservedArea(&aPacket[StateMachineNo]);
   
-  printf(" >> Sniffing channel..%d StateMachineNo:%d Encryption:%d Network_ID:0x%X\r\n", (uint8_t)channel[StateMachineNo], StateMachineNo, encryption[StateMachineNo], network_id[StateMachineNo]);
+  printf(" >> Sniffing channel..%d StateMachineNo:%d Encryption:%d Network_ID:0x%X\r\n", (uint8_t)channel[StateMachineNo], StateMachineNo, encryption[StateMachineNo], (unsigned int)network_id[StateMachineNo]);
   return 0;
 }
 
@@ -570,6 +570,7 @@ int sniffer_init(uint8_t StateMachineNo)
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
 void Error_Handler(void)
@@ -583,8 +584,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

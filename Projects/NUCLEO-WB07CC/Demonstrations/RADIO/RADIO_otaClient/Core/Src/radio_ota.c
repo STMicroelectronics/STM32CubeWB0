@@ -526,7 +526,7 @@ uint8_t OTA_Tick()
     if(app_size<=SM_APP_SIZE) 
     { /* Check if the new application fit the Flash memory */
       //PRINTF("OK for 0x%08X %.2f KB max %.2f KB\r\n", app_size, ((float)app_size)/1024.0, ((float)SM_APP_SIZE)/1024.0);
-      PRINTF("OK for 0x%08X %d.%02d KB max %d.%02d KB\r\n", app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0), PRINT_INT(SM_APP_SIZE/1024.0),PRINT_FLOAT(SM_APP_SIZE/1024.0)) ;
+      PRINTF("OK for 0x%08X %d.%02d KB max %d.%02d KB\r\n", (int)app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0), PRINT_INT(SM_APP_SIZE/1024.0),PRINT_FLOAT(SM_APP_SIZE/1024.0)) ;
       printf("OTA_START\r\n");
       tx_buffer[0] = HEADER_START;
       tx_buffer[1] = 0;
@@ -549,7 +549,7 @@ uint8_t OTA_Tick()
     else 
     { /* If the new image does not fit the Flash memory */
       //PRINTF("NOT ok for 0x%08X %.2f KB max %.2f KB\r\n", app_size, ((float)app_size)/1024.0, ((float)SM_APP_SIZE)/1024.0);
-      PRINTF("NOT OK for 0x%08X %d.%02d KB max %d.%02d KB\r\n", app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0), PRINT_INT(SM_APP_SIZE/1024.0),PRINT_FLOAT(SM_APP_SIZE/1024.0)) ;
+      PRINTF("NOT OK for 0x%08X %d.%02d KB max %d.%02d KB\r\n", (int)app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0), PRINT_INT(SM_APP_SIZE/1024.0),PRINT_FLOAT(SM_APP_SIZE/1024.0)) ;
 
       PRINTF("OTA_NOTSTART\r\n");
       tx_buffer[0] = HEADER_NOTSTART;
@@ -567,7 +567,7 @@ uint8_t OTA_Tick()
   {
     if(seq_num < seq_num_max) 
     {
-      PRINTF("OTA_DATAREQ %d/%d app_size %d\r\n", seq_num, seq_num_max, app_size);
+      PRINTF("OTA_DATAREQ %d/%d app_size %d\r\n", seq_num, seq_num_max, (int)app_size);
       tx_buffer[0] = HEADER_DATAREQ;
       tx_buffer[1] = 2;
       tx_buffer[2] = (uint8_t)(seq_num>>8);
@@ -602,7 +602,7 @@ uint8_t OTA_Tick()
   else if(ota_state_machine_g == OTA_FLASHDATA) 
   {
 //    PRINTF("OTA_FLASHDATA\r\n");
-    PRINTF("OTA_FD %d/%d app_size %d ps %d\r\n", seq_num, seq_num_max, app_size,page_size);
+    PRINTF("OTA_FD %d/%d app_size %d ps %d\r\n", seq_num, seq_num_max, (int)app_size, page_size);
     /* New data available */
     if((page_size == _MEMORY_BYTES_PER_PAGE_) || ((app_size - page_size) == 0)) {
 
@@ -657,7 +657,7 @@ uint8_t OTA_Tick()
       }
       page_size = 0;
       //PRINTF("app_size 0x%08X %.2f KB\r\n", app_size, ((float)app_size)/1024.0);
-      PRINTF("app_size 0x%08X %d.%02d KB\r\n", app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0));
+      PRINTF("app_size 0x%08X %d.%02d KB\r\n", (unsigned int)app_size, PRINT_INT(app_size/1024.0),PRINT_FLOAT(app_size/1024.0));
     }
     if(app_size) 
     {

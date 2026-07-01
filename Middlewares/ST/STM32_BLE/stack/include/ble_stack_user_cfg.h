@@ -2424,7 +2424,7 @@ tBleStatus hci_le_read_buffer_size_v2_api(uint16_t* HC_LE_ACL_Data_Packet_Length
 tBleStatus hci_le_create_big_test_api(uint8_t big_handle,
                                       uint8_t advertising_handle,
                                       uint8_t num_bis,
-                                      uint8_t* sdu_interval_us,
+                                      uint8_t sdu_interval_us[3],
                                       uint16_t iso_interval_1_25ms,
                                       uint8_t nse,
                                       uint16_t max_sdu,
@@ -2436,12 +2436,12 @@ tBleStatus hci_le_create_big_test_api(uint8_t big_handle,
                                       uint8_t irc,
                                       uint8_t pto,
                                       uint8_t encryption,
-                                      uint8_t* broadcast_code_ext);
+                                      uint8_t broadcast_code_ext[16]);
 
 tBleStatus hci_le_big_create_sync_api(uint8_t BIG_Handle,
                                       uint16_t Sync_Handle,
                                       uint8_t Encryption,
-                                      uint8_t* Broadcast_Code,
+                                      uint8_t Broadcast_Code[16],
                                       uint8_t MSE,
                                       uint16_t BIG_Sync_Timeout,
                                       uint8_t Num_BIS,
@@ -2455,7 +2455,7 @@ tBleStatus hci_le_big_terminate_sync_api(uint8_t Big_handle);
 tBleStatus hci_le_create_big_api(uint8_t big_handle,
                                  uint8_t advertising_handle,
                                  uint8_t num_bis,
-                                 uint8_t* sdu_interval_us,
+                                 uint8_t sdu_interval_us[3],
                                  uint16_t max_sdu,
                                  uint16_t Max_Transport_Latency,
                                  uint8_t RTN,
@@ -2463,13 +2463,13 @@ tBleStatus hci_le_create_big_api(uint8_t big_handle,
                                  uint8_t packing_interleaved,
                                  uint8_t framing,
                                  uint8_t encryption,
-                                 uint8_t* broadcast_code_ext);
+                                 uint8_t broadcast_code_ext[16]);
 
 tBleStatus hci_read_afh_channel_assessment_mode_api(uint8_t* AFH_Channel_Assessment_Mode);
 
 tBleStatus hci_write_afh_channel_assessment_mode_api(uint8_t AFH_Channel_Assessment_Mode);
 
-tBleStatus hci_le_set_host_channel_classification_api(uint8_t Channel_Map[LLC_MIN_NUM_DATA_CHAN_MAP_BYTES]);
+tBleStatus hci_le_set_host_channel_classification_api(uint8_t Channel_Map[5]);
 
 tBleStatus hci_le_set_cig_parameters_api(uint8_t CIG_ID,
                                          uint8_t SDU_Interval_C_To_P[3],
@@ -2510,12 +2510,18 @@ tBleStatus hci_read_connection_accept_timeout_api(uint16_t* Connection_Accept_Ti
 
 tBleStatus hci_write_connection_accept_timeout_api(uint16_t Connection_Accept_Timeout);
 
+tBleStatus hci_le_set_host_feature_v2_api(uint16_t Bit_Number,
+                                          uint8_t Bit_Value);
+
 tBleStatus hci_le_set_host_feature_api(uint8_t Bit_Number,
                                        uint8_t Bit_Value);
 
 tBleStatus hci_read_remote_version_information_api(uint16_t Connection_Handle);
 
-tBleStatus hci_le_read_remote_features_api(uint16_t Connection_Handle);
+tBleStatus hci_le_read_remote_features_page_0_api(uint16_t Connection_Handle);
+
+tBleStatus hci_le_read_all_remote_features_api(uint16_t Connection_Handle,
+                                               uint8_t Pages_Requested);
 
 tBleStatus hci_read_transmit_power_level_api(uint16_t Connection_Handle,
                                              uint8_t Type,
@@ -2525,7 +2531,7 @@ tBleStatus hci_read_rssi_api(uint16_t Connection_Handle,
                              int8_t* RSSI);
 
 tBleStatus hci_le_read_channel_map_api(uint16_t Connection_Handle,
-                                       uint8_t LE_Channel_Map[LLC_MIN_NUM_DATA_CHAN_MAP_BYTES]);
+                                       uint8_t LE_Channel_Map[5]);
 
 tBleStatus hci_disconnect_api(uint16_t Connection_Handle,
                               uint8_t Reason);
@@ -2691,8 +2697,8 @@ tBleStatus hci_le_iso_test_end_api(uint16_t Connection_Handle,
 tBleStatus hci_le_setup_iso_data_path_api(uint16_t Connection_Handle,
                                           uint8_t Data_Path_Direction,
                                           uint8_t Data_Path_ID,
-                                          uint8_t* CODEC_ID,
-                                          uint8_t* Controller_Delay,
+                                          uint8_t CODEC_ID[5],
+                                          uint8_t Controller_Delay[3],
                                           uint8_t Codec_Configuration_Length,
                                           uint8_t* Codec_Configuration);
 
@@ -2711,7 +2717,7 @@ tBleStatus hci_le_read_iso_link_quality_api(uint16_t connection_handle,
 tBleStatus hci_le_read_iso_tx_sync_api(uint16_t connection_handle,
                                        uint16_t* packet_sequence_number,
                                        uint32_t* timestamp,
-                                       uint8_t* timeoffset);
+                                       uint8_t timeoffset[3]);
 
 tBleStatus hci_tx_iso_data_api(uint16_t connection_handle,
                                uint8_t pb_flag,
@@ -2733,6 +2739,21 @@ tBleStatus hci_le_read_maximum_data_length_api(uint16_t* Supported_Max_Tx_Octets
                                                uint16_t* Supported_Max_Tx_Time,
                                                uint16_t* Supported_Max_Rx_Octets,
                                                uint16_t* Supported_Max_Rx_Time);
+
+tBleStatus hci_le_add_device_to_monitored_advertisers_list_api(uint8_t Address_Type,
+                                                               uint8_t Address[6],
+                                                               int8_t RSSI_Low_Threshold,
+                                                               int8_t RSSI_High_Threshold,
+                                                               uint8_t Timeout);
+
+tBleStatus hci_le_clear_monitored_advertisers_list_api(void);
+
+tBleStatus hci_le_enable_monitoring_advertisers_api(uint8_t Enable);
+
+tBleStatus hci_le_read_monitored_advertisers_list_size_api(uint8_t* Number);
+
+tBleStatus hci_le_remove_device_from_monitored_advertisers_list_api(uint8_t Address_Type,
+                                                                    uint8_t Address[6]);
 
 tBleStatus hci_le_set_periodic_advertising_parameters_api(uint8_t Advertising_Handle,
                                                           uint16_t Periodic_Advertising_Interval_Min,

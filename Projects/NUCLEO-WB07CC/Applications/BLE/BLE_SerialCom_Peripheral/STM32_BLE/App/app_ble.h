@@ -157,6 +157,7 @@ extern BleCoCContext_t BleCoCContextPeriph;
 #define CONN_INT_MS(x) ((uint16_t)((x)/1.25f))
 #define CONN_SUP_TIMEOUT_MS(x) ((uint16_t)((x)/10.0f))
 #define CONN_CE_LENGTH_MS(x) ((uint16_t)((x)/0.625f))
+
 /* USER CODE BEGIN EM */
 
 /* USER CODE END EM */

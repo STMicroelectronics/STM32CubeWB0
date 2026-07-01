@@ -34,6 +34,8 @@
 #define GAP_CHR_PERIPH_PREF_CONN_PARAMS_LEN     (8U)
 #define GAP_CHR_CENTRAL_ADDR_RESOLUTION_LEN     (1U)
 #define GAP_CHR_ENCRYPTED_DATA_KEY_MATERIAL_LEN (24U)
+#define GAP_CHR_RPA_ONLY_LEN                    (1U)
+#define GAP_CHR_LE_GATT_SECURITY_LEVELS_LEN     (2U)
 
 /******************************************************************************
  * FUNCTION PROTOTYPES
@@ -96,6 +98,23 @@ tBleStatus Gap_profile_set_pref_conn_par(uint16_t offset,
                                          uint16_t length,
                                          uint8_t *pref_conn_param_p);
 
+/**
+ * @brief Set initial value for LE GATT Security Level characteristic.
+ *
+ * @param offset Offset from which start to write value.
+ * @param length Data length.
+ * @param[in] value_p Pointer to the data to write.
+ *
+ * @return
+ * - BLE_STATUS_SUCCESS: the characteristic value is updated correctly
+ * - BLE_STATUS_INVALID_PARAMS: invalid parameter.
+ *
+ */
+tBleStatus Gap_profile_set_le_gatt_security_level(uint16_t offset,
+                                                  uint16_t length,
+                                                  uint8_t *value_p);
+												  
+												  
 /**
  * @brief Set GAP characteristic value.
  *

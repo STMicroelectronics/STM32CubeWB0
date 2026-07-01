@@ -399,9 +399,9 @@ static void BLE_App_Delay_DataThroughput(void)
   
   DataThroughput = (uint32_t)(DataReceived/TIMEUNIT);
 #if (CFG_DEBUG_APP_TRACE==1)
-  APP_DBG_MSG("  DataThroughput = %d  bytes/s lost = %d \n", DataThroughput, packet_lost);
+  APP_DBG_MSG("  DataThroughput = %d  bytes/s lost = %d \n", (int)DataThroughput, packet_lost);
 #else
-  DT_INFO_MSG("  DataThroughput = %d  bytes/s lost = %d \n", DataThroughput, packet_lost);
+  DT_INFO_MSG("  DataThroughput = %d  bytes/s lost = %d \n", (int)DataThroughput, packet_lost);
 #endif 
   
   

@@ -616,7 +616,7 @@ static void write_data(uint32_t flash_address, uint16_t data_length, const void 
 
 static NVMDB_status_t WriteRecord(uint32_t flash_address, uint8_t record_id, uint16_t data1_length, const void *data1, uint16_t data2_length, const void *data2)
 {
-  uint32_t word;
+  uint32_t word = 0x00000000;
   NVMDB_RecordHeaderType *header_p = (NVMDB_RecordHeaderType *)&word;
 #if NVM_CACHE
   int32_t needed_time;
@@ -2021,7 +2021,7 @@ NVMDB_status_t NVMDB_Erase(NVMDB_IdType NVMDB_id)
   /* This function schedules a flash erase. Another possible implementation can
    * invalidate all the records of the database and let a clean operation erase the page.
    */
-  const NVMDB_SmallDBContainerType *smallDBContainer_p;
+  const NVMDB_SmallDBContainerType *smallDBContainer_p = NULL;
   uint8_t type;
   NVMDB_status_t status;
 
@@ -2117,7 +2117,7 @@ NVMDB_status_t NVMDB_Erase(NVMDB_IdType NVMDB_id)
  */
 NVMDB_status_t NVMDB_CleanDB(NVMDB_IdType NVMDB_id)
 {
-  const NVMDB_SmallDBContainerType *smallDBContainer;
+  const NVMDB_SmallDBContainerType *smallDBContainer = NULL;
   uint8_t type;
 
   type = GetDBType(NVMDB_id, &smallDBContainer);

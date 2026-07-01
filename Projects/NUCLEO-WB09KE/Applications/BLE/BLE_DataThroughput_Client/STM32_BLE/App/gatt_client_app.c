@@ -1085,12 +1085,12 @@ static void client_discover_all(void)
   {
     if(a_ClientContext[index].state == GATT_CLIENT_APP_DISCOVER_SERVICES)
     {
+      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
+
       gatt_procedure(index, PROC_GATT_DISC_ALL_PRIMARY_SERVICES);
       gatt_procedure(index, PROC_GATT_DISC_ALL_CHARS);
       gatt_procedure(index, PROC_GATT_DISC_ALL_DESCS);
       gatt_procedure(index, PROC_GATT_ENABLE_ALL_NOTIFICATIONS);
-
-      a_ClientContext[index].state = GATT_CLIENT_APP_CONNECTED;
 
       /* Check if in the meantime another server has been connected. */
       UTIL_SEQ_SetTask( 1U << CFG_TASK_DISCOVER_SERVICES_ID, CFG_SEQ_PRIO_0);
@@ -1229,9 +1229,9 @@ static void DataT_Notification_Data( void )
   packet_lost = 0;
   
 #if (CFG_DEBUG_APP_TRACE==1)
-  APP_DBG_MSG("  DataThroughput = %d bytes/s lost = %d \n",DataThroughputValue, packet_lost_local);
+  APP_DBG_MSG("  DataThroughput = %d bytes/s lost = %d \n", (int)DataThroughputValue, (int)packet_lost_local);
 #else
-  DT_INFO_MSG("  DataThroughput = %d bytes/s lost = %d \n",DataThroughputValue, packet_lost_local);
+  DT_INFO_MSG("  DataThroughput = %d bytes/s lost = %d \n", (int)DataThroughputValue, (int)packet_lost_local);
 #endif 
   
   return;

@@ -174,7 +174,7 @@ uint32_t BLEPLAT_CNTR_GetTimer2TimeoutForIfs(uint32_t T_Ifs, BLEPLAT_CNTR_Transa
 {
   uint32_t Timeout = T_Ifs;
   uint32_t Tx_Delay_Comp;
-  uint32_t Init_Delay;
+  uint32_t Init_Delay = 0;
 
   if(Transaction == BLEPLAT_CNTR_RxTx)
   {

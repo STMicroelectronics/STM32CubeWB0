@@ -160,6 +160,9 @@ typedef struct
 #define ADV_CANCEL_TASK_STACK_SIZE      (800)
 #define ADV_CANCEL_TASK_PRIORITY        (tskIDLE_PRIORITY + 1)
 
+#define ADV_STARTUP_TASK_STACK_SIZE     (800)
+#define ADV_STARTUP_TASK_PRIORITY       (tskIDLE_PRIORITY + 1)
+
 /* USER CODE END PD */
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
@@ -218,6 +221,7 @@ static void BLEStack_Process_Task(void *pvParameters);
 
 /* USER CODE BEGIN PFP */
 static void Adv_Cancel_Task(void *pvParameters);
+static void Adv_Startup_Task(void *pvParameters);
 static void Adv_Cancel_Req(void *arg);
 static void Adv_Cancel(void);
 static void Switch_OFF_GPIO(void *arg);
@@ -323,7 +327,7 @@ void BLE_Init(void)
   /**
    * Set TX Power.
    */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -566,6 +570,7 @@ void APP_BLE_Init(void)
 
   /* USER CODE BEGIN APP_BLE_Init_4 */
   xTaskCreate(Adv_Cancel_Task, "ADV_CANCEL", ADV_CANCEL_TASK_STACK_SIZE>>2, NULL, ADV_CANCEL_TASK_PRIORITY, &AdvCancelTaskHandle);
+  xTaskCreate(Adv_Startup_Task, "ADV_START", ADV_STARTUP_TASK_STACK_SIZE>>2, NULL, ADV_STARTUP_TASK_PRIORITY, NULL);
   
   /* Create timer to handle the Advertising Stop */
   bleAppContext.Advertising_mgr_timer_Id.callback = Adv_Cancel_Req;    
@@ -596,11 +601,7 @@ void APP_BLE_Init(void)
     APP_DBG_MSG("  Success: aci_hal_set_radio_activity_mask command\n\r");
   }
   
-  /* Start to Advertise to accept a connection */
-  APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_FAST);
-  
-  /* Start a timer to stop advertising after a while */
-  HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id, ADV_TIMEOUT_MS);
+  /* Advertising is started by a task once scheduler is running. */
   
   /* USER CODE END APP_BLE_Init_3 */
 
@@ -826,9 +827,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
 
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1316,6 +1317,17 @@ static void Adv_Cancel_Task(void *pvParameters)
     ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
     Adv_Cancel();
   }  
+}
+
+static void Adv_Startup_Task(void *pvParameters)
+{
+  /* Start to Advertise to accept a connection */
+  APP_BLE_Procedure_Gap_Peripheral(PROC_GAP_PERIPH_ADVERTISE_START_FAST);
+
+  /* Start a timer to stop advertising after a while */
+  HAL_RADIO_TIMER_StartVirtualTimer(&bleAppContext.Advertising_mgr_timer_Id, ADV_TIMEOUT_MS);
+
+  vTaskDelete(NULL);
 }
 
 static void Adv_Cancel_Req(void *arg)

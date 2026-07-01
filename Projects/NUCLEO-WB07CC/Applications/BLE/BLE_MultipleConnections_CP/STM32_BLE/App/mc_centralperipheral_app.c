@@ -614,7 +614,7 @@ static void Terminate_Connections(MC_CENTRALPERIPHERAL_APP_Context_t* context, i
       /* Check if the termination command was successful */
       if (status != BLE_STATUS_SUCCESS)
       {
-        APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
+        APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", (unsigned int)status);
       }
       else
       {

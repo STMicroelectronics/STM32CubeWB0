@@ -221,7 +221,7 @@ int main(void)
     if(print_request != 0)
     {
       n_request++;
-      printf("Request Frame [%d]: ", n_request);
+      printf("Request Frame [%d]: ", (int)n_request);
       for(uint16_t i= 0; i<2; i++)
       {
         if(i == 1)
@@ -527,6 +527,7 @@ void InitializationActionPackets(void)
 
 /**
   * @brief  This function is executed in case of error occurrence.
+  * @param  None
   * @retval None
   */
 void Error_Handler(void)
@@ -539,8 +540,7 @@ void Error_Handler(void)
   }
   /* USER CODE END Error_Handler_Debug */
 }
-
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.

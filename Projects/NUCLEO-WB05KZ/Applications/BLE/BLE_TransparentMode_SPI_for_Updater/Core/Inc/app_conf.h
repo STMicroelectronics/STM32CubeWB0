@@ -313,7 +313,7 @@
 #define CFG_BLE_L2CAP_COS_ENABLED                         (0U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_ENABLED           (1U)
 #define CFG_BLE_CONTROLLER_PERIODIC_ADV_WR_ENABLED        (0U)
-#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (1U)
+#define CFG_BLE_CONTROLLER_CTE_ENABLED                    (0U)
 #define CFG_BLE_CONTROLLER_POWER_CONTROL_ENABLED          (0U)
 #define CFG_BLE_CONNECTION_ENABLED                        (1U)
 #define CFG_BLE_CONTROLLER_CHAN_CLASS_ENABLED             (0U)

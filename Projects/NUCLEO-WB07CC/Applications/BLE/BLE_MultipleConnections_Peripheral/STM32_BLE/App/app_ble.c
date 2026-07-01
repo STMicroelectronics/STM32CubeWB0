@@ -301,7 +301,7 @@ void BLE_Init(void)
   /**
   * Set TX Power.
   */
-  ret = aci_hal_set_tx_power_level(0, CFG_TX_POWER);
+  ret = aci_hal_set_tx_power_level(CFG_TX_POWER_MODE, CFG_TX_POWER);
   if (ret != BLE_STATUS_SUCCESS)
   {
     APP_DBG_MSG("  Fail   : aci_hal_set_tx_power_level command, result: 0x%02X\n", ret);
@@ -810,9 +810,9 @@ void BLEEVT_App_Notification(const hci_pckt *hci_pckt)
           uint8_t confirm_value;
           APP_DBG_MSG(">>== ACI_GAP_NUMERIC_COMPARISON_VALUE_VSEVT_CODE\n");
           APP_DBG_MSG("     - numeric_value = %d\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           APP_DBG_MSG("     - Hex_value = %x\n",
-                      ((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
+                      (unsigned int)((aci_gap_numeric_comparison_value_event_rp0 *)(p_blecore_evt->data))->Numeric_Value);
           
           /* Set confirm value to 1(YES) */
           confirm_value = 1;
@@ -1667,7 +1667,7 @@ void APPE_Button3Action(void)
     /* Check if the termination command was successful */
     if (status != BLE_STATUS_SUCCESS)
     {
-      APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", status);
+      APP_DBG_MSG("aci_gap_terminate failure: reason=0x%02X\n", (unsigned int)status);
     }
     else
     {
