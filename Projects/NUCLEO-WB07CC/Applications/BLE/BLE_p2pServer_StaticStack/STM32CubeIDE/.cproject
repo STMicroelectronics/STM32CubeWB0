@@ -111,7 +111,6 @@
 									<listOptionValue builtIn="false" value="-z noexecstack"/>
 									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_FLASH_APP_OFFSET=0x1A000"/>
 									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_RAM_APP_OFFSET=0x0300"/>
-									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_FLASH_APP_SIZE=0x12800"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.input.1945433812" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -239,7 +238,6 @@
 									<listOptionValue builtIn="false" value="-z noexecstack"/>
 									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_FLASH_APP_OFFSET=0x1A000"/>
 									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_RAM_APP_OFFSET=0x0300"/>
-									<listOptionValue builtIn="false" value="-Wl,--defsym=MEMORY_FLASH_APP_SIZE=0x12800"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.input.2144934744" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>

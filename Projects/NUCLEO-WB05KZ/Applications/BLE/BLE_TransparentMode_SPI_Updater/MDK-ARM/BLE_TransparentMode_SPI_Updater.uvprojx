@@ -374,7 +374,8 @@
             <ScatterFile>stm32wb05_flash.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc>--diag_suppress L6312W
+            <Misc>--predefine="-DMEMORY_FLASH_APP_SIZE=4096 "
+--diag_suppress L6312W
 --diag_suppress L6314W
 --diag_suppress L6329W</Misc>
             <LinkerInputFile></LinkerInputFile>

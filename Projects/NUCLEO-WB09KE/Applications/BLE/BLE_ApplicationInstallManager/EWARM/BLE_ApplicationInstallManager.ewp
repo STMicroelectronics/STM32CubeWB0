@@ -723,7 +723,7 @@
         </option>
         <option>
           <name>IlinkConfigDefines</name>
-          <state></state>
+          <state>MEMORY_FLASH_APP_SIZE=0x1000</state>
         </option>
         <option>
           <name>IlinkMapFile</name>
